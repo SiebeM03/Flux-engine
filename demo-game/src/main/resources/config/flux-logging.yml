@@ -1,0 +1,12 @@
+defaultLevel: INFO
+
+categories:
+  timer: TRACE
+  renderer: TRACE
+
+outputs:
+  - type: console
+    pattern: "[{level}] [{category}] {message}"
+  - type: file
+    file: "logs/flux.log"
+    pattern: "[{time}] [{level}] [{category}] {message}"
