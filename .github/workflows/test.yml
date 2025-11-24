@@ -25,11 +25,27 @@ jobs:
     - name: Set up display for headless tests
       run: |
         sudo apt-get update
-        sudo apt-get install -y xvfb
+        sudo apt-get install -y xvfb libxrandr2 libxinerama2 libxcursor1 libxi6 libasound2
+        
+    - name: Start Xvfb
+      run: |
+        export DISPLAY=:99
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        sleep 3
         
     - name: Run tests
-      run: mvn clean test
+      run: mvn clean test -Dlwjgl.natives=natives-linux
       env:
         DISPLAY: :99
       continue-on-error: false
+      
+    - name: Upload test reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-reports
+        path: |
+          **/target/surefire-reports
+          **/target/failsafe-reports
+        retention-days: 7
 
