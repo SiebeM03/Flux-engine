@@ -25,7 +25,7 @@ jobs:
     - name: Set up display for headless tests
       run: |
         sudo apt-get update
-        sudo apt-get install -y xvfb libxrandr2 libxinerama2t64 libxcursor1 libxi6 libasound2t64
+        sudo apt-get install -y xvfb libxrandr2 libxinerama1 libxcursor1 libxi6 libasound2t64
         
     - name: Start Xvfb
       run: |
