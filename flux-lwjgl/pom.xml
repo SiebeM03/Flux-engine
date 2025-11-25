@@ -15,9 +15,12 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <jgltf.model.version>2.0.4</jgltf.model.version>
     </properties>
 
     <dependencies>
+        <!-- LWJGL dependencies -->
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-opengl</artifactId>
@@ -25,6 +28,19 @@
             <classifier>${lwjgl.natives}</classifier>
         </dependency>
 
+        <!-- JglTF dependencies -->
+        <dependency>
+            <groupId>de.javagl</groupId>
+            <artifactId>jgltf-model</artifactId>
+            <version>${jgltf.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.javagl</groupId>
+            <artifactId>jgltf-impl-v2</artifactId>
+            <version>${jgltf.model.version}</version>
+        </dependency>
+
+        <!-- Flux dependencies -->
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-util</artifactId>

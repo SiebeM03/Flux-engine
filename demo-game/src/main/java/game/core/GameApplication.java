@@ -21,7 +21,8 @@ public class GameApplication extends FluxApplication {
         logger.info("Initializing Game Systems");
 
         try {
-            GltfLoader.loadFromAssets("models/damaged-helmet/scene.gltf");
+            GltfLoader.loadAsset("models/damaged-helmet/DamagedHelmet.glb");
+//            GltfLoader.loadAsset("models/damaged-helmet/scene.gltf");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
