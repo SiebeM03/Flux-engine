@@ -13,6 +13,8 @@ public final class Timer {
     private double deltaTime;
     private double lastFrameTime;
     private double currentFrameTime;
+    private double startTime;
+    private long frameCount;
 
     private final float DEFAULT_PRINT_DELAY = 1.0f;
     private final Delay printDelay;
@@ -24,8 +26,10 @@ public final class Timer {
 
     public Timer() {
         this.deltaTime = 0.0;
-        this.lastFrameTime = glfwGetTime();
+        this.startTime = glfwGetTime();
+        this.lastFrameTime = startTime;
         this.currentFrameTime = lastFrameTime;
+        this.frameCount = 0L;
 
         this.printDelay = new Delay(DEFAULT_PRINT_DELAY);
 
@@ -39,6 +43,7 @@ public final class Timer {
         this.currentFrameTime = glfwGetTime();
         this.deltaTime = this.currentFrameTime - this.lastFrameTime;
         this.lastFrameTime = this.currentFrameTime;
+        this.frameCount++;
 
         printDelay.update((float) deltaTime);
         addFrameToList();
@@ -65,5 +70,23 @@ public final class Timer {
 
     public double getDeltaTime() {
         return this.deltaTime;
+    }
+
+    /**
+     * Gets the total time since the timer was created.
+     *
+     * @return the total time in seconds
+     */
+    public double getTotalTime() {
+        return this.currentFrameTime - this.startTime;
+    }
+
+    /**
+     * Gets the current frame count.
+     *
+     * @return the number of frames that have been updated
+     */
+    public long getFrameCount() {
+        return this.frameCount;
     }
 }

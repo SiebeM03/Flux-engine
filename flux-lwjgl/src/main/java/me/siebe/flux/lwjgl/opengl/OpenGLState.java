@@ -2,13 +2,24 @@ package me.siebe.flux.lwjgl.opengl;
 
 import me.siebe.flux.util.FluxColor;
 
+import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 public class OpenGLState {
+    private static boolean initialized = false;
+
     private OpenGLState() {
         // Utility class
+    }
+
+    public static void init() {
+        if (initialized) {
+            throw new IllegalStateException("OpenGLState already initialized");
+        }
+        initialized = true;
+        createCapabilities();
     }
 
     /**
