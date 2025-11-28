@@ -39,6 +39,10 @@ public abstract class FluxApplication implements ProvidableSystem {
             WindowBuilder windowBuilder = createWindowBuilder();
             ctx.window = windowBuilder.build();
             ctx.window.init();
+
+            // OpenGL initialization
+            OpenGLState.init();
+            OpenGLState.setViewport(0, 0, ctx.getWindow().getWidth(), ctx.getWindow().getHeight());
         });
     }
 

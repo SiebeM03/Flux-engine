@@ -12,8 +12,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 
 import static me.siebe.flux.util.config.Flux.NULL;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL.createCapabilities;
-import static org.lwjgl.opengl.GL11.*;
 
 public class GlfwWindowBuilder extends WindowBuilder {
     private static final Logger logger = LoggerFactory.getLogger(GlfwWindowBuilder.class, LoggingCategories.WINDOW);
@@ -92,15 +90,11 @@ public class GlfwWindowBuilder extends WindowBuilder {
 
     private void applySettings() {
         glfwMakeContextCurrent(config.windowId);
-        createCapabilities();
         glfwSetWindowSizeLimits(config.windowId, config.minWidth, config.minHeight, config.maxWidth, config.maxHeight);
         if (showWindow) {
             glfwShowWindow(config.windowId);
         }
         glfwSwapInterval(config.vsync ? 1 : 0);
-
-        glEnable(GL_DEPTH_TEST);
-        glViewport(0, 0, config.width, config.height);
     }
 
     private void setWindowSizeListener() {

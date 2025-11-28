@@ -58,9 +58,6 @@ public class GlfwWindowBuilderIntegrationTest {
         assertEquals(300, window.getWidth());
         assertEquals(200, window.getHeight());
 
-        // Ensure OpenGL context exists
-        assertNotNull(getCapabilities(), "OpenGL capabilities should not be null after making context current");
-
         window.destroy();
     }
 
