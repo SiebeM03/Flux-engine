@@ -1,8 +1,7 @@
-defaultLevel: INFO
+defaultLevel: DEBUG
 
 categories:
-  timer: TRACE
-  renderer: TRACE
+  timer: INFO
 
 outputs:
   - type: console

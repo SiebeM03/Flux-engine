@@ -1,6 +1,7 @@
 package me.siebe.flux.api.window;
 
 import me.siebe.flux.util.system.SystemProvider;
+import me.siebe.flux.util.system.SystemProviderType;
 
 public interface Window {
     // =================================================================================================================
@@ -25,6 +26,6 @@ public interface Window {
     long getId();
 
     static WindowBuilder builder(WindowPlatform platform) {
-        return SystemProvider.provide(WindowBuilder.class, wb -> wb.getPlatform() == platform);
+        return SystemProvider.provide(WindowBuilder.class, SystemProviderType.ALL, wb -> wb.getPlatform() == platform);
     }
 }

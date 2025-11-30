@@ -33,6 +33,7 @@
             <groupId>me.siebe</groupId>
             <artifactId>flux-renderer</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

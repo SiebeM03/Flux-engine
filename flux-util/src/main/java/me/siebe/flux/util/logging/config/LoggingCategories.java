@@ -20,6 +20,7 @@ public interface LoggingCategories {
     // OpenGL related
     String RENDERER = "renderer";
     String SHADER = "shader";
+    String OPENGL = "opengl";
 
     // File related
     String GLTF = "gltf";

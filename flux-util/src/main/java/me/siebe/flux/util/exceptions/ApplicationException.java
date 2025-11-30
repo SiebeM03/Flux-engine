@@ -15,12 +15,12 @@ public class ApplicationException extends EngineException {
 
     public static ApplicationException noAppProviderImplementationFound() {
         return new ApplicationException("No FluxApplication implementation found, " +
-                "make sure to extend the class and specify the implementation class in " +
-                "src/main/resources/META-INF/services/me.siebe.flux.core.FluxApplication");
+                "make sure to extend the class in your game project. " +
+                "Also make sure the package name in your project does not start with `me.siebe.flux`");
     }
 
     public static ApplicationException multipleAppProviderImplementationFound() {
         return new ApplicationException("Multiple FluxApplication implementations were specified, " +
-                "you must implement exactly 1 FluxApplication class");
+                "you must have exactly 1 FluxApplication implementation");
     }
 }

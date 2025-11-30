@@ -7,11 +7,8 @@ import me.siebe.flux.api.window.WindowMode;
 import me.siebe.flux.api.window.WindowPlatform;
 import me.siebe.flux.core.AppContext;
 import me.siebe.flux.core.FluxApplication;
-import me.siebe.flux.lwjgl.gltf.GltfLoader;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
-
-import java.io.IOException;
 
 public class GameApplication extends FluxApplication {
     private static final Logger logger = LoggerFactory.getLogger(GameApplication.class, GameCategories.APPLICATION);
@@ -19,12 +16,6 @@ public class GameApplication extends FluxApplication {
     @Override
     protected void initGameSystems() {
         logger.info("Initializing Game Systems");
-
-        try {
-            GltfLoader.loadFromAssets("models/damaged-helmet/scene.gltf");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

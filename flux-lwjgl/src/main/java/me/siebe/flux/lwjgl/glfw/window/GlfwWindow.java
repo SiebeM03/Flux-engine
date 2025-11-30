@@ -2,6 +2,7 @@ package me.siebe.flux.lwjgl.glfw.window;
 
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowConfig;
+import me.siebe.flux.lwjgl.opengl.OpenGLState;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
@@ -20,6 +21,9 @@ public class GlfwWindow implements Window {
     @Override
     public void init() {
         logger.info("Initializing GlfwWindow with {}", StringUtils.toString(config, true));
+
+        OpenGLState.init();
+        OpenGLState.setViewport(0, 0, config.width, config.height);
     }
 
     @Override

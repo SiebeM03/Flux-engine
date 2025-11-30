@@ -2,6 +2,7 @@ package me.siebe.flux.api.renderer;
 
 import me.siebe.flux.util.system.ProvidableSystem;
 import me.siebe.flux.util.system.SystemProvider;
+import me.siebe.flux.util.system.SystemProviderType;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public interface RenderPipeline extends ProvidableSystem {
      * @return a new default rendering pipeline
      */
     static RenderPipeline create() {
-        return SystemProvider.provide(RenderPipeline.class);
+        return SystemProvider.provide(RenderPipeline.class, SystemProviderType.ALL);
     }
 
     /**
