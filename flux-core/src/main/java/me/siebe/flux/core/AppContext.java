@@ -1,5 +1,6 @@
 package me.siebe.flux.core;
 
+import me.siebe.flux.api.renderer.RenderPipeline;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.util.exceptions.ApplicationException;
 import me.siebe.flux.util.time.Timer;
@@ -13,6 +14,7 @@ public class AppContext {
     private FluxApplication application;
     Window window;
     Timer timer;
+    RenderPipeline renderPipeline;
 
     private AppContext() {
     }
