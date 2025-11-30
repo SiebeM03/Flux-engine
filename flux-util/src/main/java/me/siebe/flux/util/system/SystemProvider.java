@@ -6,6 +6,7 @@ import me.siebe.flux.util.exceptions.FluxException;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +136,8 @@ public class SystemProvider {
 
                 try {
                     customImplementations.add((T) implClass.getDeclaredConstructor().newInstance());
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    logger.warn("Could not instantiate {} using {} ({})", implClass.getSimpleName(), clazz.getSimpleName(), e.getClass().getName());
                 }
             }
         }

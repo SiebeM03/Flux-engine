@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -41,8 +42,6 @@ public class GlfwWindowBuilderIntegrationTest {
 
     @Test
     void testWindowCreation() {
-        assertTrue(glfwInitialized, "GLFW must be initialized for test");
-
         Window window = new GlfwWindowBuilder()
                 .title("Test Window")
                 .mode(WindowMode.WINDOWED)
@@ -51,14 +50,27 @@ public class GlfwWindowBuilderIntegrationTest {
                 .hidden()
                 .build();
 
-        window.init();
-
         assertNotEquals(-1L, window.getId(), "Window ID must not be -1");
         assertFalse(window.shouldClose(), "New window should not be marked for closing");
         assertEquals(300, window.getWidth());
         assertEquals(200, window.getHeight());
+    }
 
-        window.destroy();
+    @Test
+    void testWindowInitCreatesCapabilities() {
+        Window window = new GlfwWindowBuilder()
+                .title("Test Window")
+                .mode(WindowMode.WINDOWED)
+                .width(300, 200, 800)
+                .height(200, 100, 600)
+                .hidden()
+                .build();
+
+        // Ensure OpenGL context does not exist
+        assertThrows(IllegalStateException.class, GL::getCapabilities, "OpenGL capabilities should throw IllegalStateException when the window is not initialized");
+        window.init();
+        // Ensure OpenGL context exists
+        assertNotNull(getCapabilities(), "OpenGL capabilities should not be null after making context current");
     }
 
     @Test
@@ -72,21 +84,20 @@ public class GlfwWindowBuilderIntegrationTest {
                     .hidden()
                     .build();
 
-            window.init();
-
             switch (mode) {
                 case WINDOWED -> {
                     assertEquals(400, window.getWidth(), "Windowed width mismatch");
                     assertEquals(300, window.getHeight(), "Windowed height mismatch");
                 }
-                case FULLSCREEN, BORDERLESS -> {
-                    // FULLSCREEN and BORDERLESS should match primary monitor size
-                    assertEquals(primaryMonitorWidth, window.getWidth(), "Fullscreen/BORDERLESS width mismatch");
-                    assertEquals(primaryMonitorHeight, window.getHeight(), "Fullscreen/BORDERLESS height mismatch");
+                case BORDERLESS -> {
+                    assertEquals(primaryMonitorWidth, window.getWidth(), "Borderless width mismatch");
+                    assertEquals(primaryMonitorHeight, window.getHeight(), "Borderless height mismatch");
+                }
+                case FULLSCREEN -> {
+                    assertEquals(primaryMonitorWidth, window.getWidth(), "Fullscreen width mismatch");
+                    assertEquals(primaryMonitorHeight, window.getHeight(), "Fullscreen height mismatch");
                 }
             }
-
-            window.destroy();
         }
     }
 
@@ -99,8 +110,6 @@ public class GlfwWindowBuilderIntegrationTest {
                 .height(200, 100, 600)
                 .hidden()
                 .build();
-
-        window.init();
 
         long id = window.getId();
         assertEquals(300, window.getWidth());
@@ -117,8 +126,6 @@ public class GlfwWindowBuilderIntegrationTest {
 
         assertEquals(500, window.getWidth());
         assertEquals(450, window.getHeight());
-
-        window.destroy();
     }
 
     @Test
@@ -130,8 +137,6 @@ public class GlfwWindowBuilderIntegrationTest {
                 .height(200, 100, 600)
                 .hidden()
                 .build();
-
-        window.init();
 
         long id = window.getId();
         assertFalse(window.shouldClose());
@@ -146,8 +151,6 @@ public class GlfwWindowBuilderIntegrationTest {
         }
 
         assertTrue(window.shouldClose(), "Window should now be marked closed");
-
-        window.destroy();
     }
 
     @Test
@@ -161,12 +164,6 @@ public class GlfwWindowBuilderIntegrationTest {
                 .hidden()
                 .build();
 
-        window.init();
-
         assertDoesNotThrow(window::update, "update() should call glfwSwapBuffers + glfwPollEvents without error");
-
-        window.destroy();
     }
-
-
 }
