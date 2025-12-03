@@ -27,6 +27,12 @@
             <version>${flux.engine.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>me.siebe</groupId>
+            <artifactId>flux-renderer-2d</artifactId>
+            <version>${flux.engine.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

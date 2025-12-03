@@ -31,7 +31,7 @@
 
         <dependency>
             <groupId>me.siebe</groupId>
-            <artifactId>flux-renderer</artifactId>
+            <artifactId>flux-renderer-2d</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

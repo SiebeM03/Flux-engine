@@ -1,5 +1,7 @@
 package me.siebe.flux.api.renderer;
 
+import me.siebe.flux.api.renderer.context.BaseRenderContext;
+
 /**
  * Represents a single step in the rendering pipeline.
  * <p>
@@ -19,7 +21,7 @@ public interface RenderStep {
      *
      * @param context the rendering context containing frame information
      */
-    void execute(RenderContext context);
+    void execute(BaseRenderContext context);
 
     /**
      * Gets the name of this rendering step.
@@ -40,7 +42,7 @@ public interface RenderStep {
      *
      * @param context the initial rendering context
      */
-    default void init(RenderContext context) {
+    default void init(BaseRenderContext context) {
         // Default implementation does nothing
     }
 

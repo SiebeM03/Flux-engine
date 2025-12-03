@@ -1,5 +1,6 @@
 package me.siebe.flux.api.renderer;
 
+import me.siebe.flux.api.renderer.context.BaseRenderContext;
 import me.siebe.flux.util.system.ProvidableSystem;
 import me.siebe.flux.util.system.SystemProvider;
 import me.siebe.flux.util.system.SystemProviderType;
@@ -32,7 +33,7 @@ public interface RenderPipeline extends ProvidableSystem {
      *
      * @param context the rendering context for this frame
      */
-    void render(RenderContext context);
+    void render(BaseRenderContext context);
 
     /**
      * Adds a rendering step to the end of the pipeline.
@@ -93,7 +94,7 @@ public interface RenderPipeline extends ProvidableSystem {
      *
      * @param context the initial rendering context
      */
-    void init(RenderContext context);
+    void init(BaseRenderContext context);
 
     /**
      * Destroys all steps in the pipeline.

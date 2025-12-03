@@ -15,7 +15,7 @@
     </description>
     <modules>
         <module>demo-game</module>
-        <module>flux-renderer</module>
+        <module>flux-renderer-2d</module>
         <module>flux-lwjgl</module>
         <module>flux-util</module>
         <module>flux-core</module>
