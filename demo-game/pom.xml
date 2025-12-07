@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>me.siebe</groupId>
-            <artifactId>flux-renderer-2d</artifactId>
+            <artifactId>flux-renderer-3d</artifactId>
             <version>${flux.engine.version}</version>
         </dependency>
 

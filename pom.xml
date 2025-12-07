@@ -15,11 +15,11 @@
     </description>
     <modules>
         <module>demo-game</module>
-        <module>flux-renderer-2d</module>
         <module>flux-lwjgl</module>
         <module>flux-util</module>
         <module>flux-core</module>
         <module>flux-api</module>
+        <module>flux-renderer-3d</module>
     </modules>
 
     <properties>
