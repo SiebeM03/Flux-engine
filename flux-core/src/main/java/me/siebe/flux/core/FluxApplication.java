@@ -1,13 +1,13 @@
 package me.siebe.flux.core;
 
+import me.siebe.flux.api.renderer.pipeline.RenderPipeline;
+import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.window.WindowBuilder;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
 import me.siebe.flux.util.system.ProvidableSystem;
 import me.siebe.flux.util.time.Timer;
-
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  * The base class for all Flux applications.
@@ -75,6 +75,9 @@ public abstract class FluxApplication implements ProvidableSystem {
             WindowBuilder windowBuilder = createWindowBuilder();
             ctx.window = windowBuilder.build();
             ctx.window.init();
+
+            // Render pipeline initialization
+            ctx.renderer = new Renderer(RenderPipeline.create());
         });
     }
 
@@ -106,12 +109,14 @@ public abstract class FluxApplication implements ProvidableSystem {
         try {
             AppContext.withContextNoReturn(ctx -> {
                 while (!ctx.window.shouldClose()) {
-                    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                    glEnable(GL_DEPTH_TEST);
+//                    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+//                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//                    glEnable(GL_DEPTH_TEST);
 
                     gameUpdate(ctx);
                     engineUpdate(ctx);
+
+                    ctx.renderer.render();
                 }
             });
         } catch (Exception e) {
