@@ -23,6 +23,10 @@ public interface Window {
 
     int getHeight();
 
+    default float getAspectRatio() {
+        return (float) getWidth() / (float) getHeight();
+    }
+
     long getId();
 
     static WindowBuilder builder(WindowPlatform platform) {

@@ -1,9 +1,10 @@
-package me.siebe.flux.renderer2d;
+package me.siebe.flux.renderer3d;
 
 import me.siebe.flux.api.renderer.pipeline.GenericRenderPipeline;
 import me.siebe.flux.api.renderer.pipeline.RenderStep;
 import me.siebe.flux.api.renderer.context.BaseRenderContext;
-import me.siebe.flux.renderer2d.steps.ClearStep;
+import me.siebe.flux.renderer3d.steps.ClearStep;
+import me.siebe.flux.renderer3d.steps.CubeStep;
 
 public class Default2DRenderPipeline extends GenericRenderPipeline {
 
@@ -12,6 +13,7 @@ public class Default2DRenderPipeline extends GenericRenderPipeline {
         super.init();
 
         addStep(new ClearStep());
+        addStep(new CubeStep());
     }
 
     @Override

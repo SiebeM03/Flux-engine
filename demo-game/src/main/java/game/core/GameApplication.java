@@ -1,7 +1,6 @@
 package game.core;
 
 import game.core.logging.GameCategories;
-import me.siebe.flux.api.renderer.context.BaseRenderContext;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowBuilder;
 import me.siebe.flux.api.window.WindowMode;
@@ -14,21 +13,19 @@ import me.siebe.flux.util.logging.LoggerFactory;
 public class GameApplication extends FluxApplication {
     private static final Logger logger = LoggerFactory.getLogger(GameApplication.class, GameCategories.APPLICATION);
 
+    private TempCameraSetup cameraSetup;
 
     @Override
     protected void initGameSystems() {
         logger.info("Initializing Game Systems");
-
-        AppContext.withContextNoReturn(ctx -> {
-            ctx.getRenderer().setRenderContext(new BaseRenderContext());
-        });
-
+        this.cameraSetup = new TempCameraSetup();
+        this.cameraSetup.init();
     }
 
     @Override
     protected void gameUpdate(final AppContext ctx) {
         logger.trace("Updating Game");
-
+        this.cameraSetup.init();
     }
 
     @Override

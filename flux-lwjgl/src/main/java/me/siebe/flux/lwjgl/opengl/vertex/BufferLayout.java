@@ -11,6 +11,10 @@ public class BufferLayout {
         calculateOffsetsAndStride();
     }
 
+    public BufferLayout(BufferElement... elements) {
+        this(List.of(elements));
+    }
+
     public void addElement(BufferElement element) {
         elements.add(element);
         calculateOffsetsAndStride();

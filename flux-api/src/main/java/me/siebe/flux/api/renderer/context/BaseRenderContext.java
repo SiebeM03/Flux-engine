@@ -1,12 +1,15 @@
 package me.siebe.flux.api.renderer.context;
 
-import org.joml.Matrix4f;
+import me.siebe.flux.api.camera.Camera;
 
 public class BaseRenderContext {
-    private Matrix4f projectionMatrix;
-    private Matrix4f viewMatrix;
+    private Camera camera;
 
-    public Matrix4f getProjectionMatrix() {
-        return projectionMatrix;
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
     }
 }

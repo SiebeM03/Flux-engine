@@ -1,4 +1,4 @@
-package me.siebe.flux.renderer2d.steps;
+package me.siebe.flux.renderer3d.steps;
 
 import me.siebe.flux.api.renderer.pipeline.RenderStep;
 import me.siebe.flux.api.renderer.context.BaseRenderContext;
