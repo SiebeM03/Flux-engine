@@ -20,6 +20,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {
     private static final Logger logger = LoggerFactory.getLogger(ShaderProgram.class, LoggingCategories.RENDERER);
+    private static ShaderProgram ACTIVE_SHADER;
 
     private final int programId;
     private final String filename;
@@ -59,10 +60,12 @@ public class ShaderProgram {
 
 
     public void bind() {
+        ShaderProgram.ACTIVE_SHADER = this;
         glUseProgram(programId);
     }
 
     public void unbind() {
+        ShaderProgram.ACTIVE_SHADER = null;
         glUseProgram(0);
     }
 
@@ -203,5 +206,9 @@ public class ShaderProgram {
         }
         bind();
         u.uploadTexture(slot);
+    }
+
+    public static ShaderProgram getActiveShader() {
+        return ACTIVE_SHADER;
     }
 }

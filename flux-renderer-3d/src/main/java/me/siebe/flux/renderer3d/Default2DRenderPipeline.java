@@ -13,7 +13,6 @@ public class Default2DRenderPipeline extends GenericRenderPipeline {
         super.init();
 
         addStep(new ClearStep());
-        addStep(new CubeStep());
     }
 
     @Override

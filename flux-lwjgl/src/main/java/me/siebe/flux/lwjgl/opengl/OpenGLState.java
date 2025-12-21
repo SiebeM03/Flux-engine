@@ -1,5 +1,7 @@
 package me.siebe.flux.lwjgl.opengl;
 
+import me.siebe.flux.lwjgl.opengl.vertex.VertexArray;
+import me.siebe.flux.lwjgl.opengl.vertex.VertexBuffer;
 import me.siebe.flux.util.FluxColor;
 
 import static org.lwjgl.opengl.GL.createCapabilities;
@@ -181,5 +183,15 @@ public class OpenGLState {
      */
     public static void setPolygonMode(int face, int mode) {
         glPolygonMode(face, mode);
+    }
+
+    public static void drawElements(final VertexArray vao) {
+        vao.bind();
+        if (vao.getIndexBuffer() != null) {
+            glDrawElements(GL_TRIANGLES, vao.getIndexBuffer().getCount(), GL_UNSIGNED_INT, 0);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, vao.getVertexBuffers().stream().mapToInt(VertexBuffer::getSize).sum());
+        }
+        vao.unbind();
     }
 }

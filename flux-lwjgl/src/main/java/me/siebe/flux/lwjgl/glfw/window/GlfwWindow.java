@@ -55,5 +55,6 @@ public class GlfwWindow implements Window {
     @Override
     public void destroy() {
         logger.info("Destroying GlfwWindow");
+        glfwDestroyWindow(config.windowId);
     }
 }

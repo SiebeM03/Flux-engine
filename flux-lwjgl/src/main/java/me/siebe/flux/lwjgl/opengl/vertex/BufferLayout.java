@@ -33,8 +33,8 @@ public class BufferLayout {
         this.stride = 0;
         for (BufferElement element : elements) {
             element.offset = offset;
-            offset += element.size;
-            stride += element.size;
+            offset += element.byteSize;
+            stride += element.byteSize;
         }
     }
 }
