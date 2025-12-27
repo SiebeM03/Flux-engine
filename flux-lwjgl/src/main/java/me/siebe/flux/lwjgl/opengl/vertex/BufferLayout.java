@@ -28,6 +28,10 @@ public class BufferLayout {
         return stride;
     }
 
+    public int getComponentCount() {
+        return elements.stream().mapToInt(BufferElement::getComponentSize).sum();
+    }
+
     private void calculateOffsetsAndStride() {
         int offset = 0;
         this.stride = 0;

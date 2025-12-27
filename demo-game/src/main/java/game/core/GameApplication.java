@@ -8,13 +8,10 @@ import me.siebe.flux.api.window.WindowMode;
 import me.siebe.flux.api.window.WindowPlatform;
 import me.siebe.flux.core.AppContext;
 import me.siebe.flux.core.FluxApplication;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
-import me.siebe.flux.renderer3d.model.data.Model;
-import me.siebe.flux.renderer3d.model.gltf.loading.GltfLoader;
 import me.siebe.flux.renderer3d.steps.GltfStep;
+import me.siebe.flux.renderer3d.steps.OriginStep;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
-import org.joml.Matrix4f;
 
 public class GameApplication extends FluxApplication {
     private static final Logger logger = LoggerFactory.getLogger(GameApplication.class, GameCategories.APPLICATION);
@@ -28,6 +25,7 @@ public class GameApplication extends FluxApplication {
         this.cameraSetup.init();
 
         AppContext.get().getRenderer().getPipeline().addStep(new GltfStep());
+//        AppContext.get().getRenderer().getPipeline().addStep(new OriginStep());
     }
 
     @Override

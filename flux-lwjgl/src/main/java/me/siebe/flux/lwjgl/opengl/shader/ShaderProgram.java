@@ -181,7 +181,7 @@ public class ShaderProgram {
     public void upload(String name, @NotNull Object value) {
         ShaderUniform u = getUniform(name);
         if (u == null) {
-            logger.error("Uniform {} not found or unused in {}", name, filename);
+            logger.warn("Uniform {} not found or unused in {}", name, filename);
             return;
         }
         bind();
@@ -201,7 +201,7 @@ public class ShaderProgram {
     public void uploadTexture(String name, int slot) {
         ShaderUniform u = getUniform(name);
         if (u == null) {
-            logger.error("Uniform {} not found or unused in {}", name, filename);
+            logger.warn("Uniform {} not found or unused in {}", name, filename);
             return;
         }
         bind();

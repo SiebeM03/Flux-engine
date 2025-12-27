@@ -1,6 +1,7 @@
 package me.siebe.flux.renderer3d.model.data;
 
 import me.siebe.flux.util.exceptions.Validator;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -23,10 +24,16 @@ public class Mesh {
      * Each primitive has its own geometry (VertexArray) and material.
      */
     private final List<Primitive> primitives;
+
     /**
      * Position relative to the model's position
      */
     private Vector3f relativePosition;
+
+    private Quaternionf rotation;
+
+    private Vector3f scale;
+
     /**
      * Optional name for this mesh. Can be used for identification and debugging.
      */
@@ -45,8 +52,11 @@ public class Mesh {
     public Mesh(List<Primitive> primitives, String name) {
         Validator.notNull(primitives, () -> "Primitives");
         this.primitives = new ArrayList<>(primitives);
-        this.relativePosition = new Vector3f(0, 0, 0);
         this.name = name;
+
+        this.relativePosition = new Vector3f(0, 0, 0);
+        this.rotation = new Quaternionf();
+        this.scale = new Vector3f(1, 1, 1);
     }
 
     public List<Primitive> getPrimitives() {
@@ -68,6 +78,38 @@ public class Mesh {
 
     public void setRelativePosition(Vector3f relativePosition) {
         this.relativePosition.set(relativePosition);
+    }
+
+    public Quaternionf getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(Quaternionf rotation) {
+        if (rotation != null) {
+            this.rotation.set(rotation);
+        } else {
+            resetRotation();
+        }
+    }
+
+    public void resetRotation() {
+        this.rotation.identity();
+    }
+
+    public Vector3f getScale() {
+        return scale;
+    }
+
+    public void setScale(Vector3f scale) {
+        if (scale != null) {
+            this.scale.set(scale);
+        } else {
+            resetScale();
+        }
+    }
+
+    public void resetScale() {
+        this.scale.set(1, 1, 1);
     }
 
     public String getName() {

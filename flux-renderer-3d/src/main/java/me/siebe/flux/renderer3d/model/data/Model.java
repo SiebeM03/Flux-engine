@@ -2,11 +2,14 @@ package me.siebe.flux.renderer3d.model.data;
 
 import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.lwjgl.opengl.OpenGLState;
+import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
 import me.siebe.flux.lwjgl.opengl.vertex.IndexBuffer;
 import me.siebe.flux.util.exceptions.Validator;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a complete 3D model that can contain multiple meshes.
@@ -47,6 +50,13 @@ public class Model implements Renderable {
         meshes.add(mesh);
     }
 
+    public Optional<Mesh> getMesh(String name) {
+        Validator.notNull(name, () -> "Mesh name");
+        return meshes.stream()
+                .filter(mesh -> name.equals(mesh.getName()))
+                .findFirst();
+    }
+
     public boolean removeMesh(Mesh mesh) {
         return meshes.remove(mesh);
     }
@@ -81,6 +91,7 @@ public class Model implements Renderable {
      * @param mesh the mesh to render
      */
     protected void renderMesh(Mesh mesh) {
+        ShaderProgram.getActiveShader().upload("uModelMatrix", new Matrix4f().translate(mesh.getRelativePosition()));
         for (Primitive primitive : mesh.getPrimitives()) {
             renderPrimitive(primitive);
         }
@@ -94,12 +105,22 @@ public class Model implements Renderable {
      * @param primitive the primitive to render
      */
     protected void renderPrimitive(Primitive primitive) {
+        Material material = primitive.getMaterial();
+        ShaderProgram shader = ShaderProgram.getActiveShader();
+
+        material.applyOpenGLState();
+
+        // Bind textures and upload material uniforms
+        material.uploadToShader(shader);
+
         primitive.getVertexArray().bind();
         IndexBuffer indexBuffer = primitive.getVertexArray().getIndexBuffer();
         if (indexBuffer != null) {
             OpenGLState.drawElements(primitive.getVertexArray());
         }
         primitive.getVertexArray().unbind();
+
+        material.restoreOpenGLState();
     }
 
     /**
