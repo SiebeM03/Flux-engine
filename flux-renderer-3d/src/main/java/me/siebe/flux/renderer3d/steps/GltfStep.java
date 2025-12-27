@@ -1,23 +1,21 @@
 package me.siebe.flux.renderer3d.steps;
 
 import me.siebe.flux.api.renderer.context.BaseRenderContext;
+import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.api.renderer.pipeline.RenderStep;
+import me.siebe.flux.lwjgl.opengl.shader.ShaderLoader;
 import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
-import me.siebe.flux.renderer3d.model.data.Model;
-import me.siebe.flux.renderer3d.model.gltf.loading.GltfLoader;
 import me.siebe.flux.util.time.Timer;
 import org.joml.Vector3f;
 
 // TODO rename to a more generic name as it will support more than just GLTF models in the future
 public class GltfStep implements RenderStep {
     private ShaderProgram shader;
-    private Model model;
     private Timer timer;
 
     @Override
     public void init() {
-        this.shader = new ShaderProgram("shaders/gltf");
-        this.model = GltfLoader.loadModel("models/damaged-helmet/scene.gltf");
+        this.shader = ShaderLoader.get().load("shaders/gltf");
         this.timer = new Timer();
     }
 
@@ -39,7 +37,7 @@ public class GltfStep implements RenderStep {
         this.timer.update();
         shader.bind();
 
-        model.render();
+        context.getRenderables().forEach(Renderable::render);
 
         shader.unbind();
     }

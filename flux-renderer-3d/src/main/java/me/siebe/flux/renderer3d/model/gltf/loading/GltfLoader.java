@@ -12,6 +12,7 @@ import me.siebe.flux.renderer3d.model.data.Model;
 import me.siebe.flux.renderer3d.model.data.Primitive;
 import me.siebe.flux.util.FluxColor;
 import me.siebe.flux.util.assets.AssetPathResolver;
+import me.siebe.flux.util.assets.AssetPool;
 import me.siebe.flux.util.exceptions.Validator;
 import me.siebe.flux.util.io.FileIOException;
 import me.siebe.flux.util.logging.Logger;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -48,13 +50,23 @@ import static org.lwjgl.opengl.GL11.*;
  * @apiNote GLTF extensions are not currently supported. Texture coordinate indices
  * other than the default (TEXCOORD_0) are not supported and will throw an exception.
  */
-public class GltfLoader {
+public class GltfLoader extends AssetPool<Model> {
     private static final Logger logger = LoggerFactory.getLogger(GltfLoader.class, LoggingCategories.GLTF);
-
     /** Error message that is used when GLTF's texCoord for a certain texture is not null and thus might require some attention */
     private static final String texCoordAlreadyExistsErrorMsg = " is not null, this might require attention to make sure the GLTF loading works as expected (texcoords are currently ignored as they were always null during development/testing)";
 
-    private GltfLoader() {}
+    private static GltfLoader instance;
+
+    private HashMap<String, Model> models;
+
+    private GltfLoader() {
+        this.models = new HashMap<>();
+    }
+
+    public static GltfLoader get() {
+        if (instance == null) instance = new GltfLoader();
+        return instance;
+    }
 
     /**
      * Loads a GLTF model from the specified file path and converts it to a Flux Model.
@@ -67,7 +79,8 @@ public class GltfLoader {
      * @throws FileIOException  if the file cannot be read or is invalid
      * @throws RuntimeException if the GLTF model contains unsupported features (e.g., non-default texture coordinate indices)
      */
-    public static Model loadModel(String filePath) {
+    @Override
+    protected Model create(String filePath) {
         // TODO add support for .glb files. It mostly works already but the textures seem to be off (light has no visual effect on the model)
         Path assetPath = AssetPathResolver.resolveAssetPath(filePath);
         Validator.assertFileExists(assetPath);
@@ -84,7 +97,7 @@ public class GltfLoader {
      * @return the loaded GltfModel
      * @throws FileIOException if an I/O error occurs while reading the file
      */
-    private static GltfModel getGltfModel(Path filePath) throws FileIOException {
+    private GltfModel getGltfModel(Path filePath) throws FileIOException {
         try {
             GltfModelReader reader = new GltfModelReader();
             return reader.read(filePath);
@@ -106,7 +119,7 @@ public class GltfLoader {
      * @param gltfModel the GLTF model to convert
      * @return a Model containing all converted meshes and materials
      */
-    private static Model convertToFluxModel(GltfModel gltfModel) {
+    private Model convertToFluxModel(GltfModel gltfModel) {
         Model out = new Model();
 
         for (NodeModel nodeModel : gltfModel.getNodeModels()) {
@@ -155,7 +168,7 @@ public class GltfLoader {
      * @param nodeModel the GLTF node model containing mesh and transformation data
      * @return a Mesh with name and transformations extracted from the node
      */
-    private static Mesh getMesh(NodeModel nodeModel) {
+    private Mesh getMesh(NodeModel nodeModel) {
         Mesh mesh = new Mesh(nodeModel.getName());
 
         float[] matrixArray = nodeModel.getMatrix();
@@ -209,7 +222,7 @@ public class GltfLoader {
      * @return a float array containing the attribute data, or null if the accessor is null
      * or contains non-float data (e.g., normalized bytes)
      */
-    private static float[] readFloatAttribute(AccessorModel accessor) {
+    private float[] readFloatAttribute(AccessorModel accessor) {
         if (accessor == null) return null;
         AccessorData data = accessor.getAccessorData();
 
@@ -242,7 +255,7 @@ public class GltfLoader {
      * @param positions the position array used to determine vertex count when generating indices
      * @return an array of indices, or a sequential index array if no accessor is provided
      */
-    private static int[] readIndices(AccessorModel accessor, float[] positions) {
+    private int[] readIndices(AccessorModel accessor, float[] positions) {
         if (accessor != null) {
             AccessorData data = accessor.getAccessorData();
             int elements = data.getNumElements();
@@ -304,7 +317,7 @@ public class GltfLoader {
      * @return a configured VertexArray ready for rendering
      * @throws IllegalArgumentException if primitiveData does not contain positions
      */
-    private static VertexArray createVertexArray(PrimitiveData primitiveData) {
+    private VertexArray createVertexArray(PrimitiveData primitiveData) {
         if (primitiveData.positions == null || primitiveData.positions.length == 0) {
             throw new IllegalArgumentException("PrimitiveData must have positions");
         }
@@ -322,6 +335,7 @@ public class GltfLoader {
         boolean hasTangents = primitiveData.tangents != null && primitiveData.tangents.length >= vertexCount * 4;
 
         // Create buffer layout
+        // TODO find better way to sync shaders and bufferlayouts
         BufferElement posBe = new BufferElement("aPos", ShaderDataType.Float3, false);
         BufferElement norBe = new BufferElement("aNormal", ShaderDataType.Float3, false);
         BufferElement texBe = new BufferElement("aTexCoord", ShaderDataType.Float2, false);
@@ -416,7 +430,7 @@ public class GltfLoader {
      * @return a Material with properties extracted from the GLTF material
      * @throws RuntimeException if the material uses non-default texture coordinate indices
      */
-    private static Material createMaterial(MeshPrimitiveModel primitiveModel) {
+    private Material createMaterial(MeshPrimitiveModel primitiveModel) {
         Material material = new Material();
 
         MaterialModel gltfGenericMaterial = primitiveModel.getMaterialModel();
@@ -495,7 +509,7 @@ public class GltfLoader {
      * @return a Texture object ready for use, or null if textureModel is null or image data is unavailable
      * @throws RuntimeException if STBImage fails to decode the image data
      */
-    private static Texture loadTexture(TextureModel textureModel) {
+    private Texture loadTexture(TextureModel textureModel) {
         if (textureModel == null) return null;
         ImageModel imageModel = textureModel.getImageModel();
         if (imageModel == null) return null;

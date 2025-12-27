@@ -38,7 +38,7 @@ public class ShaderProgram {
      * @param basePath the base path to the shader files (without extension)
      * @throws ShaderException if the shaders cannot be loaded, compiled, or linked
      */
-    public ShaderProgram(String basePath) {
+    ShaderProgram(String basePath) {
         this.filename = basePath;
         this.attributes = new HashMap<>();
         this.uniforms = new HashMap<>();

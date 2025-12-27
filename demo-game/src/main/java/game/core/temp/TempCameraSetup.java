@@ -22,8 +22,6 @@ public class TempCameraSetup {
 
     public void init() {
         AppContext.withContextNoReturn(ctx -> {
-            ctx.getRenderer().setRenderContext(new BaseRenderContext());
-
             camera = new PerspectiveCamera(ctx.getWindow().getAspectRatio(), 0.1f, 1000.f);
             camera.setPosition(new Vector3f(0.0f, 0.0f, 3.0f));
             ctx.getRenderer().getRenderContext().setCamera(camera);
