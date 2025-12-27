@@ -8,6 +8,7 @@ import me.siebe.flux.renderer3d.model.gltf.loading.GltfLoader;
 import me.siebe.flux.util.time.Timer;
 import org.joml.Vector3f;
 
+// TODO rename to a more generic name as it will support more than just GLTF models in the future
 public class GltfStep implements RenderStep {
     private ShaderProgram shader;
     private Model model;

@@ -17,6 +17,7 @@ import me.siebe.flux.util.io.FileIOException;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -157,24 +158,43 @@ public class GltfLoader {
     private static Mesh getMesh(NodeModel nodeModel) {
         Mesh mesh = new Mesh(nodeModel.getName());
 
-        // Load translation
-        float[] translation = nodeModel.getTranslation();
-        if (translation != null && translation.length == 3) {
-            mesh.setRelativePosition(new Vector3f(nodeModel.getTranslation()));
-        }
+        float[] matrixArray = nodeModel.getMatrix();
 
-        // Load rotation (quaternion: x, y, z, w)
-        float[] rotation = nodeModel.getRotation();
-        if (rotation != null && rotation.length == 4) {
-            mesh.setRotation(new Quaternionf(rotation[0], rotation[1], rotation[2], rotation[3]));
-        }
+        if (matrixArray != null && matrixArray.length == 16) {
+            // glTF matrices are column-major → JOML matches this
+            Matrix4f matrix = new Matrix4f().set(matrixArray);
 
-        // Load scale
-        float[] scale = nodeModel.getScale();
-        if (scale != null && scale.length == 3) {
-            mesh.setScale(new Vector3f(scale));
-        }
+            // Decompose matrix
+            Vector3f translation = new Vector3f();
+            matrix.getTranslation(translation);
+            mesh.setRelativePosition(translation);
 
+            Vector3f scale = new Vector3f();
+            matrix.getScale(scale);
+            mesh.setScale(scale);
+
+            Quaternionf rotation = new Quaternionf();
+            matrix.getUnnormalizedRotation(rotation).normalize();
+            mesh.setRotation(rotation);
+        } else {
+            // Load translation
+            float[] translation = nodeModel.getTranslation();
+            if (translation != null && translation.length == 3) {
+                mesh.setRelativePosition(new Vector3f(nodeModel.getTranslation()));
+            }
+
+            // Load rotation (quaternion: x, y, z, w)
+            float[] rotation = nodeModel.getRotation();
+            if (rotation != null && rotation.length == 4) {
+                mesh.setRotation(new Quaternionf(rotation[0], rotation[1], rotation[2], rotation[3]));
+            }
+
+            // Load scale
+            float[] scale = nodeModel.getScale();
+            if (scale != null && scale.length == 3) {
+                mesh.setScale(new Vector3f(scale));
+            }
+        }
         return mesh;
     }
 

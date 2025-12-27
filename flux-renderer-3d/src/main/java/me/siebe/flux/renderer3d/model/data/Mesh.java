@@ -1,6 +1,8 @@
 package me.siebe.flux.renderer3d.model.data;
 
+import me.siebe.flux.util.DirtyValue;
 import me.siebe.flux.util.exceptions.Validator;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -34,6 +36,8 @@ public class Mesh {
 
     private Vector3f scale;
 
+    private DirtyValue<Matrix4f> modelMatrix;
+
     /**
      * Optional name for this mesh. Can be used for identification and debugging.
      */
@@ -57,6 +61,8 @@ public class Mesh {
         this.relativePosition = new Vector3f(0, 0, 0);
         this.rotation = new Quaternionf();
         this.scale = new Vector3f(1, 1, 1);
+
+        this.modelMatrix = new DirtyValue<>(new Matrix4f(), this::updateModelMatrix);
     }
 
     public List<Primitive> getPrimitives() {
@@ -78,6 +84,7 @@ public class Mesh {
 
     public void setRelativePosition(Vector3f relativePosition) {
         this.relativePosition.set(relativePosition);
+        modelMatrix.markDirty();
     }
 
     public Quaternionf getRotation() {
@@ -90,10 +97,12 @@ public class Mesh {
         } else {
             resetRotation();
         }
+        modelMatrix.markDirty();
     }
 
     public void resetRotation() {
         this.rotation.identity();
+        modelMatrix.markDirty();
     }
 
     public Vector3f getScale() {
@@ -106,10 +115,20 @@ public class Mesh {
         } else {
             resetScale();
         }
+        modelMatrix.markDirty();
     }
 
     public void resetScale() {
         this.scale.set(1, 1, 1);
+        modelMatrix.markDirty();
+    }
+
+    public Matrix4f getModelMatrix() {
+        return modelMatrix.get();
+    }
+
+    private void updateModelMatrix(Matrix4f m) {
+        m.translate(relativePosition).rotate(rotation).scale(scale);
     }
 
     public String getName() {

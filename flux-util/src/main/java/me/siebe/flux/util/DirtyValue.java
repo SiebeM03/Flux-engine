@@ -12,8 +12,8 @@ public class DirtyValue<T> {
     public DirtyValue(Supplier<T> calculator) {
         this.calculator = calculator;
         this.updater = null;
-        this.dirty = true;
         this.value = null;
+        this.dirty = true;
     }
 
     public DirtyValue(T initialValue, Consumer<T> updater) {

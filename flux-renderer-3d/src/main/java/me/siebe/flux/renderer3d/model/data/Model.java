@@ -5,7 +5,6 @@ import me.siebe.flux.lwjgl.opengl.OpenGLState;
 import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
 import me.siebe.flux.lwjgl.opengl.vertex.IndexBuffer;
 import me.siebe.flux.util.exceptions.Validator;
-import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +90,7 @@ public class Model implements Renderable {
      * @param mesh the mesh to render
      */
     protected void renderMesh(Mesh mesh) {
-        ShaderProgram.getActiveShader().upload("uModelMatrix", new Matrix4f().translate(mesh.getRelativePosition()));
+        ShaderProgram.getActiveShader().upload("uModelMatrix", mesh.getModelMatrix());
         for (Primitive primitive : mesh.getPrimitives()) {
             renderPrimitive(primitive);
         }
