@@ -522,7 +522,7 @@ public class Material {
         shader.upload("uMaterial.emissiveFactor", emissiveFactor);
 
         // Occlusion strength
-//        shader.upload("uMaterial.occlusionStrength", getOcclusionStrength()); // TODO uncomment
+        shader.upload("uMaterial.occlusionStrength", getOcclusionStrength()); // TODO uncomment
 
         // Alpha properties
         shader.upload("uMaterial.alphaCutoff", getAlphaCutoff());

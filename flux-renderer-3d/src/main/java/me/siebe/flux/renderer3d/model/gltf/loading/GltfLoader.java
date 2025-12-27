@@ -30,20 +30,59 @@ import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 
+/**
+ * Utility class for loading GLTF (GL Transmission Format) 3D models and converting them
+ * into the Flux engine's internal model representation.
+ * <p>
+ * This loader supports GLTF 2.0 models with the following features:
+ * <ul>
+ *   <li>Mesh geometry (positions, normals, texture coordinates, tangents)</li>
+ *   <li>Indexed and non-indexed primitives</li>
+ *   <li>PBR materials (base color, metallic-roughness, normal maps, occlusion, emissive)</li>
+ *   <li>Texture loading from embedded or external image data</li>
+ *   <li>Node transformations (translation, rotation, scale)</li>
+ * </ul>
+ * <p>
+ *
+ * @apiNote GLTF extensions are not currently supported. Texture coordinate indices
+ * other than the default (TEXCOORD_0) are not supported and will throw an exception.
+ */
 public class GltfLoader {
     private static final Logger logger = LoggerFactory.getLogger(GltfLoader.class, LoggingCategories.GLTF);
 
+    /** Error message that is used when GLTF's texCoord for a certain texture is not null and thus might require some attention */
+    private static final String texCoordAlreadyExistsErrorMsg = " is not null, this might require attention to make sure the GLTF loading works as expected (texcoords are currently ignored as they were always null during development/testing)";
+
     private GltfLoader() {}
 
+    /**
+     * Loads a GLTF model from the specified file path and converts it to a Flux Model.
+     * <p>
+     * The file path is resolved using the asset path resolver, and the resulting model
+     * contains all meshes, primitives, materials, and textures from the GLTF file.
+     *
+     * @param filePath the path to the GLTF file (relative to the asset root)
+     * @return a Model containing all meshes and materials from the GLTF file
+     * @throws FileIOException  if the file cannot be read or is invalid
+     * @throws RuntimeException if the GLTF model contains unsupported features (e.g., non-default texture coordinate indices)
+     */
     public static Model loadModel(String filePath) {
+        // TODO add support for .glb files. It mostly works already but the textures seem to be off (light has no visual effect on the model)
         Path assetPath = AssetPathResolver.resolveAssetPath(filePath);
         Validator.assertFileExists(assetPath);
         logger.debug("Loading gltf model from {}", assetPath);
 
         GltfModel gltfModel = getGltfModel(assetPath);
-        return convertToFluxModel(gltfModel, assetPath);
+        return convertToFluxModel(gltfModel);
     }
 
+    /**
+     * Reads a GLTF model from the specified file path using the jgltf library.
+     *
+     * @param filePath the path to the GLTF file
+     * @return the loaded GltfModel
+     * @throws FileIOException if an I/O error occurs while reading the file
+     */
     private static GltfModel getGltfModel(Path filePath) throws FileIOException {
         try {
             GltfModelReader reader = new GltfModelReader();
@@ -53,29 +92,24 @@ public class GltfLoader {
         }
     }
 
-    private static Model convertToFluxModel(GltfModel gltfModel, Path assetPath) {
+    /**
+     * Converts a GltfModel from the jgltf library into a Flux Model.
+     * <p>
+     * This method processes all nodes in the GLTF model, extracting:
+     * <ul>
+     *   <li>Mesh primitives with vertex attributes (position, normal, texture coordinates, tangents)</li>
+     *   <li>Index buffers for indexed rendering</li>
+     *   <li>Materials with PBR properties and textures</li>
+     * </ul>
+     *
+     * @param gltfModel the GLTF model to convert
+     * @return a Model containing all converted meshes and materials
+     */
+    private static Model convertToFluxModel(GltfModel gltfModel) {
         Model out = new Model();
 
         for (NodeModel nodeModel : gltfModel.getNodeModels()) {
-            // Create a basic mesh setup with name and translation
-            Mesh mesh = new Mesh(nodeModel.getName());
-            // Load translation
-            float[] translation = nodeModel.getTranslation();
-            if (translation != null && translation.length == 3) {
-                mesh.setRelativePosition(new Vector3f(nodeModel.getTranslation()));
-            }
-
-            // Load rotation (quaternion: x, y, z, w)
-            float[] rotation = nodeModel.getRotation();
-            if (rotation != null && rotation.length == 4) {
-                mesh.setRotation(new Quaternionf(rotation[0], rotation[1], rotation[2], rotation[3]));
-            }
-
-            // Load scale
-            float[] scale = nodeModel.getScale();
-            if (scale != null && scale.length == 3) {
-                mesh.setScale(new Vector3f(scale));
-            }
+            Mesh mesh = getMesh(nodeModel);
 
             for (MeshModel meshModel : nodeModel.getMeshModels()) {
                 for (MeshPrimitiveModel primitiveModel : meshModel.getMeshPrimitiveModels()) {
@@ -105,7 +139,56 @@ public class GltfLoader {
         return out;
     }
 
-    // Read float attributes (POSITION, NORMAL, TEXCOORD_0, TANGENT)
+    /**
+     * Creates a Mesh from a GLTF node model, extracting transformation properties.
+     * <p>
+     * This method extracts the following properties from the node:
+     * <ul>
+     *   <li>Mesh name from the node name</li>
+     *   <li>Translation (3D position vector) if present</li>
+     *   <li>Rotation (quaternion with x, y, z, w components) if present</li>
+     *   <li>Scale (3D scale vector) if present</li>
+     * </ul>
+     * Missing transformation properties are left at their default values in the Mesh.
+     *
+     * @param nodeModel the GLTF node model containing mesh and transformation data
+     * @return a Mesh with name and transformations extracted from the node
+     */
+    private static Mesh getMesh(NodeModel nodeModel) {
+        Mesh mesh = new Mesh(nodeModel.getName());
+
+        // Load translation
+        float[] translation = nodeModel.getTranslation();
+        if (translation != null && translation.length == 3) {
+            mesh.setRelativePosition(new Vector3f(nodeModel.getTranslation()));
+        }
+
+        // Load rotation (quaternion: x, y, z, w)
+        float[] rotation = nodeModel.getRotation();
+        if (rotation != null && rotation.length == 4) {
+            mesh.setRotation(new Quaternionf(rotation[0], rotation[1], rotation[2], rotation[3]));
+        }
+
+        // Load scale
+        float[] scale = nodeModel.getScale();
+        if (scale != null && scale.length == 3) {
+            mesh.setScale(new Vector3f(scale));
+        }
+
+        return mesh;
+    }
+
+    /**
+     * Reads float attribute data from a GLTF accessor.
+     * <p>
+     * This method extracts float data from accessors used for vertex attributes such as
+     * POSITION, NORMAL, TEXCOORD_0, and TANGENT. The data is returned as a flat float array
+     * with all elements and components interleaved.
+     *
+     * @param accessor the accessor model containing the attribute data, or null if the attribute is missing
+     * @return a float array containing the attribute data, or null if the accessor is null
+     * or contains non-float data (e.g., normalized bytes)
+     */
     private static float[] readFloatAttribute(AccessorModel accessor) {
         if (accessor == null) return null;
         AccessorData data = accessor.getAccessorData();
@@ -123,10 +206,22 @@ public class GltfLoader {
         } else {
             // Unexpected component type (e.g. normalized bytes). Try to create a compact ByteBuffer and interpret
             // floats if possible: but for simplicity, return null here and let caller handle missing attributes.
+            // FIXME implement alternative way to load buffer data
             return null;
         }
     }
 
+    /**
+     * Reads index data from a GLTF accessor, or generates sequential indices if no accessor is provided.
+     * <p>
+     * Supports indices stored as integers, shorts, or bytes. If no index accessor is provided
+     * (non-indexed geometry), this method generates sequential indices based on the vertex count
+     * derived from the positions array.
+     *
+     * @param accessor  the accessor model containing the index data, or null for non-indexed geometry
+     * @param positions the position array used to determine vertex count when generating indices
+     * @return an array of indices, or a sequential index array if no accessor is provided
+     */
     private static int[] readIndices(AccessorModel accessor, float[] positions) {
         if (accessor != null) {
             AccessorData data = accessor.getAccessorData();
@@ -172,6 +267,23 @@ public class GltfLoader {
         }
     }
 
+    /**
+     * Creates a VertexArray from primitive data, setting up vertex buffers and index buffers.
+     * <p>
+     * This method creates a vertex array with a fixed layout containing:
+     * <ul>
+     *   <li>Position (3 floats, required)</li>
+     *   <li>Normal (3 floats, defaults to [0,0,0] if missing)</li>
+     *   <li>Texture coordinates (2 floats, defaults to [0,0] if missing)</li>
+     *   <li>Tangent (4 floats including handedness, defaults to [0,0,0,0] if missing)</li>
+     * </ul>
+     * Missing attributes are filled with default values. The vertex array is bound during creation
+     * and unbound before returning.
+     *
+     * @param primitiveData the primitive data containing vertex attributes and indices
+     * @return a configured VertexArray ready for rendering
+     * @throws IllegalArgumentException if primitiveData does not contain positions
+     */
     private static VertexArray createVertexArray(PrimitiveData primitiveData) {
         if (primitiveData.positions == null || primitiveData.positions.length == 0) {
             throw new IllegalArgumentException("PrimitiveData must have positions");
@@ -262,15 +374,27 @@ public class GltfLoader {
         vertexArray.unbind();
         return vertexArray;
     }
+
     /**
-     * Creates a Material from the GLTF primitive model.
-     * Extracts all material properties including base color, metallic/roughness,
-     * textures, emissive properties, occlusion, and alpha settings.
+     * Creates a Material from a GLTF mesh primitive model.
      * <p>
-     * Uses the jgltf extension mechanism to access material properties.
+     * Extracts PBR material properties from GLTF 2.0 materials, including:
+     * <ul>
+     *   <li>Base color factor and albedo texture</li>
+     *   <li>Metallic and roughness factors with combined texture</li>
+     *   <li>Normal map texture</li>
+     *   <li>Occlusion strength and texture</li>
+     *   <li>Emissive factor and texture</li>
+     *   <li>Alpha mode (OPAQUE, MASK, BLEND)</li>
+     *   <li>Double-sided rendering flag</li>
+     * </ul>
+     * <p>
+     * Currently only supports MaterialModelV2 (GLTF 2.0). Other material types will log
+     * an error and return a default material.
      *
-     * @param primitiveModel the GLTF primitive model containing material reference
-     * @return the created Material instance
+     * @param primitiveModel the mesh primitive model containing material information
+     * @return a Material with properties extracted from the GLTF material
+     * @throws RuntimeException if the material uses non-default texture coordinate indices
      */
     private static Material createMaterial(MeshPrimitiveModel primitiveModel) {
         Material material = new Material();
@@ -285,14 +409,14 @@ public class GltfLoader {
                     material.setBaseColor(new FluxColor(gltfMaterial.getBaseColorFactor()));
                     material.setAlbedoTexture(loadTexture(gltfMaterial.getBaseColorTexture()));
                     if (gltfMaterial.getBaseColorTexcoord() != null)
-                        throw texCoordsNotNull("BaseColorTexcoord");
+                        throw new RuntimeException("BaseColorTexcoord" + texCoordAlreadyExistsErrorMsg);
 
                     // Metallic-roughness
                     material.setMetallicFactor(gltfMaterial.getMetallicFactor());
                     material.setRoughnessFactor(gltfMaterial.getRoughnessFactor());
                     material.setMetallicRoughnessTexture(loadTexture(gltfMaterial.getMetallicRoughnessTexture()));
                     if (gltfMaterial.getMetallicRoughnessTexcoord() != null)
-                        throw texCoordsNotNull("MetallicRoughnessTexcoord");
+                        throw new RuntimeException("MetallicRoughnessTexcoord" + texCoordAlreadyExistsErrorMsg);
 
                     // Normal
                     material.setNormalTexture(loadTexture(gltfMaterial.getNormalTexture()));
@@ -300,19 +424,19 @@ public class GltfLoader {
                         material.getNormalTexture().setFilters(GL_LINEAR, GL_LINEAR);
                     }
                     if (gltfMaterial.getNormalTexcoord() != null)
-                        throw texCoordsNotNull("NormalTexcoord");
+                        throw new RuntimeException("NormalTexcoord" + texCoordAlreadyExistsErrorMsg);
 
                     // Occlusion
                     material.setOcclusionStrength(gltfMaterial.getOcclusionStrength());
                     material.setOcclusionTexture(loadTexture(gltfMaterial.getOcclusionTexture()));
                     if (gltfMaterial.getOcclusionTexcoord() != null)
-                        throw texCoordsNotNull("OcclusionTexcoord");
+                        throw new RuntimeException("OcclusionTexcoord" + texCoordAlreadyExistsErrorMsg);
 
                     // Emissive
                     material.setEmissiveFactor(new Vector3f(gltfMaterial.getEmissiveFactor()));
                     material.setEmissiveTexture(loadTexture(gltfMaterial.getEmissiveTexture()));
                     if (gltfMaterial.getEmissiveTexcoord() != null)
-                        throw texCoordsNotNull("EmissiveTexcoord");
+                        throw new RuntimeException("EmissiveTexcoord" + texCoordAlreadyExistsErrorMsg);
 
                     // AlphaMode
                     try {
@@ -334,11 +458,22 @@ public class GltfLoader {
     }
 
     /**
-     * Loads a texture from the GLTF model.
-     * Extracts the image data from the texture model and creates a Texture instance.
+     * Loads a texture from a GLTF texture model.
+     * <p>
+     * This method extracts image data from the GLTF model and uses STBImage to decode it.
+     * The texture is configured with:
+     * <ul>
+     *   <li>Minification and magnification filters from the GLTF model (defaults to GL_LINEAR_MIPMAP_LINEAR and GL_LINEAR)</li>
+     *   <li>Wrap modes for S and T coordinates from the GLTF model</li>
+     *   <li>RGBA format (RGB images are padded with alpha=255)</li>
+     * </ul>
+     * <p>
+     * The image data is flipped vertically during loading to account for GLTF's bottom-up
+     * coordinate system. STBImage memory is freed after texture creation.
      *
-     * @param textureModel the GLTF texture model
-     * @return the loaded Texture, or null if loading fails
+     * @param textureModel the texture model containing image data, or null if no texture
+     * @return a Texture object ready for use, or null if textureModel is null or image data is unavailable
+     * @throws RuntimeException if STBImage fails to decode the image data
      */
     private static Texture loadTexture(TextureModel textureModel) {
         if (textureModel == null) return null;
@@ -347,7 +482,7 @@ public class GltfLoader {
 
         // Path imagePath = assetPath.getParent().resolve(imageModel.getUri());
         ByteBuffer textureData = imageModel.getImageData();
-        if (textureData == null) return null; // TODO possibly create ByteBuffer from the file itself??
+        if (textureData == null) return null; // FIXME possibly create ByteBuffer from the file itself??
 
         // Make sure buffer is at position 0 and limit is set correctly
         textureData.rewind();
@@ -413,22 +548,26 @@ public class GltfLoader {
         return texture;
     }
 
-    private static class PrimitiveData {
-        public float[] positions;
-        public float[] normals;
-        public float[] texCoords;
-        public float[] tangents;
-        public int[] indices;
-    }
-
     /**
-     * This will simply create a RuntimeException for when a {@link MaterialModelV2}'s texcoords are not null.
+     * Internal data structure for holding primitive vertex and index data during GLTF conversion.
      * <p>
-     * It alerts Flux developers that the GLTF loading might require attention
-     *
-     * @param name the name of the texcoords
+     * This class is used as an intermediate representation when processing GLTF mesh primitives
+     * before creating the final VertexArray and Material objects.
      */
-    private static RuntimeException texCoordsNotNull(String name) {
-        return new RuntimeException(name + " is not null, this might require attention to make sure the GLTF loading works as expected (texcoords are currently ignored as they were always null during development/testing)");
+    private static class PrimitiveData {
+        /** Vertex positions as a flat array of 3 floats per vertex (x, y, z). */
+        public float[] positions;
+
+        /** Vertex normals as a flat array of 3 floats per vertex (x, y, z). May be null if not present. */
+        public float[] normals;
+
+        /** Texture coordinates as a flat array of 2 floats per vertex (u, v). May be null if not present. */
+        public float[] texCoords;
+
+        /** Vertex tangents as a flat array of 4 floats per vertex (x, y, z, w) where w indicates handedness. May be null if not present. */
+        public float[] tangents;
+
+        /** Index buffer for indexed rendering. May be null for non-indexed geometry. */
+        public int[] indices;
     }
 }

@@ -9,7 +9,6 @@ import me.siebe.flux.api.window.WindowPlatform;
 import me.siebe.flux.core.AppContext;
 import me.siebe.flux.core.FluxApplication;
 import me.siebe.flux.renderer3d.steps.GltfStep;
-import me.siebe.flux.renderer3d.steps.OriginStep;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
@@ -25,7 +24,6 @@ public class GameApplication extends FluxApplication {
         this.cameraSetup.init();
 
         AppContext.get().getRenderer().getPipeline().addStep(new GltfStep());
-//        AppContext.get().getRenderer().getPipeline().addStep(new OriginStep());
     }
 
     @Override
