@@ -1,11 +1,15 @@
 package me.siebe.flux.lwjgl.opengl.texture;
 
+import me.siebe.flux.util.assets.AssetPathResolver;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
@@ -69,8 +73,39 @@ public class Texture {
         unbind();
     }
 
+    public Texture(String path, int target, int internalFormat, int format, int type) {
+        Path assetPath = AssetPathResolver.resolveAssetPath(path);
+        if (Files.notExists(assetPath)) {
+            throw new IllegalArgumentException(assetPath + " does not exist");
+        }
+
+        IntBuffer width = BufferUtils.createIntBuffer(1);
+        IntBuffer height = BufferUtils.createIntBuffer(1);
+        IntBuffer channels = BufferUtils.createIntBuffer(1);
+
+        ByteBuffer imageData = STBImage.stbi_load(assetPath.toString(), width, height, channels, 4);
+        if (imageData == null) {
+            throw new RuntimeException("Failed to load texture from " + assetPath + ": " + STBImage.stbi_failure_reason());
+        }
+
+        this.width = width.get(0);
+        this.height = height.get(0);
+
+        this.glId = glGenTextures();
+        bind();
+        glTexImage2D(target, 0, internalFormat, this.width, this.height, 0, format, type, imageData);
+        glGenerateMipmap(target);
+
+        setFilters(GL_LINEAR, GL_LINEAR);
+        setWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+        unbind();
+
+        STBImage.stbi_image_free(imageData);
+    }
+
     // TODO implement with GltfLoader#loadTexture() as it uses a lot of similar code
     public Texture(String path) {
+        Path assetPath = AssetPathResolver.resolveAssetPath(path);
         this.glId = glGenTextures();
         bind();
 
@@ -80,9 +115,9 @@ public class Texture {
             IntBuffer channels = stack.mallocInt(1);
 
             STBImage.stbi_set_flip_vertically_on_load(true);
-            ByteBuffer imageData = STBImage.stbi_load(path, w, h, channels, 4);
+            ByteBuffer imageData = STBImage.stbi_load(assetPath.toString(), w, h, channels, 4);
             if (imageData == null) {
-                throw new RuntimeException("Failed to load texture: " + path);
+                throw new RuntimeException("Failed to load texture: " + assetPath + ": " + STBImage.stbi_failure_reason());
             }
 
             width = w.get();

@@ -6,6 +6,7 @@ import me.siebe.flux.lwjgl.opengl.OpenGLState;
 import me.siebe.flux.lwjgl.opengl.shader.ShaderDataType;
 import me.siebe.flux.lwjgl.opengl.shader.ShaderLoader;
 import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
+import me.siebe.flux.lwjgl.opengl.shader.ShaderType;
 import me.siebe.flux.lwjgl.opengl.vertex.BufferElement;
 import me.siebe.flux.lwjgl.opengl.vertex.BufferLayout;
 import me.siebe.flux.lwjgl.opengl.vertex.VertexArray;
@@ -17,7 +18,7 @@ public class OriginStep implements RenderStep {
 
     @Override
     public void init() {
-        shader = ShaderLoader.get().load("shaders/test");
+        shader = ShaderType.SIMPLE_3D.getShader();
 
         vertexArray = new VertexArray();
         vertexArray.bind();

@@ -5,6 +5,7 @@ import de.javagl.jgltf.model.io.GltfModelReader;
 import de.javagl.jgltf.model.v2.MaterialModelV2;
 import me.siebe.flux.lwjgl.opengl.shader.ShaderDataType;
 import me.siebe.flux.lwjgl.opengl.texture.Texture;
+import me.siebe.flux.lwjgl.opengl.texture.TextureLoader;
 import me.siebe.flux.lwjgl.opengl.vertex.*;
 import me.siebe.flux.renderer3d.model.data.Material;
 import me.siebe.flux.renderer3d.model.data.Mesh;
@@ -24,6 +25,7 @@ import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -57,10 +59,9 @@ public class GltfLoader extends AssetPool<Model> {
 
     private static GltfLoader instance;
 
-    private HashMap<String, Model> models;
+    private String currentModelRootFolder;
 
     private GltfLoader() {
-        this.models = new HashMap<>();
     }
 
     public static GltfLoader get() {
@@ -82,12 +83,17 @@ public class GltfLoader extends AssetPool<Model> {
     @Override
     protected Model create(String filePath) {
         // TODO add support for .glb files. It mostly works already but the textures seem to be off (light has no visual effect on the model)
+        String slashifiedFilePath = filePath.replace("/", File.separator);
+        this.currentModelRootFolder = filePath.substring(0, slashifiedFilePath.lastIndexOf(File.separator) + 1);
+
         Path assetPath = AssetPathResolver.resolveAssetPath(filePath);
         Validator.assertFileExists(assetPath);
         logger.debug("Loading gltf model from {}", assetPath);
 
         GltfModel gltfModel = getGltfModel(assetPath);
-        return convertToFluxModel(gltfModel);
+        Model model = convertToFluxModel(gltfModel);
+        this.currentModelRootFolder = null;
+        return model;
     }
 
     /**
@@ -562,7 +568,12 @@ public class GltfLoader extends AssetPool<Model> {
         So we always use RGBA format when we requested 4 channels
         */
 
-        Texture texture = new Texture(w, h, GL_TEXTURE_2D, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+        Texture texture = TextureLoader.get().load(
+                currentModelRootFolder + imageModel.getUri(),
+                () -> new Texture(w, h, GL_TEXTURE_2D, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, pixels)
+        );
+
         texture.bind();
         // Typical GLTF filters:
         // - GL_TEXTURE_MIN_FILTER: 9987 -> GL_LINEAR_MIPMAP_LINEAR

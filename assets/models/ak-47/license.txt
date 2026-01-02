@@ -1,0 +1,11 @@
+Model Information:
+* title:	RIFLE | AK-47 (Ver.2) Weapon Model (CS2)
+* source:	https://sketchfab.com/3d-models/rifle-ak-47-ver2-weapon-model-cs2-019465e8ecfd43b687d963f7b0aadf81
+* author:	6lucius (https://sketchfab.com/6lucius)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "RIFLE | AK-47 (Ver.2) Weapon Model (CS2)" (https://sketchfab.com/3d-models/rifle-ak-47-ver2-weapon-model-cs2-019465e8ecfd43b687d963f7b0aadf81) by 6lucius (https://sketchfab.com/6lucius) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

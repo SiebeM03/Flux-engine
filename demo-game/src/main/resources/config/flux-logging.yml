@@ -2,7 +2,6 @@ defaultLevel: DEBUG
 
 categories:
   timer: INFO
-  renderer: ERROR
 
 outputs:
   - type: console

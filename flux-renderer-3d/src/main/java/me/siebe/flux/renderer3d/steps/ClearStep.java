@@ -25,6 +25,7 @@ public class ClearStep implements RenderStep {
 
     @Override
     public void execute(BaseRenderContext context) {
+        OpenGLState.setClearColor(clearColor);
         OpenGLState.clearColorAndDepth();
     }
 }

@@ -3,8 +3,8 @@ package me.siebe.flux.renderer3d.steps;
 import me.siebe.flux.api.renderer.context.BaseRenderContext;
 import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.api.renderer.pipeline.RenderStep;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderLoader;
 import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
+import me.siebe.flux.lwjgl.opengl.shader.ShaderType;
 import me.siebe.flux.util.time.Timer;
 import org.joml.Vector3f;
 
@@ -15,7 +15,7 @@ public class GltfStep implements RenderStep {
 
     @Override
     public void init() {
-        this.shader = ShaderLoader.get().load("shaders/gltf");
+        this.shader = ShaderType.PBR.getShader();
         this.timer = new Timer();
     }
 

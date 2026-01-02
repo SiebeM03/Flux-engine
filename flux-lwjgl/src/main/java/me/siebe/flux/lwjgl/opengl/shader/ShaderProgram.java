@@ -58,6 +58,9 @@ public class ShaderProgram {
                 filename, attributes.size(), uniforms.size());
     }
 
+    public int getProgramId() {
+        return programId;
+    }
 
     public void bind() {
         ShaderProgram.ACTIVE_SHADER = this;
