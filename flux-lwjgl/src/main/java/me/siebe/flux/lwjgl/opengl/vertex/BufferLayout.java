@@ -28,13 +28,17 @@ public class BufferLayout {
         return stride;
     }
 
+    public int getComponentCount() {
+        return elements.stream().mapToInt(BufferElement::getComponentSize).sum();
+    }
+
     private void calculateOffsetsAndStride() {
         int offset = 0;
         this.stride = 0;
         for (BufferElement element : elements) {
             element.offset = offset;
-            offset += element.size;
-            stride += element.size;
+            offset += element.byteSize;
+            stride += element.byteSize;
         }
     }
 }

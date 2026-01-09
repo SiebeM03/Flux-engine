@@ -16,12 +16,7 @@ import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
@@ -112,14 +107,14 @@ public class ShaderProgramBuilder {
         // Check for mismatches
         for (ShaderVaryingDef vertexVarying : vertexVaryings) {
             if (!fragmentVaryingNames.contains(vertexVarying.getName())) {
-                logger.warn("Vertex shader outputs varying '{}' but fragment shader does not declare it", 
+                logger.warn("Vertex shader outputs varying '{}' but fragment shader does not declare it",
                         vertexVarying.getName());
             }
         }
 
         for (ShaderVaryingDef fragmentVarying : fragmentVaryings) {
             if (!vertexVaryingNames.contains(fragmentVarying.getName())) {
-                throw new ShaderException("Fragment shader declares varying '" + fragmentVarying.getName() + 
+                throw new ShaderException("Fragment shader declares varying '" + fragmentVarying.getName() +
                         "' but vertex shader does not output it");
             }
         }
@@ -168,7 +163,7 @@ public class ShaderProgramBuilder {
      * Saves the generated shader source code to files.
      * Useful for debugging or inspection.
      *
-     * @param vertexPath the path to save the vertex shader
+     * @param vertexPath   the path to save the vertex shader
      * @param fragmentPath the path to save the fragment shader
      * @throws IOException if file writing fails
      */
@@ -247,10 +242,10 @@ public class ShaderProgramBuilder {
             this.name = name;
             this.attributes = new HashMap<>();
             this.uniforms = new HashMap<>();
-            
+
             reflectAttributes();
             reflectUniforms();
-            
+
             logger.debug("Created built shader program '{}' with {} attributes and {} uniforms",
                     name, attributes.size(), uniforms.size());
         }
@@ -291,13 +286,13 @@ public class ShaderProgramBuilder {
          * Uploads a value to a uniform.
          * This method provides the same interface as ShaderProgram.upload().
          *
-         * @param name the uniform name
+         * @param name  the uniform name
          * @param value the value to upload
          */
         public void upload(String name, @NotNull Object value) {
             ShaderUniform u = getUniform(name);
             if (u == null) {
-                logger.error("Uniform {} not found or unused in {}", name, this.name);
+                logger.warn("Uniform {} not found or unused in {}", name, this.name);
                 return;
             }
             bind();
@@ -323,7 +318,7 @@ public class ShaderProgramBuilder {
         public void uploadTexture(String name, int slot) {
             ShaderUniform u = getUniform(name);
             if (u == null) {
-                logger.error("Uniform {} not found or unused in {}", name, this.name);
+                logger.warn("Uniform {} not found or unused in {}", name, this.name);
                 return;
             }
             bind();

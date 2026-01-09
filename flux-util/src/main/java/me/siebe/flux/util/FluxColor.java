@@ -63,6 +63,17 @@ public class FluxColor {
         );
     }
 
+    public FluxColor(float[] colors) {
+        if (colors.length < 3 || colors.length > 4) {
+            throw new IllegalArgumentException("colors array requires 3 (RGB) or 4 (RGBA) values, got: " + colors.length);
+        }
+
+        this.rgb.set(colors[0], colors[1], colors[2]);
+        if (colors.length == 4) {
+            this.a = colors[3];
+        }
+    }
+
     public FluxColor copy() {
         return new FluxColor(this);
     }

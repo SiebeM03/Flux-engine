@@ -23,6 +23,7 @@ public class GlfwWindow implements Window {
         logger.info("Initializing GlfwWindow with {}", StringUtils.toString(config, true));
 
         OpenGLState.init();
+        OpenGLState.enableDepthTest();
         OpenGLState.setViewport(0, 0, config.width, config.height);
     }
 
@@ -55,5 +56,6 @@ public class GlfwWindow implements Window {
     @Override
     public void destroy() {
         logger.info("Destroying GlfwWindow");
+        glfwDestroyWindow(config.windowId);
     }
 }
