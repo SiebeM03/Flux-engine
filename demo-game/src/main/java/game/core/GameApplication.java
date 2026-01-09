@@ -1,6 +1,8 @@
 package game.core;
 
 import game.core.logging.GameCategories;
+import me.siebe.flux.api.event.EventBusProvider;
+import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowBuilder;
 import me.siebe.flux.api.window.WindowMode;
@@ -20,12 +22,16 @@ public class GameApplication extends FluxApplication {
         logger.info("Initializing Game Systems");
         this.cameraSetup = new TempCameraSetup();
         this.cameraSetup.init();
+
+        EventBusProvider.get().getListenerRegistry().register(WindowResizeEvent.class, e -> {
+            logger.info("Window Resize Event");
+        });
     }
 
     @Override
     protected void gameUpdate(final AppContext ctx) {
         logger.trace("Updating Game");
-        this.cameraSetup.init();
+        this.cameraSetup.update(ctx);
     }
 
     @Override

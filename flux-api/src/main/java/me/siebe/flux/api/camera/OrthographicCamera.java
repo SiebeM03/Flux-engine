@@ -1,5 +1,7 @@
 package me.siebe.flux.api.camera;
 
+import me.siebe.flux.api.event.EventBusProvider;
+import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import org.joml.Matrix4f;
 
 public class OrthographicCamera extends GenericCamera {
@@ -17,6 +19,10 @@ public class OrthographicCamera extends GenericCamera {
         this.top = top;
         this.near = near;
         this.far = far;
+
+        EventBusProvider.get().getListenerRegistry().register(FramebufferResizeEvent.class, e -> {
+            // TODO add event listener for framebuffer resize
+        });
     }
 
     public void setProjection(float left, float right, float bottom, float top, float near, float far) {

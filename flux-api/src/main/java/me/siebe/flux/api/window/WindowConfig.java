@@ -14,10 +14,10 @@ import me.siebe.flux.util.string.ToStringIgnore;
  *     <li>monitor: {@link org.lwjgl.system.MemoryUtil#NULL}</li>
  *     <li>width/height: {@code 1280x720}</li>
  *     <li>minimum dimensions: {@code 120x120}</li>
- *     <li>maximum dimensions: {@link me.siebe.flux.util.config.Flux#FLUX_DONT_CARE}</li>
+ *     <li>maximum dimensions: {@link Flux#FLUX_DONT_CARE}</li>
  *     <li>vsync: {@code true}</li>
  *     <li>samples: {@code 0}</li>
- *     <li>target FPS: {@link me.siebe.flux.util.config.Flux#FLUX_DONT_CARE}</li>
+ *     <li>target FPS: {@link Flux#FLUX_DONT_CARE}</li>
  * </ul>
  * </p>
  */
@@ -28,6 +28,7 @@ public class WindowConfig {
     public WindowMode mode;
     public long monitor;
 
+    // TODO store both windowWidth and framebufferWidth
     public int width;
     public int minWidth;
     public int maxWidth;

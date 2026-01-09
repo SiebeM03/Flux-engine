@@ -29,7 +29,7 @@ public class TempCameraSetup {
             ctx.getRenderer().getRenderContext().setCamera(camera);
 
             // Hide cursor and capture it
-            GLFW.glfwSetInputMode(ctx.getWindow().getId(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
+//            GLFW.glfwSetInputMode(ctx.getWindow().getId(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
         });
     }
 

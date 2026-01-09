@@ -1,8 +1,13 @@
 package me.siebe.flux.core;
 
-import me.siebe.flux.api.renderer.pipeline.RenderPipeline;
+import me.siebe.flux.api.event.EventBus;
+import me.siebe.flux.api.event.EventBusProvider;
+import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.renderer.Renderer;
+import me.siebe.flux.api.renderer.RendererProvider;
+import me.siebe.flux.api.renderer.pipeline.RenderPipeline;
 import me.siebe.flux.api.window.WindowBuilder;
+import me.siebe.flux.event.DefaultEventBus;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
@@ -67,6 +72,9 @@ public abstract class FluxApplication implements ProvidableSystem {
      */
     private void initEngineSystems() {
         logger.info("Initializing Engine Systems");
+        EventBus eventBus = new DefaultEventBus();
+        eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
+        EventBusProvider.init(eventBus);
 
         AppContext.withContextNoReturn(ctx -> {
             ctx.timer = new Timer();
@@ -77,7 +85,7 @@ public abstract class FluxApplication implements ProvidableSystem {
             ctx.window.init();
 
             // Render pipeline initialization
-            ctx.renderer = new Renderer(RenderPipeline.create());
+            RendererProvider.init(new Renderer(RenderPipeline.create()));
         });
     }
 
@@ -109,14 +117,10 @@ public abstract class FluxApplication implements ProvidableSystem {
         try {
             AppContext.withContextNoReturn(ctx -> {
                 while (!ctx.window.shouldClose()) {
-//                    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-//                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//                    glEnable(GL_DEPTH_TEST);
-
                     gameUpdate(ctx);
                     engineUpdate(ctx);
 
-                    ctx.renderer.render();
+                    RendererProvider.get().render();
                 }
             });
         } catch (Exception e) {
@@ -144,6 +148,8 @@ public abstract class FluxApplication implements ProvidableSystem {
         ctx.timer.print();
 
         ctx.window.update();
+
+        EventBusProvider.get().flush();
     }
 
     /**
