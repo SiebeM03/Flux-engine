@@ -1,12 +1,16 @@
 package me.siebe.flux.core;
 
+import me.siebe.flux.api.event.EventBus;
+import me.siebe.flux.api.event.EventBusProvider;
 import me.siebe.flux.api.renderer.Renderer;
+import me.siebe.flux.api.renderer.RendererProvider;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.util.exceptions.ApplicationException;
 import me.siebe.flux.util.time.Timer;
 
 import java.util.function.Consumer;
 
+@Deprecated()
 public class AppContext {
 
     private static AppContext instance;
@@ -15,6 +19,7 @@ public class AppContext {
     Window window;
     Timer timer;
     Renderer renderer;
+    EventBus eventBus;
 
     private AppContext() {
     }
@@ -60,7 +65,13 @@ public class AppContext {
         return timer;
     }
 
+    @Deprecated
     public Renderer getRenderer() {
-        return renderer;
+        return RendererProvider.get();
+    }
+
+    @Deprecated
+    public EventBus getEventBus() {
+        return EventBusProvider.get();
     }
 }
