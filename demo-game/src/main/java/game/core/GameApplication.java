@@ -4,8 +4,6 @@ import game.core.logging.GameCategories;
 import game.core.render.CustomRenderContext;
 import game.core.temp.TempCameraSetup;
 import game.core.temp.TerrainGenerator;
-import me.siebe.flux.api.event.EventBusProvider;
-import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.api.window.Window;
@@ -46,10 +44,6 @@ public class GameApplication extends FluxApplication {
 
         this.cameraSetup = new TempCameraSetup();
         this.cameraSetup.init();
-
-        EventBusProvider.get().getListenerRegistry().register(WindowResizeEvent.class, e -> {
-            logger.info("Window Resize Event");
-        });
     }
 
     @Override

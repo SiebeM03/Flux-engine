@@ -22,9 +22,6 @@ public class DefaultEventPoolRegistry implements EventPoolRegistry {
             Class<T> eventType,
             Supplier<T> factory
     ) {
-        if (!(Event.class.isAssignableFrom(eventType))) {
-            logger.warn("Event type {} is not a Pooled event type", eventType);
-        }
         pools.put(eventType, new DefaultEventPool<>(factory));
     }
 

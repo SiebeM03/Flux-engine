@@ -9,6 +9,8 @@ import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.function.Consumer;
 
@@ -29,6 +31,7 @@ public class DefaultEventBus implements EventBus {
     @Override
     public <E extends Event> void post(E event) {
         if (event instanceof Queued) {
+            logger.trace("Queued event {}", event);
             eventQueue.offer(event);
         } else {
             fire(event);
@@ -50,8 +53,10 @@ public class DefaultEventBus implements EventBus {
     private <E extends Event> void fire(E event) {
         Class<E> eventType = (Class<E>) event.getClass();
 
-        listenerRegistry.get(eventType).ifPresent(listeners -> {
-            logger.debug("Firing event {} to {} listeners", eventType.getName(), listeners.size());
+        Optional<List<EventListener<E>>> optListeners = listenerRegistry.get(eventType);
+        if (optListeners.isPresent()) {
+            List<EventListener<E>> listeners = optListeners.get();
+            logger.trace("Firing event {} to {} listeners", eventType.getName(), listeners.size());
 
             for (EventListener<E> listener : listeners) {
                 if (event instanceof Cancellable cancellable && cancellable.isCancelled()) break;
@@ -62,7 +67,7 @@ public class DefaultEventBus implements EventBus {
                     logger.error("Exception while handling event " + eventType.getName(), e);
                 }
             }
-        });
+        }
 
         if (event instanceof Pooled) {
             poolRegistry.release(event);
@@ -73,7 +78,7 @@ public class DefaultEventBus implements EventBus {
     public void flush() {
         if (eventQueue.isEmpty()) return;
 
-        logger.debug("Flushing {} events in queue", eventQueue.size());
+        logger.trace("Flushing {} events in queue", eventQueue.size());
         while (!eventQueue.isEmpty()) {
             fire(eventQueue.poll());
         }

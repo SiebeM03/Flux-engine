@@ -55,7 +55,7 @@ public class GlfwWindowBuilder extends WindowBuilder {
                 config.windowId = glfwCreateWindow(config.width, config.height, config.title, config.monitor, NULL);
             }
             case WINDOWED -> {
-//                glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+                glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
                 config.windowId = glfwCreateWindow(config.width, config.height, config.title, config.monitor, NULL);
             }
             case BORDERLESS -> {
@@ -85,7 +85,7 @@ public class GlfwWindowBuilder extends WindowBuilder {
         }
 
         glfwWindowHint(GLFW_SAMPLES, config.samples);
-//        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     }
 
     private void applySettings() {

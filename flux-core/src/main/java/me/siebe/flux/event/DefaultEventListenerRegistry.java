@@ -6,11 +6,11 @@ import me.siebe.flux.api.event.EventListenerRegistry;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultEventListenerRegistry implements EventListenerRegistry {
     private static final Logger logger = LoggerFactory.getLogger(DefaultEventListenerRegistry.class);
@@ -24,7 +24,7 @@ public class DefaultEventListenerRegistry implements EventListenerRegistry {
         get(eventType).ifPresentOrElse(
                 list -> list.add(listener),
                 () -> {
-                    List<EventListener<E>> newList = new ArrayList<>();
+                    List<EventListener<E>> newList = new CopyOnWriteArrayList<>();
                     newList.add(listener);
                     listeners.put(eventType, newList);
                 }

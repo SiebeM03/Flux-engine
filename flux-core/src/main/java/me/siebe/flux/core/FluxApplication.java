@@ -2,6 +2,7 @@ package me.siebe.flux.core;
 
 import me.siebe.flux.api.event.EventBus;
 import me.siebe.flux.api.event.EventBusProvider;
+import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.renderer.RendererProvider;
@@ -74,6 +75,7 @@ public abstract class FluxApplication implements ProvidableSystem {
         logger.info("Initializing Engine Systems");
         EventBus eventBus = new DefaultEventBus();
         eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
+        eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
         EventBusProvider.init(eventBus);
 
         AppContext.withContextNoReturn(ctx -> {
