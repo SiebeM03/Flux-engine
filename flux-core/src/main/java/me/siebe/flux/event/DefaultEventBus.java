@@ -42,6 +42,8 @@ public class DefaultEventBus implements EventBus {
     public <E extends Event & Pooled> void post(Class<E> eventType, Consumer<E> consumer) {
         try {
             E event = poolRegistry.acquire(eventType);
+            if (event == null) throw new IllegalStateException("No event registered for type " + eventType);
+
             consumer.accept(event); // Allows users to set event values
             post(event);
         } catch (Exception e) {
@@ -86,7 +88,7 @@ public class DefaultEventBus implements EventBus {
     public void flush() {
         if (eventQueue.isEmpty()) return;
 
-        logger.debug("Flushing {} events in queue", eventQueue.size());
+        logger.trace("Flushing {} events in queue", eventQueue.size());
         int batchSize = eventQueue.size();
 
         for (int i = 0; i < batchSize; i++) {
