@@ -6,7 +6,6 @@ import me.siebe.flux.api.event.EventListenerRegistry;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

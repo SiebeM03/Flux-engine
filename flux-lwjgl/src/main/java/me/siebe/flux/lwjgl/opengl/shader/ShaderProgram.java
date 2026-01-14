@@ -20,6 +20,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {
     private static final Logger logger = LoggerFactory.getLogger(ShaderProgram.class, LoggingCategories.RENDERER);
+    private static ShaderProgram ACTIVE_SHADER;
 
     private final int programId;
     private final String filename;
@@ -37,7 +38,7 @@ public class ShaderProgram {
      * @param basePath the base path to the shader files (without extension)
      * @throws ShaderException if the shaders cannot be loaded, compiled, or linked
      */
-    public ShaderProgram(String basePath) {
+    ShaderProgram(String basePath) {
         this.filename = basePath;
         this.attributes = new HashMap<>();
         this.uniforms = new HashMap<>();
@@ -59,10 +60,12 @@ public class ShaderProgram {
 
 
     public void bind() {
+        ShaderProgram.ACTIVE_SHADER = this;
         glUseProgram(programId);
     }
 
     public void unbind() {
+        ShaderProgram.ACTIVE_SHADER = null;
         glUseProgram(0);
     }
 
@@ -178,7 +181,7 @@ public class ShaderProgram {
     public void upload(String name, @NotNull Object value) {
         ShaderUniform u = getUniform(name);
         if (u == null) {
-            logger.error("Uniform {} not found or unused in {}", name, filename);
+            logger.warn("Uniform {} not found or unused in {}", name, filename);
             return;
         }
         bind();
@@ -198,10 +201,14 @@ public class ShaderProgram {
     public void uploadTexture(String name, int slot) {
         ShaderUniform u = getUniform(name);
         if (u == null) {
-            logger.error("Uniform {} not found or unused in {}", name, filename);
+            logger.warn("Uniform {} not found or unused in {}", name, filename);
             return;
         }
         bind();
         u.uploadTexture(slot);
+    }
+
+    public static ShaderProgram getActiveShader() {
+        return ACTIVE_SHADER;
     }
 }

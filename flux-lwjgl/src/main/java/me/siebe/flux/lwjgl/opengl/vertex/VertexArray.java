@@ -6,6 +6,7 @@ import me.siebe.flux.util.logging.config.LoggingCategories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
@@ -52,7 +53,6 @@ public class VertexArray extends GLBuffer {
                             layout.getStride(),
                             element.offset
                     );
-                    logger.info("Vertex attrib array {} has been added", element.name);
                     vertexBufferIndex++;
                 }
                 case Int, Int2, Int3, Int4 -> {
@@ -96,6 +96,8 @@ public class VertexArray extends GLBuffer {
                 default -> throw new IllegalArgumentException("Unknown vertex buffer type: " + element.type);
             }
         }
+
+        logger.debug("Vertex buffer has been added with attributes: {}", vertexBuffer.getLayout().getElements().stream().map(e -> e.name).collect(Collectors.joining(", ")));
         vertexBuffers.add(vertexBuffer);
     }
 
