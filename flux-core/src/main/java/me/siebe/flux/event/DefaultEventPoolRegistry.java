@@ -22,6 +22,9 @@ public class DefaultEventPoolRegistry implements EventPoolRegistry {
             Class<T> eventType,
             Supplier<T> factory
     ) {
+        if (pools.containsKey(eventType)) {
+            logger.warn("Event type {} has already been registered, overriding...", eventType);
+        }
         pools.put(eventType, new DefaultEventPool<>(factory));
     }
 

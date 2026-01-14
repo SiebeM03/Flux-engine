@@ -5,13 +5,12 @@ public class EventBusProvider {
     private final EventBus eventBus;
 
     private EventBusProvider(EventBus eventBus) {
+        if (eventBus == null) throw new IllegalArgumentException("EventBus must not be null.");
         this.eventBus = eventBus;
     }
 
     public static void init(EventBus eventBus) {
-        if (instance != null) {
-            throw new IllegalStateException("EventBus instance has already been initialized.");
-        }
+        if (instance != null) throw new IllegalStateException("EventBus instance has already been initialized.");
         instance = new EventBusProvider(eventBus);
     }
 

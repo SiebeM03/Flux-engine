@@ -19,6 +19,7 @@ public class DefaultEventListenerRegistry implements EventListenerRegistry {
 
     @Override
     public <E extends Event> void register(Class<E> eventType, EventListener<E> listener) {
+        // TODO assert not null using Validator
         logger.debug("Registering event listener {} for event {}", listener, eventType.getName());
 
         get(eventType).ifPresentOrElse(

@@ -1,6 +1,7 @@
 package me.siebe.flux.event;
 
 import me.siebe.flux.api.event.*;
+import me.siebe.flux.api.event.EventListener;
 import me.siebe.flux.api.event.traits.Cancellable;
 import me.siebe.flux.api.event.traits.Pooled;
 import me.siebe.flux.api.event.traits.Queued;
@@ -8,10 +9,7 @@ import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class DefaultEventBus implements EventBus {
@@ -30,6 +28,8 @@ public class DefaultEventBus implements EventBus {
 
     @Override
     public <E extends Event> void post(E event) {
+        if (event == null) return;
+
         if (event instanceof Queued) {
             logger.trace("Queued event {}", event);
             eventQueue.offer(event);
@@ -51,22 +51,30 @@ public class DefaultEventBus implements EventBus {
 
     @SuppressWarnings("unchecked")
     private <E extends Event> void fire(E event) {
+        if (event == null) return;
         Class<E> eventType = (Class<E>) event.getClass();
 
-        Optional<List<EventListener<E>>> optListeners = listenerRegistry.get(eventType);
-        if (optListeners.isPresent()) {
-            List<EventListener<E>> listeners = optListeners.get();
-            logger.trace("Firing event {} to {} listeners", eventType.getName(), listeners.size());
+        try {
+            Optional<List<EventListener<E>>> optListeners = listenerRegistry.get(eventType);
+            if (optListeners.isPresent()) {
+                List<EventListener<E>> listeners = optListeners.get();
+                logger.trace("Firing event {} to {} listeners", eventType.getName(), listeners.size());
 
-            for (EventListener<E> listener : listeners) {
-                if (event instanceof Cancellable cancellable && cancellable.isCancelled()) break;
+                for (EventListener<E> listener : listeners) {
+                    if (event instanceof Cancellable cancellable && cancellable.isCancelled()) break;
 
-                try {
-                    listener.onEvent(event);
-                } catch (Exception e) {
-                    logger.error("Exception while handling event " + eventType.getName(), e);
+                    try {
+                        listener.onEvent(event);
+                    } catch (Exception e) {
+                        logger.error("Exception in listener {} while handling event {}", listener, eventType.getName(), e);
+                    }
                 }
             }
+        } catch (ConcurrentModificationException e) {
+            logger.error("Concurrent modification error occurred while firing event {} to the listeners. \n" +
+                    "This is likely due to an event listener registering/unregistering a listener", eventType.getName(), e);
+        } catch (Exception e) {
+            logger.error("Exception while handling event {}", eventType.getName(), e);
         }
 
         if (event instanceof Pooled) {
@@ -78,9 +86,12 @@ public class DefaultEventBus implements EventBus {
     public void flush() {
         if (eventQueue.isEmpty()) return;
 
-        logger.trace("Flushing {} events in queue", eventQueue.size());
-        while (!eventQueue.isEmpty()) {
-            fire(eventQueue.poll());
+        logger.debug("Flushing {} events in queue", eventQueue.size());
+        int batchSize = eventQueue.size();
+
+        for (int i = 0; i < batchSize; i++) {
+            Event event = eventQueue.poll();
+            fire(event);
         }
     }
 

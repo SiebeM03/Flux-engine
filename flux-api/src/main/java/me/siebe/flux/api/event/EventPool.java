@@ -6,4 +6,6 @@ public interface EventPool<T extends Event & Pooled> {
     T acquire();
 
     void release(T event);
+
+    int getPoolSize();
 }
