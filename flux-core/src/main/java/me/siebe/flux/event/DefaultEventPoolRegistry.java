@@ -25,6 +25,9 @@ public class DefaultEventPoolRegistry implements EventPoolRegistry {
         if (!(Event.class.isAssignableFrom(eventType))) {
             logger.warn("Event type {} is not a Pooled event type", eventType);
         }
+        if (pools.containsKey(eventType)) {
+            logger.warn("Event type {} has already been registered, overriding...", eventType);
+        }
         pools.put(eventType, new DefaultEventPool<>(factory));
     }
 

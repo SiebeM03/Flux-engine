@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultEventListenerRegistry implements EventListenerRegistry {
     private static final Logger logger = LoggerFactory.getLogger(DefaultEventListenerRegistry.class);
@@ -19,12 +20,13 @@ public class DefaultEventListenerRegistry implements EventListenerRegistry {
 
     @Override
     public <E extends Event> void register(Class<E> eventType, EventListener<E> listener) {
+        // TODO assert not null using Validator
         logger.debug("Registering event listener {} for event {}", listener, eventType.getName());
 
         get(eventType).ifPresentOrElse(
                 list -> list.add(listener),
                 () -> {
-                    List<EventListener<E>> newList = new ArrayList<>();
+                    List<EventListener<E>> newList = new CopyOnWriteArrayList<>();
                     newList.add(listener);
                     listeners.put(eventType, newList);
                 }

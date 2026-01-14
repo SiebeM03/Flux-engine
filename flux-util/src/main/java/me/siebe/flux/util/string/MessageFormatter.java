@@ -1,4 +1,4 @@
-package me.siebe.flux.util.logging;
+package me.siebe.flux.util.string;
 
 import java.util.Objects;
 
@@ -6,7 +6,7 @@ import java.util.Objects;
  * Provides lightweight SLF4J-style message formatting where {@code {}} placeholders are replaced by
  * the supplied arguments in order. A backslash ({@code \}) can be used to escape braces.
  */
-final class MessageFormatter {
+public final class MessageFormatter {
     private static final char ESCAPE = '\\';
     private static final char OPEN = '{';
     private static final char CLOSE = '}';
@@ -14,13 +14,9 @@ final class MessageFormatter {
     private MessageFormatter() {
     }
 
-    static String format(String message, Object... arguments) {
-        if (message == null) {
-            return "null";
-        }
-        if (arguments == null || arguments.length == 0) {
-            return message;
-        }
+    public static String format(String message, Object... arguments) {
+        if (message == null) return "null";
+        if (arguments == null || arguments.length == 0) return message;
 
         StringBuilder builder = new StringBuilder(message.length() + 16 * arguments.length);
         int argIndex = 0;
@@ -28,7 +24,7 @@ final class MessageFormatter {
         for (int index = 0; index < message.length(); index++) {
             char current = message.charAt(index);
 
-            if (current == ESCAPE && index + 1 < message.length()) {
+            if (isEscapeChar(current) && hasCharAfter(message, index)) {
                 char next = message.charAt(index + 1);
                 if (next == OPEN || next == CLOSE) {
                     builder.append(next);
@@ -39,7 +35,7 @@ final class MessageFormatter {
                 continue;
             }
 
-            if (current == OPEN && index + 1 < message.length() && message.charAt(index + 1) == CLOSE) {
+            if (isPlaceHolderFormat(message, index)) {
                 if (argIndex < arguments.length) {
                     builder.append(Objects.toString(arguments[argIndex], "null"));
                     argIndex++;
@@ -54,6 +50,28 @@ final class MessageFormatter {
         }
 
         return builder.toString();
+    }
+
+    private static boolean isPlaceHolderFormat(String message, int index) {
+        return isOpenChar(message.charAt(index))
+                && hasCharAfter(message, index)
+                && isCloseChar(message.charAt(index + 1));
+    }
+
+    private static boolean isEscapeChar(char c) {
+        return c == ESCAPE;
+    }
+
+    private static boolean isOpenChar(char c) {
+        return c == OPEN;
+    }
+
+    private static boolean isCloseChar(char c) {
+        return c == CLOSE;
+    }
+
+    private static boolean hasCharAfter(String message, int index) {
+        return index + 1 < message.length();
     }
 }
 

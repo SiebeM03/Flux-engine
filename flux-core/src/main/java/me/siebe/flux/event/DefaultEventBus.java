@@ -8,6 +8,7 @@ import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
 
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.Consumer;
@@ -28,6 +29,8 @@ public class DefaultEventBus implements EventBus {
 
     @Override
     public <E extends Event> void post(E event) {
+        if (event == null) return;
+
         if (event instanceof Queued) {
             eventQueue.offer(event);
         } else {
@@ -50,19 +53,26 @@ public class DefaultEventBus implements EventBus {
     private <E extends Event> void fire(E event) {
         Class<E> eventType = (Class<E>) event.getClass();
 
-        listenerRegistry.get(eventType).ifPresent(listeners -> {
-            logger.debug("Firing event {} to {} listeners", eventType.getName(), listeners.size());
+        try {
+            listenerRegistry.get(eventType).ifPresent(listeners -> {
+                logger.debug("Firing event {} to {} listeners", eventType.getName(), listeners.size());
 
-            for (EventListener<E> listener : listeners) {
-                if (event instanceof Cancellable cancellable && cancellable.isCancelled()) break;
+                for (EventListener<E> listener : listeners) {
+                    if (event instanceof Cancellable cancellable && cancellable.isCancelled()) break;
 
-                try {
-                    listener.onEvent(event);
-                } catch (Exception e) {
-                    logger.error("Exception while handling event " + eventType.getName(), e);
+                    try {
+                        listener.onEvent(event);
+                    } catch (Exception e) {
+                        logger.error("Exception in listener {} while handling event {}", listener, eventType.getName(), e);
+                    }
                 }
-            }
-        });
+            });
+        } catch (ConcurrentModificationException e) {
+            logger.error("Concurrent modification error occurred while firing event {} to the listeners. \n" +
+                    "This is likely due to an event listener registering/unregistering a listener", eventType.getName(), e);
+        } catch (Exception e) {
+            logger.error("Exception while handling event {}", eventType.getName(), e);
+        }
 
         if (event instanceof Pooled) {
             poolRegistry.release(event);
@@ -74,8 +84,12 @@ public class DefaultEventBus implements EventBus {
         if (eventQueue.isEmpty()) return;
 
         logger.debug("Flushing {} events in queue", eventQueue.size());
-        while (!eventQueue.isEmpty()) {
-            fire(eventQueue.poll());
+        int batchSize = eventQueue.size();
+
+        for (int i = 0; i < batchSize; i++) {
+            Event event = eventQueue.poll();
+            if (event == null) continue;
+            fire(event);
         }
     }
 

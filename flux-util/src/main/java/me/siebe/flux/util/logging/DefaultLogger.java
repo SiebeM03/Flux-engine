@@ -1,6 +1,7 @@
 package me.siebe.flux.util.logging;
 
 import me.siebe.flux.util.logging.config.LogLevel;
+import me.siebe.flux.util.string.MessageFormatter;
 
 import java.util.Objects;
 
@@ -41,7 +42,11 @@ final class DefaultLogger implements Logger {
     public void log(LogLevel level, String message, Object... arguments) {
         if (!isEnabled(level)) return;
         String resolvedMessage = formatMessage(message, arguments);
-        LoggingManager.publish(category, name, level, resolvedMessage, null);
+        Throwable throwable = null;
+        if (arguments[arguments.length - 1] instanceof Throwable) {
+            throwable = (Throwable) arguments[arguments.length - 1];
+        }
+        LoggingManager.publish(category, name, level, resolvedMessage, throwable);
     }
 
     @Override

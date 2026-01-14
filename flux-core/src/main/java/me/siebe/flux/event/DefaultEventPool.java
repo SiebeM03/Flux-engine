@@ -27,7 +27,13 @@ public final class DefaultEventPool<E extends Event & Pooled> implements EventPo
 
     @Override
     public void release(E event) {
+        // TODO prevent event from being released multiple times and thus also added to the queue multiple times
         event.reset();
         pool.addLast(event);
+    }
+
+    @Override
+    public int getPoolSize() {
+        return pool.size();
     }
 }
