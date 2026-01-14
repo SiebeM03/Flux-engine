@@ -1,15 +1,25 @@
 package me.siebe.flux.api.window;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 public class WindowBuilderTest {
 
+    private WindowBuilder createMockBuilder() {
+        WindowBuilder builder = Mockito.mock(WindowBuilder.class, Mockito.withSettings()
+                .useConstructor(WindowPlatform.GLFW)
+                .defaultAnswer(Mockito.CALLS_REAL_METHODS));
+        when(builder.build()).thenReturn(null);
+        return builder;
+    }
+
     @Test
     void builderSetsPropertiesCorrectly() {
-        MockWindowBuilder builder = new MockWindowBuilder();
+        WindowBuilder builder = createMockBuilder();
 
         builder.title("Test")
                 .mode(WindowMode.WINDOWED)
@@ -19,7 +29,7 @@ public class WindowBuilderTest {
                 .samples(4)
                 .targetFps(150);
 
-        WindowConfig config = builder.getConfig();
+        WindowConfig config = builder.config;
 
         // Check all set properties
         assertEquals("Test", config.title);
@@ -37,9 +47,9 @@ public class WindowBuilderTest {
 
     @Test
     void builderUsesDefaultConfigs() {
-        MockWindowBuilder builder = new MockWindowBuilder();
+        WindowBuilder builder = createMockBuilder();
 
-        WindowConfig builderConfig = builder.getConfig();
+        WindowConfig builderConfig = builder.config;
         WindowConfig defaultConfig = new WindowConfig();
 
         // Assert that builderConfig has the same values as defaultConfig
@@ -60,6 +70,4 @@ public class WindowBuilderTest {
         assertEquals(defaultConfig.samples, builderConfig.samples);
         assertEquals(defaultConfig.targetFps, builderConfig.targetFps);
     }
-
-
 }

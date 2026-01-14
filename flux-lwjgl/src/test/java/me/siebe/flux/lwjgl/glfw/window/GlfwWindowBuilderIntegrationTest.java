@@ -1,5 +1,9 @@
 package me.siebe.flux.lwjgl.glfw.window;
 
+import me.siebe.flux.api.event.EventBus;
+import me.siebe.flux.api.event.EventBusProvider;
+import me.siebe.flux.api.event.EventListenerRegistry;
+import me.siebe.flux.api.event.EventPoolRegistry;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowMode;
 import org.junit.jupiter.api.AfterAll;
@@ -7,10 +11,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL.getCapabilities;
+import static org.mockito.Mockito.mock;
 
 public class GlfwWindowBuilderIntegrationTest {
     private static boolean glfwInitialized = false;
@@ -31,6 +37,24 @@ public class GlfwWindowBuilderIntegrationTest {
         assertNotNull(vidMode, "Primary monitor video mode cannot be null");
         primaryMonitorWidth = vidMode.width();
         primaryMonitorHeight = vidMode.height();
+
+        Mockito.mockStatic(EventBusProvider.class).when(EventBusProvider::get)
+                .thenAnswer(invocation -> {
+                    // Create a mock EventBus
+                    EventBus mockEventBus = mock(EventBus.class);
+
+                    // Allow test code to configure what happens for ListenerRegistry, etc.
+                    // Set up sensible defaults:
+                    EventListenerRegistry mockListenerRegistry = mock(EventListenerRegistry.class);
+                    EventPoolRegistry mockEventPoolRegistry = mock(EventPoolRegistry.class);
+
+                    Mockito.when(mockEventBus.getListenerRegistry()).thenReturn(mockListenerRegistry);
+                    Mockito.when(mockEventBus.getEventPoolRegistry()).thenReturn(mockEventPoolRegistry);
+
+                    // Test methods can further customize these mock as needed by calling
+                    // Mockito.reset(mockEventBus), etc., or using ArgumentCaptor
+                    return mockEventBus;
+                });
     }
 
     @AfterAll
