@@ -13,11 +13,13 @@ public class VertexBuffer extends GLBuffer {
     private static final Logger logger = LoggerFactory.getLogger(VertexBuffer.class, LoggingCategories.RENDERER);
 
     private BufferLayout bufferLayout;
+    private int size;
 
     public VertexBuffer(int size) {
         super(glGenBuffers());
         bind();
         glBufferData(GL_ARRAY_BUFFER, size, GL_DYNAMIC_DRAW);
+        this.size = size;
     }
 
     public VertexBuffer(float[] vertices) {
@@ -28,6 +30,7 @@ public class VertexBuffer extends GLBuffer {
         buffer.put(vertices).flip();
 
         glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        this.size = vertices.length;
     }
 
     @Override
@@ -50,6 +53,10 @@ public class VertexBuffer extends GLBuffer {
         buffer.put(data).flip();
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, data);
+        this.size = data.length;
     }
 
+    public int getSize() {
+        return size;
+    }
 }

@@ -26,11 +26,12 @@ public class GlfwWindow implements Window {
         logger.info("Initializing GlfwWindow with {}", StringUtils.toString(config, true));
 
         OpenGLState.init();
+        OpenGLState.enableDepthTest();
         OpenGLState.setViewport(0, 0, config.width, config.height);
 
         // Register window event callbacks
         glfwSetWindowSizeCallback(getId(), this::sendWindowResizeEvent);
-//        glfwSetFramebufferSizeCallback(getId(), this::sendFramebufferResizeEvent);
+        glfwSetFramebufferSizeCallback(getId(), this::sendFramebufferResizeEvent);
 
         // Register event listeners
         EventBusProvider.get().getListenerRegistry().register(WindowResizeEvent.class, this::onWindowResize);
@@ -52,15 +53,10 @@ public class GlfwWindow implements Window {
     private void onWindowResize(WindowResizeEvent e) {
         config.width = e.getNewWidth();
         config.height = e.getNewHeight();
-        System.out.println("Resized at " + config.width + "x" + config.height);
     }
 
     private void sendFramebufferResizeEvent(long windowId, int width, int height) {
         if (isValidSizeChange(width, height)) {
-//            FramebufferResizeEvent event = EventBusProvider.get().getEventPoolRegistry().get(FramebufferResizeEvent.class).acquire();
-//            event.set(config.width, config.height, width, height);
-//            EventBusProvider.get().post(event);
-//
             EventBusProvider.get().post(FramebufferResizeEvent.class, e -> e.set(config.width, config.height, width, height));
         }
     }
@@ -92,6 +88,8 @@ public class GlfwWindow implements Window {
     @Override
     public void destroy() {
         logger.info("Destroying GlfwWindow");
+        glfwDestroyWindow(config.windowId);
+
         EventBusProvider.get().getListenerRegistry().unregister(WindowResizeEvent.class, this::onWindowResize);
         EventBusProvider.get().getListenerRegistry().unregister(FramebufferResizeEvent.class, this::onFramebufferResize);
     }

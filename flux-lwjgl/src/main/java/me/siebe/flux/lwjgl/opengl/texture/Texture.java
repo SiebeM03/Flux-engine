@@ -1,14 +1,18 @@
 package me.siebe.flux.lwjgl.opengl.texture;
 
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.stb.STBImage;
+import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
+import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class Texture {
     /**
@@ -63,6 +67,33 @@ public class Texture {
         setFilters(GL_LINEAR, GL_LINEAR);
         setWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
         unbind();
+    }
+
+    // TODO implement with GltfLoader#loadTexture() as it uses a lot of similar code
+    public Texture(String path) {
+        this.glId = glGenTextures();
+        bind();
+
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer w = stack.mallocInt(1);
+            IntBuffer h = stack.mallocInt(1);
+            IntBuffer channels = stack.mallocInt(1);
+
+            STBImage.stbi_set_flip_vertically_on_load(true);
+            ByteBuffer imageData = STBImage.stbi_load(path, w, h, channels, 4);
+            if (imageData == null) {
+                throw new RuntimeException("Failed to load texture: " + path);
+            }
+
+            width = w.get();
+            height = h.get();
+            target = GL_TEXTURE_2D;
+
+            glTexImage2D(target, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+            glGenerateMipmap(target);
+
+            STBImage.stbi_image_free(imageData);
+        }
     }
 
     public void bind() {
