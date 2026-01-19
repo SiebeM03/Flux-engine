@@ -4,6 +4,10 @@ categories:
   timer: INFO
   renderer: ERROR
 
+startupBannerConfig:
+  enabled: true
+  log-system-info: true
+
 outputs:
   - type: console
     pattern: "[{level}] [{category}] {message}"

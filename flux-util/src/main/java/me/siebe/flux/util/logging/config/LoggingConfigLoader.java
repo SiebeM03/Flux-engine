@@ -122,6 +122,7 @@ public final class LoggingConfigLoader {
         private Boolean colorEnabled;
         private String timestampFormat;
         private Map<String, String> categories = new LinkedHashMap<>();
+        private Map<String, String> startupBannerConfig = new LinkedHashMap<>();
         private Map<String, String> levelColors = new LinkedHashMap<>();
         private List<LoggingOutputDocument> outputs = List.of();
 
@@ -143,6 +144,10 @@ public final class LoggingConfigLoader {
 
         public void setCategories(Map<String, String> categories) {
             this.categories = categories == null ? new LinkedHashMap<>() : new LinkedHashMap<>(categories);
+        }
+
+        public void setStartupBannerConfig(Map<String, String> startupBannerConfig) {
+            this.startupBannerConfig = startupBannerConfig == null ? new LinkedHashMap<>() : new LinkedHashMap<>(startupBannerConfig);
         }
 
         public void setLevelColors(Map<String, String> levelColors) {
@@ -169,6 +174,15 @@ public final class LoggingConfigLoader {
 
             if (colorEnabled != null) {
                 builder.colorEnabled(colorEnabled);
+            }
+
+            if (startupBannerConfig != null) {
+                if (startupBannerConfig.containsKey("enabled")) {
+                    builder.startupBannerEnabled(Boolean.parseBoolean(startupBannerConfig.get("enabled")));
+                }
+                if (startupBannerConfig.containsKey("log-system-info")) {
+                    builder.startupBannerLogSystemInfo(Boolean.parseBoolean(startupBannerConfig.get("log-system-info")));
+                }
             }
 
             if (timestampFormat != null) {

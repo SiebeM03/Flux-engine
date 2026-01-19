@@ -20,6 +20,8 @@ public final class LoggingConfiguration {
     private final Map<String, LogLevel> categoryLevels;
     private final Map<LogLevel, AnsiColor> levelColors;
     private final boolean colorEnabled;
+    private final boolean startupBannerEnabled;
+    private final boolean startupBannerLogSystemInfo;
     private final DateTimeFormatter timestampFormatter;
     private final List<LoggingOutputConfiguration> outputs;
 
@@ -28,6 +30,8 @@ public final class LoggingConfiguration {
         this.categoryLevels = Collections.unmodifiableMap(new ConcurrentHashMap<>(builder.categoryLevels));
         this.levelColors = Collections.unmodifiableMap(new EnumMap<>(builder.levelColors));
         this.colorEnabled = builder.colorEnabled;
+        this.startupBannerEnabled = builder.startupBannerEnabled;
+        this.startupBannerLogSystemInfo = builder.startupBannerLogSystemInfo;
         this.timestampFormatter = builder.timestampFormatter;
         this.outputs = Collections.unmodifiableList(new ArrayList<>(builder.outputs));
     }
@@ -112,6 +116,20 @@ public final class LoggingConfiguration {
     }
 
     /**
+     * @return {@code true} when the startup banner is enabled
+     */
+    public boolean isStartupBannerEnabled() {
+        return startupBannerEnabled;
+    }
+
+    /**
+     * @return {@code true} when the system information should be logged on startup
+     */
+    public boolean isStartupBannerLogSystemInfo() {
+        return startupBannerLogSystemInfo;
+    }
+
+    /**
      * @return an unmodifiable view of the category to level mappings
      */
     public Map<String, LogLevel> categoryLevels() {
@@ -155,6 +173,8 @@ public final class LoggingConfiguration {
         private final Map<String, LogLevel> categoryLevels = new ConcurrentHashMap<>();
         private final Map<LogLevel, AnsiColor> levelColors = new EnumMap<>(LogLevel.class);
         private boolean colorEnabled = true;
+        private boolean startupBannerEnabled = true;
+        private boolean startupBannerLogSystemInfo = true;
         private DateTimeFormatter timestampFormatter = DEFAULT_TIMESTAMP_FORMATTER;
         private final List<LoggingOutputConfiguration> outputs = new ArrayList<>();
 
@@ -170,6 +190,8 @@ public final class LoggingConfiguration {
             this.categoryLevels.putAll(configuration.categoryLevels);
             this.levelColors.putAll(configuration.levelColors);
             this.colorEnabled = configuration.colorEnabled;
+            this.startupBannerEnabled = configuration.startupBannerEnabled;
+            this.startupBannerLogSystemInfo = configuration.startupBannerLogSystemInfo;
             this.timestampFormatter = configuration.timestampFormatter;
             this.outputs.addAll(configuration.outputs);
         }
@@ -230,6 +252,28 @@ public final class LoggingConfiguration {
          */
         public Builder colorEnabled(boolean enabled) {
             this.colorEnabled = enabled;
+            return this;
+        }
+
+        /**
+         * Enables or disables logging of the startup banner
+         *
+         * @param enabled {@code true} to log the startup banner
+         * @return this builder
+         */
+        public Builder startupBannerEnabled(boolean enabled) {
+            this.startupBannerEnabled = enabled;
+            return this;
+        }
+
+        /**
+         * Enables or disables logging of the system information at startup.
+         *
+         * @param enabled {@code true} to log system information
+         * @return this builder
+         */
+        public Builder startupBannerLogSystemInfo(boolean enabled) {
+            this.startupBannerLogSystemInfo = enabled;
             return this;
         }
 

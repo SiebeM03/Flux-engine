@@ -54,6 +54,8 @@ public abstract class FluxApplication implements ProvidableSystem {
 
         try {
             initEngineSystems();
+            logger.info("Engine successfully initialized");
+            StartupBanner.displayBanner();
             initGameSystems();
         } catch (Exception e) {
             logger.error("Something went wrong while initializing the application", e);
