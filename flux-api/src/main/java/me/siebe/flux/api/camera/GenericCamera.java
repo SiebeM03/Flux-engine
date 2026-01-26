@@ -1,55 +1,46 @@
 package me.siebe.flux.api.camera;
 
 import me.siebe.flux.util.DirtyValue;
-import me.siebe.flux.util.Transform;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public abstract class GenericCamera implements Camera {
-    /**
-     * The transform for this camera (position and rotation).
-     * Scale is not used for cameras.
-     */
-    protected final Transform transform;
-
-    /**
-     * The up vector used for lookAt calculations.
-     * Defaults to (0, 1, 0).
-     */
+    protected final Vector3f position;
+    protected final Vector3f direction;
     protected final Vector3f up;
+    protected final Vector3f target;
 
     protected final DirtyValue<Matrix4f> viewMatrix;
     protected final DirtyValue<Matrix4f> projectionMatrix;
     protected final DirtyValue<Matrix4f> viewProjectionMatrix;
 
     public GenericCamera() {
-        this.transform = new Transform();
+        this.position = new Vector3f(0.0f, 0.0f, 0.0f);
+        this.direction = new Vector3f(0.0f, 0.0f, -1.0f);
         this.up = new Vector3f(0.0f, 1.0f, 0.0f);
+        this.target = new Vector3f(0.0f, 0.0f, 0.0f);
+
 
         this.viewMatrix = new DirtyValue<>(new Matrix4f(), this::updateViewMatrix);
         this.projectionMatrix = new DirtyValue<>(new Matrix4f(), this::updateProjectionMatrix);
         this.viewProjectionMatrix = new DirtyValue<>(new Matrix4f(), this::updateViewProjectionMatrix);
     }
 
-    public Transform getTransform() {
-        return transform;
-    }
-
     @Override
     public Vector3f getPosition() {
-        return transform.getPosition();
+        return new Vector3f(this.position);
     }
 
     @Override
     public void setPosition(Vector3f position) {
-        transform.setPosition(position);
+        this.position.set(position);
         this.viewMatrix.markDirty();
         this.viewProjectionMatrix.markDirty();
     }
 
     @Override
     public Vector3f getDirection() {
-        return transform.getForward();
+        return new Vector3f(this.direction);
     }
 
     @Override
@@ -57,22 +48,10 @@ public abstract class GenericCamera implements Camera {
         return new Vector3f(this.up);
     }
 
-    /**
-     * Sets the up vector used for lookAt calculations.
-     *
-     * @param up The up vector (typically (0, 1, 0))
-     */
-    public void setUp(Vector3f up) {
-        if (up != null) {
-            this.up.set(up);
-            this.viewMatrix.markDirty();
-            this.viewProjectionMatrix.markDirty();
-        }
-    }
-
     @Override
     public void lookAt(Vector3f target) {
-        transform.lookAt(target, this.up);
+        this.target.set(target);
+        this.direction.set(this.target).sub(this.position).normalize();
         this.viewMatrix.markDirty();
         this.viewProjectionMatrix.markDirty();
     }
@@ -99,11 +78,6 @@ public abstract class GenericCamera implements Camera {
     }
 
     protected void updateViewMatrix(Matrix4f m) {
-        // Compute view matrix from transform
-        // View matrix is the inverse of the model matrix
-        Vector3f position = transform.getPosition();
-        Vector3f forward = transform.getForward();
-        Vector3f target = new Vector3f(position).add(forward);
         m.identity().lookAt(position, target, up);
     }
 

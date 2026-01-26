@@ -357,7 +357,7 @@ public class Transform {
      * @return The combined transformation matrix
      */
     public Matrix4f getCombinedMatrix(Transform relativeTransform) {
-        return modelMatrix.get()
+        return new Matrix4f(modelMatrix.get())
                 .translate(relativeTransform.position)
                 .rotate(relativeTransform.rotation)
                 .scale(relativeTransform.scale);
