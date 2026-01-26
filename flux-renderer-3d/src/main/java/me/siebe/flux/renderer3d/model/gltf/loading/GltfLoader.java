@@ -57,10 +57,12 @@ public class GltfLoader extends AssetPool<Model> {
 
     private static GltfLoader instance;
 
-    private HashMap<String, Model> models;
-
     private GltfLoader() {
-        this.models = new HashMap<>();
+    }
+
+    @Override
+    public Model load(String identifier) {
+        return create(identifier);
     }
 
     public static GltfLoader get() {
