@@ -1,10 +1,13 @@
 package me.siebe.flux.lwjgl.glfw.window;
 
+import me.siebe.flux.api.event.EventBus;
 import me.siebe.flux.api.event.EventBusProvider;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowConfig;
+import me.siebe.flux.lwjgl.glfw.input.MouseButtonEvent;
+import me.siebe.flux.lwjgl.glfw.input.MousePosEvent;
 import me.siebe.flux.lwjgl.opengl.OpenGLState;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
@@ -33,9 +36,19 @@ public class GlfwWindow implements Window {
         glfwSetWindowSizeCallback(getId(), this::sendWindowResizeEvent);
         glfwSetFramebufferSizeCallback(getId(), this::sendFramebufferResizeEvent);
 
+        glfwSetCursorPosCallback(getId(), this::sendMousePosEvent);
+        glfwSetMouseButtonCallback(getId(), this::sendMouseClickEvent);
+
+        EventBus eventBus = EventBusProvider.get();
         // Register event listeners
-        EventBusProvider.get().getListenerRegistry().register(WindowResizeEvent.class, this::onWindowResize);
-        EventBusProvider.get().getListenerRegistry().register(FramebufferResizeEvent.class, this::onFramebufferResize);
+        eventBus.getListenerRegistry().register(WindowResizeEvent.class, this::onWindowResize);
+        eventBus.getListenerRegistry().register(FramebufferResizeEvent.class, this::onFramebufferResize);
+
+        // Register all Pooled events
+        eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
+        eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
+        eventBus.getEventPoolRegistry().register(MousePosEvent.class, MousePosEvent::new);
+        eventBus.getEventPoolRegistry().register(MouseButtonEvent.class, MouseButtonEvent::new);
     }
 
     @Override
@@ -63,6 +76,14 @@ public class GlfwWindow implements Window {
 
     private void onFramebufferResize(FramebufferResizeEvent e) {
         OpenGLState.setViewport(0, 0, e.getNewWidth(), e.getNewHeight());
+    }
+
+    private void sendMousePosEvent(long windowId, double x, double y) {
+        EventBusProvider.get().post(MousePosEvent.class, e -> e.set(this, x, y));
+    }
+
+    private void sendMouseClickEvent(long windowId, int button, int action, int mods) {
+        EventBusProvider.get().post(MouseButtonEvent.class, e -> e.set(button, action));
     }
 
     @Override

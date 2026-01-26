@@ -76,8 +76,6 @@ public abstract class FluxApplication implements ProvidableSystem {
     private void initEngineSystems() {
         logger.info("Initializing Engine Systems");
         EventBus eventBus = new DefaultEventBus();
-        eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
-        eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
         EventBusProvider.init(eventBus);
 
         AppContext.withContextNoReturn(ctx -> {
