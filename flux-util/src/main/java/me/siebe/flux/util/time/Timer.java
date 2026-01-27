@@ -3,6 +3,7 @@ package me.siebe.flux.util.time;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
@@ -31,7 +32,7 @@ public final class Timer {
         this.currentFrameTime = lastFrameTime;
         this.frameCount = 0L;
 
-        this.printDelay = new Delay(DEFAULT_PRINT_DELAY);
+        this.printDelay = new Delay(Duration.ofSeconds((long) DEFAULT_PRINT_DELAY));
 
         this.newFrameIndex = 0;
         this.frameTimes = new double[FRAMES_TO_CONSIDER];
@@ -45,7 +46,7 @@ public final class Timer {
         this.lastFrameTime = this.currentFrameTime;
         this.frameCount++;
 
-        printDelay.update((float) deltaTime);
+        printDelay.update(Duration.ofMillis((long) (deltaTime * 1000)));
         addFrameToList();
     }
 
