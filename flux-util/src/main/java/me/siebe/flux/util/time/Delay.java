@@ -33,6 +33,7 @@ public class Delay {
         if (isOver() && !autoReset) {
             return;
         }
+        reset();
         timePassed += deltaTime;
     }
 
