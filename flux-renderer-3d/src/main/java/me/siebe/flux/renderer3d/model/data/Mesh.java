@@ -1,6 +1,6 @@
 package me.siebe.flux.renderer3d.model.data;
 
-import me.siebe.flux.util.DirtyValue;
+import me.siebe.flux.util.Transform;
 import me.siebe.flux.util.exceptions.Validator;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -28,15 +28,9 @@ public class Mesh {
     private final List<Primitive> primitives;
 
     /**
-     * Position relative to the model's position
+     * The transform relative to the parent Model's transform
      */
-    private Vector3f relativePosition;
-
-    private Quaternionf rotation;
-
-    private Vector3f scale;
-
-    private DirtyValue<Matrix4f> modelMatrix;
+    private Transform transform;
 
     /**
      * Optional name for this mesh. Can be used for identification and debugging.
@@ -58,11 +52,7 @@ public class Mesh {
         this.primitives = new ArrayList<>(primitives);
         this.name = name;
 
-        this.relativePosition = new Vector3f(0, 0, 0);
-        this.rotation = new Quaternionf();
-        this.scale = new Vector3f(1, 1, 1);
-
-        this.modelMatrix = new DirtyValue<>(new Matrix4f(), this::updateModelMatrix);
+        this.transform = new Transform();
     }
 
     public List<Primitive> getPrimitives() {
@@ -78,57 +68,92 @@ public class Mesh {
         return primitives.remove(primitive);
     }
 
+    public Transform getTransform() {
+        return transform;
+    }
+
+    public void setTransform(Transform transform) {
+        this.transform = transform;
+    }
+
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     public Vector3f getRelativePosition() {
-        return relativePosition;
+        return transform.getPosition();
     }
 
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     public void setRelativePosition(Vector3f relativePosition) {
-        this.relativePosition.set(relativePosition);
-        modelMatrix.markDirty();
+        transform.setPosition(relativePosition);
     }
 
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     public Quaternionf getRotation() {
-        return rotation;
+        return transform.getRotation();
     }
 
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     public void setRotation(Quaternionf rotation) {
-        if (rotation != null) {
-            this.rotation.set(rotation);
-        } else {
-            resetRotation();
-        }
-        modelMatrix.markDirty();
+        transform.setRotation(rotation);
     }
 
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     public void resetRotation() {
-        this.rotation.identity();
-        modelMatrix.markDirty();
+        transform.resetRotation();
     }
 
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     public Vector3f getScale() {
-        return scale;
+        return transform.getScale();
     }
 
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     public void setScale(Vector3f scale) {
-        if (scale != null) {
-            this.scale.set(scale);
-        } else {
-            resetScale();
-        }
-        modelMatrix.markDirty();
+        transform.setScale(scale);
     }
 
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     public void resetScale() {
-        this.scale.set(1, 1, 1);
-        modelMatrix.markDirty();
+        transform.resetScale();
     }
 
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     public Matrix4f getModelMatrix() {
-        return modelMatrix.get();
+        return transform.getModelMatrix();
     }
 
+    /**
+     * Use Mesh#getTransform() instead
+     */
+    @Deprecated(forRemoval = true)
     private void updateModelMatrix(Matrix4f m) {
-        m.translate(relativePosition).rotate(rotation).scale(scale);
+        m.set(transform.getModelMatrix());
     }
 
     public String getName() {

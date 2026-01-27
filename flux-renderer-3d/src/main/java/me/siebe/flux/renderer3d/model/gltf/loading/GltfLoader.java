@@ -182,32 +182,32 @@ public class GltfLoader extends AssetPool<Model> {
             // Decompose matrix
             Vector3f translation = new Vector3f();
             matrix.getTranslation(translation);
-            mesh.setRelativePosition(translation);
+            mesh.getTransform().setPosition(translation);
 
             Vector3f scale = new Vector3f();
             matrix.getScale(scale);
-            mesh.setScale(scale);
+            mesh.getTransform().setScale(scale);
 
             Quaternionf rotation = new Quaternionf();
             matrix.getUnnormalizedRotation(rotation).normalize();
-            mesh.setRotation(rotation);
+            mesh.getTransform().setRotation(rotation);
         } else {
             // Load translation
             float[] translation = nodeModel.getTranslation();
             if (translation != null && translation.length == 3) {
-                mesh.setRelativePosition(new Vector3f(nodeModel.getTranslation()));
+                mesh.getTransform().setPosition(new Vector3f(nodeModel.getTranslation()));
             }
 
             // Load rotation (quaternion: x, y, z, w)
             float[] rotation = nodeModel.getRotation();
             if (rotation != null && rotation.length == 4) {
-                mesh.setRotation(new Quaternionf(rotation[0], rotation[1], rotation[2], rotation[3]));
+                mesh.getTransform().setRotation(new Quaternionf(rotation[0], rotation[1], rotation[2], rotation[3]));
             }
 
             // Load scale
             float[] scale = nodeModel.getScale();
             if (scale != null && scale.length == 3) {
-                mesh.setScale(new Vector3f(scale));
+                mesh.getTransform().setScale(new Vector3f(scale));
             }
         }
         return mesh;
