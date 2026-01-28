@@ -130,7 +130,7 @@ public class OpenGLState {
      * @param color the color
      */
     public static void setClearColor(FluxColor color) {
-        glClearColor(color.getR(), color.getG(), color.getB(), color.getA());
+        glClearColor(color.redFloat(), color.greenFloat(), color.blueFloat(), color.alphaFloat());
     }
 
     /**
