@@ -15,18 +15,24 @@ import me.siebe.flux.util.system.SystemProviderType;
  * It provides methods to create, retrieve and delete entities, as well as query for entities
  * that have specific component combinations.
  * <p>
- * The ECS patter separates data (components) from behavior (systems) promoting composition
+ * The ECS pattern separates data (components) from behavior (systems) promoting composition
  * over inheritance and enabling efficient data-oriented design.
  */
 public interface World {
+
+    /**
+     * Gets the unique identifier for this world.
+     *
+     * @return the world's unique identifier
+     */
+    int getId();
+
     /**
      * Gets the name of this world.
      *
      * @return the world's name, never null
      */
     String getName();
-
-    int getId();
 
     // =================================================================================================================
     // World creation methods

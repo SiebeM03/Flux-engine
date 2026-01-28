@@ -25,10 +25,6 @@ public class FluxColor {
     public static final FluxColor MAROON = new FluxColor(0.5f, 0.0f, 0.0f);
     public static final FluxColor OLIVE = new FluxColor(0.5f, 0.5f, 0.0f);
 
-
-    private Vector3f rgb = new Vector3f();
-    private float a = 1;
-
     private int rgba;
     private static final int R_OFFSET = 24;
     private static final int G_OFFSET = 16;
@@ -63,9 +59,20 @@ public class FluxColor {
     }
 
     public FluxColor(String hex) {
-        setR(Integer.valueOf(hex.substring(1, 3), 16));
-        setG(Integer.valueOf(hex.substring(3, 5), 16));
-        setB(Integer.valueOf(hex.substring(5, 7), 16));
+        if (hex == null) throw new IllegalArgumentException("Hex color string must not be null");
+        if (hex.charAt(0) != '#') throw new IllegalArgumentException("Hex color string must start with #");
+        if (hex.length() != 7 && hex.length() != 9)
+            throw new IllegalArgumentException("Hex color string must be in the format #RRGGBB or #RRGGBBAA, got: '" + hex + "'");
+
+        try {
+            int r = Integer.valueOf(hex.substring(1, 3), 16);
+            int g = Integer.valueOf(hex.substring(3, 5), 16);
+            int b = Integer.valueOf(hex.substring(5, 7), 16);
+            int a = hex.length() == 9 ? Integer.valueOf(hex.substring(7, 9), 16) : 255;
+            set(r, g, b, a);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("hex color string contains invalid hex digits: '" + hex + "'", e);
+        }
     }
 
     public FluxColor(float[] colors) {
@@ -76,9 +83,7 @@ public class FluxColor {
         setR(colors[0]);
         setG(colors[1]);
         setB(colors[2]);
-        if (colors.length == 4) {
-            setA(colors[3]);
-        }
+        setA(colors.length == 4 ? colors[3] : 1.0f);
     }
 
 
@@ -206,10 +211,14 @@ public class FluxColor {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof FluxColor c) {
-            return (rgb.x == c.rgb.x && rgb.y == c.rgb.y && rgb.z == c.rgb.z && a == c.a);
-        }
-        return false;
+        if (this == obj) return true;
+        if (!(obj instanceof FluxColor c)) return false;
+        return this.rgba == c.rgba;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(rgba);
     }
 
     private void ensureRange(int... values) throws IllegalArgumentException {
@@ -220,6 +229,6 @@ public class FluxColor {
     }
 
     private int toInt(float v) {
-        return (int) (v * 255);
+        return ValueUtils.clampedValue((int) (v * 255), 0, 255);
     }
 }

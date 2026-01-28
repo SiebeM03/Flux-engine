@@ -16,7 +16,6 @@ public final class EcsSystem {
         INSTANCE.worlds.put(world.getId(), world);
     }
 
-    // TODO improve memory lookup
     public static World getWorldByEntityId(int id) {
         for (World world : INSTANCE.worlds.values()) {
             if (world.getEntity(id) != null) {

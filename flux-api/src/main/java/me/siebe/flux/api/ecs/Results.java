@@ -26,7 +26,7 @@ public interface Results<T> extends Iterable<T> {
     /**
      * Returns a Stream of the query results.
      * <p>
-     * This allows for functional-style operations on th results, such as
+     * This allows for functional-style operations on the results, such as
      * filtering, mapping, and collecting.
      *
      * @return a Stream of the results

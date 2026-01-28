@@ -5,9 +5,7 @@ import me.siebe.flux.api.ecs.Entity;
 import me.siebe.flux.api.ecs.Results;
 import me.siebe.flux.api.ecs.World;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -23,7 +21,7 @@ public class SimpleWorld implements World {
     private final int id;
     private final String name;
 
-    private final List<Entity> entities = new ArrayList<>();
+    private final Map<Integer, Entity> entityMap = new HashMap<>();
     private final ComponentRegistry componentRegistry;
 
     private final AtomicInteger nextEntityId = new AtomicInteger(0);
@@ -35,6 +33,7 @@ public class SimpleWorld implements World {
         this.componentRegistry = new ComponentRegistry(maxEntities);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getId() {
         return id;
@@ -46,6 +45,11 @@ public class SimpleWorld implements World {
         return name;
     }
 
+
+    // =================================================================================================================
+    // Entity managing method
+    // =================================================================================================================
+
     /**
      * {@inheritDoc}
      * <p>
@@ -55,8 +59,8 @@ public class SimpleWorld implements World {
     @Override
     public Entity createEntity(Object... components) {
         int id = recycledEntityIds.isEmpty() ? nextEntityId.getAndIncrement() : recycledEntityIds.pop();
-        SimpleEntity entity = new SimpleEntity(id);
-        entities.add(entity);
+        SimpleEntity entity = new SimpleEntity(id, this);
+        entityMap.put(id, entity);
 
         for (Object component : components) {
             if (component == null) continue;
@@ -68,10 +72,7 @@ public class SimpleWorld implements World {
     /** {@inheritDoc} */
     @Override
     public Entity getEntity(int id) {
-        return entities.stream()
-                .filter(entity -> ((SimpleEntity) entity).getId() == id)
-                .findFirst()
-                .orElse(null);
+        return entityMap.get(id);
     }
 
     /**
@@ -82,43 +83,63 @@ public class SimpleWorld implements World {
      */
     @Override
     public boolean deleteEntity(Entity entity) {
+        if (!entityMap.containsKey(entity.getId())) return false;
+
         componentRegistry.removeComponents(entity.getId());
+        entityMap.remove(entity.getId());
         recycledEntityIds.push(entity.getId());
-        entities.remove(entity);
-        entity.delete();
         return true;
     }
 
 
-    ComponentRegistry getComponentRegistry() {
-        return componentRegistry;
-    }
-
+    // =================================================================================================================
+    // Entity searching methods
+    // =================================================================================================================
 
     /** {@inheritDoc} */
     @Override
     public <T> Results<Results.With1<T>> findEntitiesWith(Class<T> type) {
-        return WorldQuery.findEntitiesWith(componentRegistry, type);
+        return WorldQuery.findEntitiesWith(this, type);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T1, T2> Results<Results.With2<T1, T2>> findEntitiesWith(Class<T1> type1, Class<T2> type2) {
-        return WorldQuery.findEntitiesWith(componentRegistry, type1, type2);
+        return WorldQuery.findEntitiesWith(this, type1, type2);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T1, T2, T3> Results<Results.With3<T1, T2, T3>> findEntitiesWith(Class<T1> type1, Class<T2> type2, Class<T3> type3) {
-        return WorldQuery.findEntitiesWith(componentRegistry, type1, type2, type3);
+        return WorldQuery.findEntitiesWith(this, type1, type2, type3);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T1, T2, T3, T4> Results<Results.With4<T1, T2, T3, T4>> findEntitiesWith(Class<T1> type1, Class<T2> type2, Class<T3> type3, Class<T4> type4) {
-        return WorldQuery.findEntitiesWith(componentRegistry, type1, type2, type3, type4);
+        return WorldQuery.findEntitiesWith(this, type1, type2, type3, type4);
     }
 
+
+    // =================================================================================================================
+    // World utility and creation methods
+    // =================================================================================================================
+
+    ComponentRegistry getComponentRegistry() {
+        return componentRegistry;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof World world)) return false;
+        return id == world.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
 
     /**
      * Factory implementation for creating SimpleWorld instances.

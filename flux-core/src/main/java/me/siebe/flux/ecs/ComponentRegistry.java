@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Registry for managing component stores byt component type.
+ * Registry for managing component stores by component type.
  * <p>
  * The ComponentRegistry maintains a mapping from component class to their
  * respective {@link ComponentStore} instances. It provides a method to register,

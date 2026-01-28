@@ -12,7 +12,7 @@ package me.siebe.flux.api.ecs;
  */
 public interface Entity {
     /**
-     * Add a components to this entity.
+     * Adds a component to this entity.
      * <p>
      * If the entity already has a component of the same type, the behavior
      * is implementation-dependent (may replace or throw an exception)
@@ -59,7 +59,7 @@ public interface Entity {
     /**
      * Marks this entity as deleted
      * <p>
-     * This method should be called by teh World when deleting an entity.
+     * This method should be called by the World when deleting an entity.
      * After deletion, the entity should not be used for further operations.
      *
      * @return true if the entity was successfully marked as deleted

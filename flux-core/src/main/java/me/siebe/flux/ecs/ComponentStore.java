@@ -94,12 +94,14 @@ final class ComponentStore<T> {
         if (index == -1) return;
 
         int lastIndex = size - 1;
-        int lastEntity = indexToEntity[index];
+        int lastEntity = indexToEntity[lastIndex];
 
-        // Move last element into removed slot
-        components[index] = components[lastIndex];
-        indexToEntity[index] = lastEntity;
-        entityToIndex[lastEntity] = index;
+        // Move last element into removed slot (if it's not already the last element)
+        if (index !=  lastIndex) {
+            components[index] = components[lastIndex];
+            indexToEntity[index] = lastEntity;
+            entityToIndex[lastEntity] = index;
+        }
 
         // Clear last slot
         components[lastIndex] = null;
