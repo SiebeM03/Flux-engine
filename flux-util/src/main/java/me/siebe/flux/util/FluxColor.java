@@ -25,42 +25,54 @@ public class FluxColor {
     public static final FluxColor MAROON = new FluxColor(0.5f, 0.0f, 0.0f);
     public static final FluxColor OLIVE = new FluxColor(0.5f, 0.5f, 0.0f);
 
+    private int rgba;
+    private static final int R_OFFSET = 24;
+    private static final int G_OFFSET = 16;
+    private static final int B_OFFSET = 8;
+    private static final int A_OFFSET = 0;
+    private static final int VALUE_MASK = 0xFF;
 
-    private Vector3f rgb = new Vector3f();
-    private float a = 1;
+
+    // =================================================================================================================
+    // Constructors
+    // =================================================================================================================
+    public FluxColor(int r, int g, int b, int a) {
+        set(r, g, b, a);
+    }
 
     public FluxColor() {
+        set(0, 0, 0, 255);
     }
 
-    public FluxColor(FluxColor color) {
-        this.rgb.set(color.rgb);
-        this.a = color.a;
+    public FluxColor(int r, int g, int b) {
+        set(r, g, b, 255);
     }
 
-    public FluxColor(Vector3f rgb) {
-        this.rgb.set(rgb);
-    }
-
-    public FluxColor(Vector3f rgb, float alpha) {
-        this.rgb.set(rgb);
-        this.a = alpha;
-    }
-
+    @Deprecated
     public FluxColor(float r, float g, float b) {
-        this.rgb.set(r, g, b);
+        set(r, g, b, 1.0f);
     }
 
+    @Deprecated
     public FluxColor(float r, float g, float b, float a) {
-        rgb.set(r, g, b);
-        this.a = a;
+        set(r, g, b, a);
     }
 
     public FluxColor(String hex) {
-        this.rgb = new Vector3f(
-                Integer.valueOf(hex.substring(1, 3), 16) / 255f,
-                Integer.valueOf(hex.substring(3, 5), 16) / 255f,
-                Integer.valueOf(hex.substring(5, 7), 16) / 255f
-        );
+        if (hex == null) throw new IllegalArgumentException("Hex color string must not be null");
+        if (hex.charAt(0) != '#') throw new IllegalArgumentException("Hex color string must start with #");
+        if (hex.length() != 7 && hex.length() != 9)
+            throw new IllegalArgumentException("Hex color string must be in the format #RRGGBB or #RRGGBBAA, got: '" + hex + "'");
+
+        try {
+            int r = Integer.valueOf(hex.substring(1, 3), 16);
+            int g = Integer.valueOf(hex.substring(3, 5), 16);
+            int b = Integer.valueOf(hex.substring(5, 7), 16);
+            int a = hex.length() == 9 ? Integer.valueOf(hex.substring(7, 9), 16) : 255;
+            set(r, g, b, a);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("hex color string contains invalid hex digits: '" + hex + "'", e);
+        }
     }
 
     public FluxColor(float[] colors) {
@@ -68,73 +80,155 @@ public class FluxColor {
             throw new IllegalArgumentException("colors array requires 3 (RGB) or 4 (RGBA) values, got: " + colors.length);
         }
 
-        this.rgb.set(colors[0], colors[1], colors[2]);
-        if (colors.length == 4) {
-            this.a = colors[3];
-        }
+        setR(colors[0]);
+        setG(colors[1]);
+        setB(colors[2]);
+        setA(colors.length == 4 ? colors[3] : 1.0f);
+    }
+
+
+    // =================================================================================================================
+    // Cloning methods
+    // =================================================================================================================
+    public FluxColor(FluxColor color) {
+        this.rgba = color.rgba;
     }
 
     public FluxColor copy() {
         return new FluxColor(this);
     }
 
-    public void set(float r, float g, float b, float a) {
-        this.rgb.set(r, g, b);
-        this.a = a;
+
+    // =================================================================================================================
+    // Setters
+    // =================================================================================================================
+    public void set(int r, int g, int b, int a) {
+        setR(r);
+        setG(g);
+        setB(b);
+        setA(a);
     }
 
-    public void set(Vector4f rgba) {
-        this.rgb.set(rgba.x, rgba.y, rgba.z);
-        this.a = rgba.w;
+    public void setR(int r) {
+        ensureRange(r);
+        this.rgba = (this.rgba & 0x00FFFFFF) | ((r & VALUE_MASK) << R_OFFSET);
+    }
+
+    public void setG(int g) {
+        ensureRange(g);
+        this.rgba = (this.rgba & 0xFF00FFFF) | ((g & VALUE_MASK) << G_OFFSET);
+    }
+
+    public void setB(int b) {
+        ensureRange(b);
+        this.rgba = (this.rgba & 0xFFFF00FF) | ((b & VALUE_MASK) << B_OFFSET);
+    }
+
+    public void setA(int a) {
+        ensureRange(a);
+        this.rgba = (this.rgba & 0xFFFFFF00) | ((a & VALUE_MASK) << A_OFFSET);
+    }
+
+
+    public void set(float r, float g, float b, float a) {
+        setR(toInt(r));
+        setG(toInt(g));
+        setB(toInt(b));
+        setA(toInt(a));
     }
 
     public void setR(float r) {
-        this.rgb.x = r;
+        setR(toInt(r));
     }
 
     public void setG(float g) {
-        this.rgb.y = g;
+        setG(toInt(g));
     }
 
     public void setB(float b) {
-        this.rgb.z = b;
+        setB(toInt(b));
     }
 
-    public void setAlpha(float a) {
-        this.a = a;
-    }
-
-
-    public Vector4f toVec4() {
-        return new Vector4f(getR(), getG(), getB(), getA());
-    }
-
-    public Vector3f toVec3() {
-        return new Vector3f(getR(), getG(), getB());
+    public void setA(float a) {
+        setA(toInt(a));
     }
 
 
-    public float getR() {
-        return this.rgb.x;
+    public void set(Vector4f rgba) {
+        set(rgba.x, rgba.y, rgba.z, rgba.w);
     }
 
-    public float getG() {
-        return this.rgb.y;
+    public void set(Vector3f rgb) {
+        set(rgb.x, rgb.y, rgb.z, 1.0f);
     }
 
-    public float getB() {
-        return this.rgb.z;
+
+    // =================================================================================================================
+    // Getters
+    // =================================================================================================================
+    public int redInt() {
+        return (rgba >> R_OFFSET) & VALUE_MASK;
     }
 
-    public float getA() {
-        return this.a;
+    public int greenInt() {
+        return (rgba >> G_OFFSET) & VALUE_MASK;
     }
+
+    public int blueInt() {
+        return (rgba >> B_OFFSET) & VALUE_MASK;
+    }
+
+    public int alphaInt() {
+        return (rgba >> A_OFFSET) & VALUE_MASK;
+    }
+
+
+    public float redFloat() {
+        return redInt() / 255f;
+    }
+
+    public float greenFloat() {
+        return greenInt() / 255f;
+    }
+
+    public float blueFloat() {
+        return blueInt() / 255f;
+    }
+
+    public float alphaFloat() {
+        return alphaInt() / 255f;
+    }
+
+
+    public Vector4f asVec4() {
+        return new Vector4f(redFloat(), greenFloat(), blueFloat(), alphaFloat());
+    }
+
+    public Vector3f asVec3() {
+        return new Vector3f(redFloat(), greenFloat(), blueFloat());
+    }
+
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof FluxColor c) {
-            return (rgb.x == c.rgb.x && rgb.y == c.rgb.y && rgb.z == c.rgb.z && a == c.a);
+        if (this == obj) return true;
+        if (!(obj instanceof FluxColor c)) return false;
+        return this.rgba == c.rgba;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(rgba);
+    }
+
+    private void ensureRange(int... values) throws IllegalArgumentException {
+        for (int value : values) {
+            if (value < 0) throw new IllegalArgumentException("RGBA values cannot be less than 0");
+            if (value > 255) throw new IllegalArgumentException("RGBA values cannot be greater than 255");
         }
-        return false;
+    }
+
+    private int toInt(float v) {
+        return ValueUtils.clampedValue((int) (v * 255), 0, 255);
     }
 }
