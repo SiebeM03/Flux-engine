@@ -42,16 +42,6 @@ public enum ShaderDataType {
     }
 
     /**
-     * Gets the OpenGL type constant for this shader data type.
-     *
-     * @return the OpenGL type constant (e.g., GL_FLOAT, GL_FLOAT_VEC2, etc.)
-     */
-    public int getGLType() {
-        return openGLType;
-    }
-
-    
-    /**
      * Gets the size in bytes of a single component of this shader data type.
      * For example, Float types have a component size of 4 bytes, while Bool has 1 byte.
      *
@@ -81,13 +71,18 @@ public enum ShaderDataType {
         return componentSize * componentCount;
     }
 
+    /**
+     * Gets the OpenGL type constant for this shader data type.
+     *
+     * @return the OpenGL type constant (e.g., GL_FLOAT, GL_FLOAT_VEC2, etc.)
+     */
     public int getOpenGLType() {
         return openGLType;
     }
 
     public static ShaderDataType fromOpenGLType(int openGLType) {
         for (ShaderDataType dataType : ShaderDataType.values()) {
-            if (dataType.getGLType() == openGLType) {
+            if (dataType.getOpenGLType() == openGLType) {
                 return dataType;
             }
         }

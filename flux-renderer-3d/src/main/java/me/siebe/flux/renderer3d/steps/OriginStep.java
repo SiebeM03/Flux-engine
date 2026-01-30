@@ -15,9 +15,13 @@ public class OriginStep implements RenderStep {
     private ShaderProgram shader;
     private VertexArray vertexArray;
 
+    protected ShaderProgram getShader() {
+        return ShaderLoader.get().load("shaders/test");
+    }
+
     @Override
     public void init() {
-        shader = ShaderLoader.get().load("shaders/test");
+        shader = getShader();
 
         vertexArray = new VertexArray();
         vertexArray.bind();
@@ -39,6 +43,7 @@ public class OriginStep implements RenderStep {
 
     @Override
     public void prepare(BaseRenderContext context) {
+        this.shader = getShader();
         OpenGLState.disableCullFace();
     }
 
