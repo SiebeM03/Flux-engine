@@ -6,12 +6,18 @@ import me.siebe.flux.util.logging.LoggerFactory;
 public class Delay {
     private static final Logger logger = LoggerFactory.getLogger(Delay.class, "timer");
     private final float duration;
+    private final boolean autoReset;
 
     private float timePassed = 0.0f;
     private boolean paused = false;
 
-    public Delay(float duration) {
+    public Delay(float duration, boolean autoReset) {
         this.duration = duration;
+        this.autoReset = autoReset;
+    }
+
+    public Delay(float duration) {
+        this(duration, true);
     }
 
     public boolean isOver() {
@@ -24,7 +30,10 @@ public class Delay {
 
     public void update(float deltaTime) {
         if (paused) return;
-        if (isOver()) return;
+        if (isOver() && !autoReset) {
+            return;
+        }
+        reset();
         timePassed += deltaTime;
     }
 
@@ -47,5 +56,9 @@ public class Delay {
     public Delay start() {
         paused = false;
         return this;
+    }
+
+    public boolean isAutoReset() {
+        return autoReset;
     }
 }
