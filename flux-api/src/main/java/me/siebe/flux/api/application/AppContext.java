@@ -1,4 +1,4 @@
-package me.siebe.flux.core;
+package me.siebe.flux.api.application;
 
 import me.siebe.flux.api.event.EventBus;
 import me.siebe.flux.api.event.EventBusProvider;
@@ -15,7 +15,7 @@ public class AppContext {
 
     private static AppContext instance;
 
-    private FluxApplication application;
+    private Application application;
     Window window;
     Timer timer;
     Renderer renderer;
@@ -48,15 +48,16 @@ public class AppContext {
         ctxConsumer.accept(get());
     }
 
-    public FluxApplication getApplication() {
+    public Application getApplication() {
         if (this.application == null) throw ApplicationException.notInitialized();
         return this.application;
     }
 
-    public void setApplication(FluxApplication application) {
+    public void setApplication(Application application) {
         if (this.application != null) throw ApplicationException.alreadyInitialized();
         this.application = application;
     }
+
     public Window getWindow() {
         return window;
     }
