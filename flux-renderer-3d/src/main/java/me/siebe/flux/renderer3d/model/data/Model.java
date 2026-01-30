@@ -4,7 +4,9 @@ import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.lwjgl.opengl.OpenGLState;
 import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
 import me.siebe.flux.lwjgl.opengl.vertex.IndexBuffer;
+import me.siebe.flux.util.Transform;
 import me.siebe.flux.util.exceptions.Validator;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,8 @@ public class Model implements Renderable {
      */
     private String name;
 
+    private Transform transform;
+
     public Model() {
         this(new ArrayList<>(), null);
     }
@@ -42,6 +46,8 @@ public class Model implements Renderable {
         Validator.notNull(meshes, () -> "Meshes");
         this.meshes = meshes;
         this.name = name;
+
+        this.transform = new Transform();
     }
 
     public void addMesh(Mesh mesh) {
@@ -56,6 +62,10 @@ public class Model implements Renderable {
                 .findFirst();
     }
 
+    public List<Mesh> getMeshes() {
+        return meshes;
+    }
+
     public boolean removeMesh(Mesh mesh) {
         return meshes.remove(mesh);
     }
@@ -66,6 +76,14 @@ public class Model implements Renderable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Transform getTransform() {
+        return transform;
+    }
+
+    public void setTransform(Transform transform) {
+        this.transform = transform;
     }
 
     /**
@@ -86,11 +104,16 @@ public class Model implements Renderable {
      * Renders a single mesh by rendering all its primitives.
      * This is a basic implementation that binds the vertex array and draws the elements.
      * Subclasses or render steps may override this behavior for more advanced rendering.
+     * <p>
+     * The model matrix combines the Model's transform with the Mesh's relative transform.
      *
      * @param mesh the mesh to render
      */
     protected void renderMesh(Mesh mesh) {
-        ShaderProgram.getActiveShader().upload("uModelMatrix", mesh.getModelMatrix());
+        // Combine Model position with Mesh transform
+        Matrix4f combinedMatrix = transform.getCombinedMatrix(mesh.getTransform());
+
+        ShaderProgram.getActiveShader().upload("uModelMatrix", combinedMatrix);
         for (Primitive primitive : mesh.getPrimitives()) {
             renderPrimitive(primitive);
         }
