@@ -21,9 +21,16 @@ public class Default3DRenderPipeline extends GenericRenderPipeline {
         }
 
         for (RenderStep step : steps) {
-            step.prepare(context);
-            step.execute(context);
-            step.finish(context);
+            try {
+                step.prepare(context);
+                step.execute(context);
+                step.finish(context);
+            } catch (Exception e) {
+                step.init();
+                step.prepare(context);
+                step.execute(context);
+                step.finish(context);
+            }
         }
     }
 }

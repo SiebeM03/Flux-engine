@@ -12,7 +12,6 @@ public class PerspectiveCamera extends GenericCamera {
 
     public PerspectiveCamera(float fieldOfView, float aspectRatio, float near, float far) {
         this.fieldOfView = fieldOfView;
-        // TODO auto update with events
         this.aspectRatio = aspectRatio;
         this.near = near;
         this.far = far;
