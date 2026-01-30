@@ -15,6 +15,7 @@ public class StringUtils {
             Field field = fields[i];
 
             if (field.isAnnotationPresent(ToStringIgnore.class)) continue;
+            if (!shouldShowField(obj, field)) continue;
 
             field.setAccessible(true);
             if (expanded) {
@@ -43,5 +44,11 @@ public class StringUtils {
 
     public static String toString(Object obj) {
         return toString(obj, false);
+    }
+
+
+    private static boolean shouldShowField(Object obj, Field field) {
+        if (field.getName().equals("serialVersionUID")) return false;
+        return true;
     }
 }

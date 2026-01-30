@@ -125,18 +125,6 @@ public class ShaderProgram {
         }
     }
 
-    private String getFileContent(String path) {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-            if (inputStream == null) {
-                throw new ShaderException("Shader file not found: " + path);
-            }
-            byte[] bytes = inputStream.readAllBytes();
-            return new String(bytes, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new ShaderException("Failed to read shader file: " + path, e);
-        }
-    }
-
     private int compile(String source, int type) {
         int shader = glCreateShader(type);
         if (shader == 0) {

@@ -1,5 +1,6 @@
 package me.siebe.flux.lwjgl.opengl.shader;
 
+import me.siebe.flux.api.application.Application;
 import me.siebe.flux.api.application.EngineSystem;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
@@ -23,6 +24,25 @@ import static java.nio.file.StandardWatchEventKinds.*;
  * <p>
  * {@link #processPendingReloads()} must be called on the OpenGL thread (e.g. at
  * the start of each frame in the game loop).
+ * <p>
+ * This can be configured and implemented in 2 ways:
+ * <ul>
+ * <li>
+ *     <b>VM options</b>: if option {@code flux.shader.hotreload.paths} is set, the values (comma-separated) are
+ *     passed as strings to {@link #ShaderHotReloader(String...)} and it is automatically registered via
+ *     {@link Application#registerEngineSystem(EngineSystem)}
+ * </li>
+ * <li>
+ *     <b>Manually</b>: you can also manually register a ShaderHotReloader from within your game code:
+ *     <pre>{@code
+ *     AppContext.get()
+ *          .getApplication()
+ *          .registerEngineSystem(new ShaderHotReloader(
+ *              "src/main/resources"    // Add all folders you want to check
+ *           );
+ *     }</pre>
+ * </li>
+ * </ul>
  */
 public class ShaderHotReloader implements EngineSystem {
     private static final Logger logger = LoggerFactory.getLogger(ShaderHotReloader.class, LoggingCategories.SHADER);
