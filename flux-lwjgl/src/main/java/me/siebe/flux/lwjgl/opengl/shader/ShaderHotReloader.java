@@ -37,6 +37,9 @@ public class ShaderHotReloader implements EngineSystem {
         this.watchRoots = new ArrayList<>();
         for (String watchRootFolderName : watchRootFolderNames) {
             Path watchRoot = cwd.resolve(watchRootFolderName);
+            if (!Files.exists(watchRoot)) {
+                logger.warn("Watch root {} does not exist", watchRoot);
+            }
             if (watchRoot.toFile().isDirectory()) {
                 watchRoots.add(watchRoot);
             }
@@ -62,6 +65,9 @@ public class ShaderHotReloader implements EngineSystem {
         watchThread.setDaemon(true);
         watchThread.start();
         logger.info("Shader hot reload started watching {} root(s)", watchRoots.size());
+        for (Path watchRoot : watchRoots) {
+            logger.trace("Watching {}", watchRoot);
+        }
     }
 
     /**
