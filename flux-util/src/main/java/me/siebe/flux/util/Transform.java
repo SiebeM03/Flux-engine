@@ -1,5 +1,6 @@
 package me.siebe.flux.util;
 
+import me.siebe.flux.util.memory.Copyable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -14,7 +15,7 @@ import org.joml.Vector3f;
  * <p>
  * Transformation order: translate → rotate → scale
  */
-public class Transform {
+public class Transform implements Copyable<Transform> {
     private final Vector3f position;
     private final Quaternionf rotation;
     private final Vector3f scale;
@@ -471,5 +472,14 @@ public class Transform {
      */
     public void lookAt(Vector3f target) {
         lookAt(target, new Vector3f(0, 1, 0));
-    }//
+    }
+
+    @Override
+    public Transform copy() {
+        Transform clone = new Transform();
+        clone.setPosition(new Vector3f(position));
+        clone.setRotation(new Quaternionf(rotation));
+        clone.setScale(new Vector3f(scale));
+        return clone;
+    }
 }

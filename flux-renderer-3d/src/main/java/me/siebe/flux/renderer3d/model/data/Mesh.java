@@ -2,6 +2,7 @@ package me.siebe.flux.renderer3d.model.data;
 
 import me.siebe.flux.util.Transform;
 import me.siebe.flux.util.exceptions.Validator;
+import me.siebe.flux.util.memory.Copyable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -20,7 +21,7 @@ import java.util.List;
  * This is a generic data structure that can be populated from various file formats
  * (GLTF, OBJ, FBX, etc.) by their respective parsers.
  */
-public class Mesh {
+public class Mesh implements Copyable<Mesh> {
     /**
      * List of primitives that make up this mesh.
      * Each primitive has its own geometry (VertexArray) and material.
@@ -162,5 +163,21 @@ public class Mesh {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void delete() {
+        primitives.forEach(Primitive::delete);
+    }
+
+    @Override
+    public Mesh copy() {
+        Mesh clone = new Mesh();
+        clone.setName(name);
+        clone.setTransform(transform.copy());
+        clone.primitives.clear();
+        for (Primitive primitive : primitives) {
+            clone.addPrimitive(primitive.copy());
+        }
+        return clone;
     }
 }

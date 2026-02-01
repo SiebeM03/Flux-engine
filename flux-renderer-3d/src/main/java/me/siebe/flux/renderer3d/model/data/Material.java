@@ -5,9 +5,10 @@ import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
 import me.siebe.flux.lwjgl.opengl.texture.Texture;
 import me.siebe.flux.util.FluxColor;
 import me.siebe.flux.util.ValueUtils;
+import me.siebe.flux.util.memory.Copyable;
 import org.joml.Vector3f;
 
-public class Material {
+public class Material implements Copyable<Material> {
     private String name;
 
     /**
@@ -389,6 +390,33 @@ public class Material {
      */
     public void setDoubleSided(boolean doubleSided) {
         this.doubleSided = doubleSided;
+    }
+
+    @Override
+    public Material copy() {
+        Material material = new Material();
+        material.setName(name);
+        material.setBaseColor(baseColor.copy());
+        material.setAlbedoTexture(albedoTexture.copy());
+        material.setNormalTexture(normalTexture.copy());
+        material.setMetallicRoughnessTexture(metallicRoughnessTexture.copy());
+        material.setMetallicFactor(metallicFactor);
+        material.setEmissiveTexture(emissiveTexture.copy());
+        material.setEmissiveFactor(emissiveFactor);
+        material.setOcclusionTexture(occlusionTexture.copy());
+        material.setOcclusionStrength(occlusionStrength);
+        material.setAlphaCutoff(alphaCutoff);
+        material.setAlphaMode(alphaMode);
+        material.setDoubleSided(doubleSided);
+        return material;
+    }
+
+    public void delete() {
+        if (hasAlbedoTexture()) getAlbedoTexture().delete();
+        if (hasNormalTexture()) getNormalTexture().delete();
+        if (hasMetallicRoughnessTexture()) getMetallicRoughnessTexture().delete();
+        if (hasEmissiveTexture()) getEmissiveTexture().delete();
+        if (hasOcclusionTexture()) getOcclusionTexture().delete();
     }
 
     /**

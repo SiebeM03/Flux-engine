@@ -16,6 +16,7 @@ import me.siebe.flux.event.DefaultEventBus;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
+import me.siebe.flux.util.memory.NativeTracker;
 import me.siebe.flux.util.system.ProvidableSystem;
 import me.siebe.flux.util.time.Timer;
 
@@ -209,6 +210,8 @@ public abstract class FluxApplication extends Application implements ProvidableS
             destroyEngineSystems(ctx);
             destroyGameSystems();
         });
+
+        NativeTracker.report();
     }
 
     /**
@@ -221,6 +224,7 @@ public abstract class FluxApplication extends Application implements ProvidableS
      */
     private void destroyEngineSystems(final AppContext ctx) {
         ctx.getWindow().destroy();
+        ctx.getRenderer().destroy();
 
         systemManager.destroy();
     }

@@ -59,6 +59,6 @@ public class OriginStep implements RenderStep {
 
     @Override
     public void destroy() {
-        RenderStep.super.destroy();
+        shader.delete();
     }
 }

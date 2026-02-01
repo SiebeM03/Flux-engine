@@ -44,7 +44,7 @@ public class ShaderLoader extends AssetPool<ShaderProgram> {
             ShaderProgram newProgram = new ShaderProgram(basePath, resourceRoot);
             ShaderProgram oldProgram = replaceAsset(basePath, newProgram);
             if (oldProgram != null) {
-                oldProgram.destroy();
+                oldProgram.delete();
             }
             logger.info("Hot-reloaded shader '{}'", basePath);
             return true;

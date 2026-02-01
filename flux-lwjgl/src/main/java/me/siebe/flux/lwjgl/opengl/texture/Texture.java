@@ -1,5 +1,7 @@
 package me.siebe.flux.lwjgl.opengl.texture;
 
+import me.siebe.flux.lwjgl.opengl.GLResource;
+import me.siebe.flux.util.memory.Copyable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
@@ -14,12 +16,7 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
-public class Texture {
-    /**
-     * OpenGL texture handle (GLuint).
-     */
-    private int glId;
-
+public class Texture extends GLResource implements Copyable<Texture> {
     /**
      * Texture width in pixels.
      */
@@ -55,11 +52,11 @@ public class Texture {
      * @param data           the data of the texture, used in OpenGL methods such as {@link GL11#glTexImage2D(int, int, int, int, int, int, int, int, ByteBuffer)}
      */
     public Texture(int width, int height, int target, int internalFormat, int format, int type, ByteBuffer data) {
+        super(glGenTextures());
         this.width = width;
         this.height = height;
         this.target = target;
 
-        this.glId = glGenTextures();
         bind();
         glTexImage2D(target, 0, internalFormat, width, height, 0, format, type, data);
         glGenerateMipmap(target);
@@ -71,7 +68,7 @@ public class Texture {
 
     // TODO implement with GltfLoader#loadTexture() as it uses a lot of similar code
     public Texture(String path) {
-        this.glId = glGenTextures();
+        super(glGenTextures());
         bind();
 
         try (MemoryStack stack = stackPush()) {
@@ -96,8 +93,9 @@ public class Texture {
         }
     }
 
-    public void bind() {
-        glBindTexture(target, glId);
+    @Override
+    protected int getBindTarget() {
+        return target;
     }
 
     public void bindToSlot(int slot) {
@@ -107,10 +105,6 @@ public class Texture {
 
     public void unbind() {
         glBindTexture(target, 0);
-    }
-
-    public void delete() {
-        glDeleteTextures(glId);
     }
 
     public void setFilters(int minFilter, int magFilter) {
@@ -125,13 +119,6 @@ public class Texture {
         glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapS);
         glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapT);
         unbind();
-    }
-
-    /**
-     * @return OpenGL texture handle
-     */
-    public int getGlId() {
-        return glId;
     }
 
     /**
@@ -153,5 +140,11 @@ public class Texture {
      */
     public int getComponentCount() {
         return componentCount;
+    }
+
+    @Override
+    public Texture copy() {
+        addReference();
+        return this;
     }
 }
