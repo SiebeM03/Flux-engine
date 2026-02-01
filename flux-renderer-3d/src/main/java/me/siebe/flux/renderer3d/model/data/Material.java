@@ -539,7 +539,7 @@ public class Material implements Copyable<Material> {
      */
     private void uploadUniforms(ShaderProgram shader) {
         // Base color
-        shader.upload("uMaterial.baseColor", getBaseColor().toVec4());
+        shader.upload("uMaterial.baseColor", getBaseColor().asVec4());
 
         // Metallic and roughness factors
         shader.upload("uMaterial.metallicFactor", getMetallicFactor());
