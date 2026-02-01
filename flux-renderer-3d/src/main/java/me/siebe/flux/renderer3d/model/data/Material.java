@@ -397,13 +397,13 @@ public class Material implements Copyable<Material> {
         Material material = new Material();
         material.setName(name);
         material.setBaseColor(baseColor.copy());
-        material.setAlbedoTexture(albedoTexture.copy());
-        material.setNormalTexture(normalTexture.copy());
-        material.setMetallicRoughnessTexture(metallicRoughnessTexture.copy());
+        if (hasAlbedoTexture()) material.setAlbedoTexture(albedoTexture.copy());
+        if (hasNormalTexture()) material.setNormalTexture(normalTexture.copy());
+        if (hasMetallicRoughnessTexture()) material.setMetallicRoughnessTexture(metallicRoughnessTexture.copy());
         material.setMetallicFactor(metallicFactor);
-        material.setEmissiveTexture(emissiveTexture.copy());
+        if (hasEmissiveTexture()) material.setEmissiveTexture(emissiveTexture.copy());
         material.setEmissiveFactor(emissiveFactor);
-        material.setOcclusionTexture(occlusionTexture.copy());
+        if (hasOcclusionTexture()) material.setOcclusionTexture(occlusionTexture.copy());
         material.setOcclusionStrength(occlusionStrength);
         material.setAlphaCutoff(alphaCutoff);
         material.setAlphaMode(alphaMode);
