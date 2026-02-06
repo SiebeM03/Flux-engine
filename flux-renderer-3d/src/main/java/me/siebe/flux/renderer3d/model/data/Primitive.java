@@ -2,6 +2,7 @@ package me.siebe.flux.renderer3d.model.data;
 
 import me.siebe.flux.lwjgl.opengl.vertex.VertexArray;
 import me.siebe.flux.util.exceptions.Validator;
+import me.siebe.flux.util.memory.Copyable;
 
 /**
  * Represents a single primitive within a mesh.
@@ -10,7 +11,7 @@ import me.siebe.flux.util.exceptions.Validator;
  * This is a generic data structure that can be populated from various file formats
  * (GLTF, OBJ, FBX, etc.) by their respective parsers.
  */
-public class Primitive {
+public class Primitive implements Copyable<Primitive> {
     /**
      * The vertex array object containing the geometry data (vertices, indices).
      * This encapsulates all vertex buffers and the index buffer needed for rendering.
@@ -35,5 +36,16 @@ public class Primitive {
 
     public Material getMaterial() {
         return material;
+    }
+
+    public void delete() {
+        vertexArray.delete();
+        material.delete();
+    }
+
+    @Override
+    public Primitive copy() {
+        Primitive clone = new Primitive(vertexArray.copy(), material.copy());
+        return clone;
     }
 }

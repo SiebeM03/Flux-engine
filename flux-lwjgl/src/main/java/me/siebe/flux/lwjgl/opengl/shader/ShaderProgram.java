@@ -1,5 +1,6 @@
 package me.siebe.flux.lwjgl.opengl.shader;
 
+import me.siebe.flux.lwjgl.opengl.GLResource;
 import me.siebe.flux.util.exceptions.ShaderException;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
@@ -8,23 +9,17 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.IntBuffer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 
-public class ShaderProgram {
+public class ShaderProgram extends GLResource {
     private static final Logger logger = LoggerFactory.getLogger(ShaderProgram.class, LoggingCategories.RENDERER);
     private static ShaderProgram ACTIVE_SHADER;
 
-    private final int programId;
     private final String filename;
 
     private final Map<String, ShaderAttribute> attributes;
@@ -43,17 +38,10 @@ public class ShaderProgram {
      * @throws ShaderException if the shaders cannot be loaded, compiled, or linked
      */
     ShaderProgram(String basePath, Path resourceRoot) {
+        super(ShaderFactory.createShader(basePath, resourceRoot));
         this.filename = basePath;
         this.attributes = new HashMap<>();
         this.uniforms = new HashMap<>();
-
-        String vertexSource = getShaderSource(basePath + ".vert", resourceRoot);
-        String fragmentSource = getShaderSource(basePath + ".frag", resourceRoot);
-
-        int vertexShader = compile(vertexSource, GL_VERTEX_SHADER);
-        int fragmentShader = compile(fragmentSource, GL_FRAGMENT_SHADER);
-
-        this.programId = link(vertexShader, fragmentShader);
 
         reflectAttributes();
         reflectUniforms();
@@ -62,102 +50,25 @@ public class ShaderProgram {
                 filename, attributes.size(), uniforms.size());
     }
 
+    @Override
+    protected int getBindTarget() {
+        return GL_PROGRAM;
+    }
+
+    @Override
     public void bind() {
         ShaderProgram.ACTIVE_SHADER = this;
-        glUseProgram(programId);
+        super.bind();
     }
 
+    @Override
     public void unbind() {
         ShaderProgram.ACTIVE_SHADER = null;
-        glUseProgram(0);
-    }
-
-    public void destroy() {
-        unbind();
-        glDeleteProgram(programId);
-    }
-
-    private int link(int vertexShader, int fragmentShader) {
-        int program = glCreateProgram();
-        if (program == 0) {
-            throw ShaderException.failedToCreateProgram();
-        }
-
-        glAttachShader(program, vertexShader);
-        glAttachShader(program, fragmentShader);
-        glLinkProgram(program);
-
-        if (glGetProgrami(program, GL_LINK_STATUS) == GL_FALSE) {
-            String infoLog = glGetProgramInfoLog(program);
-            glDeleteProgram(program);
-            glDeleteShader(vertexShader);
-            glDeleteShader(fragmentShader);
-            throw new ShaderException("Failed to link shader program:\n" + infoLog);
-        }
-
-        // Clean up shaders after linking
-        glDetachShader(program, vertexShader);
-        glDetachShader(program, fragmentShader);
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-
-        return program;
-    }
-
-    private static String getShaderSource(String resourcePath, Path resourceRoot) {
-        if (resourceRoot == null) {
-            try (InputStream inputStream = ShaderProgram.class.getClassLoader().getResourceAsStream(resourcePath)) {
-                if (inputStream == null) {
-                    throw new ShaderException("Shader file not found: " + resourcePath);
-                }
-                byte[] bytes = inputStream.readAllBytes();
-                return new String(bytes, StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                throw new ShaderException("Failed to read shader file: " + resourcePath, e);
-            }
-        }
-        Path path = resourceRoot.resolve(resourcePath);
-        try {
-            byte[] bytes = Files.readAllBytes(path);
-            return new String(bytes, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new ShaderException("Failed to read shader file: " + path, e);
-        }
-    }
-
-    private String getFileContent(String path) {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-            if (inputStream == null) {
-                throw new ShaderException("Shader file not found: " + path);
-            }
-            byte[] bytes = inputStream.readAllBytes();
-            return new String(bytes, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new ShaderException("Failed to read shader file: " + path, e);
-        }
-    }
-
-    private int compile(String source, int type) {
-        int shader = glCreateShader(type);
-        if (shader == 0) {
-            throw ShaderException.failedToCreateProgram();
-        }
-
-        glShaderSource(shader, source);
-        glCompileShader(shader);
-
-        if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
-            String infoLog = glGetShaderInfoLog(shader);
-            glDeleteShader(shader);
-            String shaderType = type == GL_VERTEX_SHADER ? "vertex" : "fragment";
-            throw new ShaderException("Failed to compile " + shaderType + " shader:\n" + infoLog);
-        }
-
-        return shader;
+        super.unbind();
     }
 
     private void reflectAttributes() {
-        int count = glGetProgrami(programId, GL_ACTIVE_ATTRIBUTES);
+        int count = glGetProgrami(getGlId(), GL_ACTIVE_ATTRIBUTES);
 
         IntBuffer sizeBuf = BufferUtils.createIntBuffer(1);
         IntBuffer typeBuf = BufferUtils.createIntBuffer(1);
@@ -166,8 +77,8 @@ public class ShaderProgram {
             sizeBuf.clear();
             typeBuf.clear();
 
-            String name = glGetActiveAttrib(programId, i, sizeBuf, typeBuf);
-            int location = glGetAttribLocation(programId, name);
+            String name = glGetActiveAttrib(getGlId(), i, sizeBuf, typeBuf);
+            int location = glGetAttribLocation(getGlId(), name);
             int size = sizeBuf.get(0);
             int type = typeBuf.get(0);
 
@@ -176,14 +87,14 @@ public class ShaderProgram {
     }
 
     private void reflectUniforms() {
-        int count = glGetProgrami(programId, GL_ACTIVE_UNIFORMS);
+        int count = glGetProgrami(getGlId(), GL_ACTIVE_UNIFORMS);
 
         IntBuffer sizeBuf = BufferUtils.createIntBuffer(1);
         IntBuffer typeBuf = BufferUtils.createIntBuffer(1);
 
         for (int i = 0; i < count; i++) {
-            String name = glGetActiveUniform(programId, i, sizeBuf, typeBuf);
-            int location = glGetUniformLocation(programId, name);
+            String name = glGetActiveUniform(getGlId(), i, sizeBuf, typeBuf);
+            int location = glGetUniformLocation(getGlId(), name);
             int size = sizeBuf.get(0);
             int type = typeBuf.get(0);
 

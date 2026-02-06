@@ -3,6 +3,7 @@ defaultLevel: DEBUG
 categories:
   timer: INFO
   renderer: ERROR
+  assets: DEBUG
 
 startupBannerConfig:
   enabled: true

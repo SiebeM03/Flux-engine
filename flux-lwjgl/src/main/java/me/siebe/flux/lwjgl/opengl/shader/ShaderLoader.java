@@ -13,7 +13,11 @@ public class ShaderLoader extends AssetPool<ShaderProgram> {
     private static ShaderLoader instance;
 
     static {
-        startHotReloadFromSystemProperties();
+        try {
+            startHotReloadFromSystemProperties();
+        } catch (Exception e) {
+            logger.error("Error starting shader hot-reloading", e);
+        }
     }
 
     private ShaderLoader() {}
@@ -41,11 +45,12 @@ public class ShaderLoader extends AssetPool<ShaderProgram> {
      */
     boolean reload(String basePath, Path resourceRoot) {
         try {
-            ShaderProgram newProgram = new ShaderProgram(basePath, resourceRoot);
-            ShaderProgram oldProgram = replaceAsset(basePath, newProgram);
+            ShaderProgram oldProgram = load(basePath);
             if (oldProgram != null) {
-                oldProgram.destroy();
+                oldProgram.delete();
             }
+            ShaderProgram newProgram = new ShaderProgram(basePath, resourceRoot);
+            putAsset(basePath, newProgram);
             logger.info("Hot-reloaded shader '{}'", basePath);
             return true;
         } catch (Exception e) {
@@ -70,6 +75,6 @@ public class ShaderLoader extends AssetPool<ShaderProgram> {
 
         ShaderHotReloader hotReloader = new ShaderHotReloader(values.split(","));
         logger.debug("System property {} is set, initializing ShaderHotReloader system and registering it to the application", SYSTEM_PROPERTY_PATHS);
-        AppContext.get().getApplication().registerEngineSystem(hotReloader);
+        AppContext.get().getSystemManager().registerEngineSystem(hotReloader);
     }
 }

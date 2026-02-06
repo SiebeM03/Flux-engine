@@ -1,6 +1,7 @@
 package me.siebe.flux.lwjgl.opengl.shader;
 
 import me.siebe.flux.api.application.EngineSystem;
+import me.siebe.flux.api.application.SystemManager;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
@@ -23,6 +24,25 @@ import static java.nio.file.StandardWatchEventKinds.*;
  * <p>
  * {@link #processPendingReloads()} must be called on the OpenGL thread (e.g. at
  * the start of each frame in the game loop).
+ * <p>
+ * This can be configured and implemented in 2 ways:
+ * <ul>
+ * <li>
+ *     <b>VM options</b>: if option {@code flux.shader.hotreload.paths} is set, the values (comma-separated) are
+ *     passed as strings to {@link #ShaderHotReloader(String...)} and it is automatically registered via
+ *     {@link SystemManager#registerEngineSystem(EngineSystem)}
+ * </li>
+ * <li>
+ *     <b>Manually</b>: you can also manually register a ShaderHotReloader from within your game code:
+ *     <pre>{@code
+ *     AppContext.get()
+ *          .getSystemManager
+ *          .registerEngineSystem(new ShaderHotReloader(
+ *              "src/main/resources"    // Add all folders you want to check
+ *           );
+ *     }</pre>
+ * </li>
+ * </ul>
  */
 public class ShaderHotReloader implements EngineSystem {
     private static final Logger logger = LoggerFactory.getLogger(ShaderHotReloader.class, LoggingCategories.SHADER);
@@ -37,6 +57,9 @@ public class ShaderHotReloader implements EngineSystem {
         this.watchRoots = new ArrayList<>();
         for (String watchRootFolderName : watchRootFolderNames) {
             Path watchRoot = cwd.resolve(watchRootFolderName);
+            if (!Files.exists(watchRoot)) {
+                logger.warn("Watch root {} does not exist", watchRoot);
+            }
             if (watchRoot.toFile().isDirectory()) {
                 watchRoots.add(watchRoot);
             }
@@ -62,6 +85,9 @@ public class ShaderHotReloader implements EngineSystem {
         watchThread.setDaemon(true);
         watchThread.start();
         logger.info("Shader hot reload started watching {} root(s)", watchRoots.size());
+        for (Path watchRoot : watchRoots) {
+            logger.trace("Watching {}", watchRoot);
+        }
     }
 
     /**
@@ -124,10 +150,17 @@ public class ShaderHotReloader implements EngineSystem {
                     String relative = resourceRoot.relativize(fullPath).toString().replace('\\', '/');
                     String basePath = shaderBasePath(relative);
                     if (basePath != null) {
-                        pendingReloads.offer(new PendingReload(basePath, resourceRoot));
+                        // Check if a PendingReload value is already queued with the same basePath and resourceRoot
+                        boolean alreadyInQueue = pendingReloads.stream().anyMatch(p -> p.basePath.equals(basePath) && p.resourceRoot.equals(resourceRoot));
+                        if (!alreadyInQueue) {
+                            pendingReloads.offer(new PendingReload(basePath, resourceRoot));
+                        }
                     }
                 }
-                key.reset();
+                boolean valid = key.reset();
+                if (!valid) {
+                    logger.warn("WatchKey no longer valid for {}", eventDir);
+                }
             }
         } catch (ClosedWatchServiceException e) {
             // Normal when stopping
@@ -136,6 +169,14 @@ public class ShaderHotReloader implements EngineSystem {
         }
     }
 
+    /**
+     * Registers all subdirectories of the given directory to the watch service.
+     * <p>
+     * Newly created files or directories will not be registered at runtime, only modifications to shader files will trigger a reload.
+     *
+     * @param watchService The watch service to register files/directories to
+     * @param dir          The root directory to recursively check and register to the watch service
+     */
     private void registerRecursive(WatchService watchService, Path dir) throws IOException {
         Files.walkFileTree(dir, new SimpleFileVisitor<>() {
             @Override

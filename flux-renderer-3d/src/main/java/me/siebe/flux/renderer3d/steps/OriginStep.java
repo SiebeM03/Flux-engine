@@ -16,7 +16,7 @@ public class OriginStep implements RenderStep {
     private VertexArray vertexArray;
 
     protected ShaderProgram getShader() {
-        return ShaderLoader.get().load("shaders/test");
+        return ShaderLoader.get().load("shaders/color_pos_3D");
     }
 
     @Override
@@ -59,6 +59,7 @@ public class OriginStep implements RenderStep {
 
     @Override
     public void destroy() {
-        RenderStep.super.destroy();
+        shader.delete();
+        vertexArray.delete();
     }
 }

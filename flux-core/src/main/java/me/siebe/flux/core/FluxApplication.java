@@ -1,21 +1,17 @@
 package me.siebe.flux.core;
 
 import me.siebe.flux.api.application.AppContext;
-import me.siebe.flux.api.application.Application;
-import me.siebe.flux.api.application.EngineSystem;
 import me.siebe.flux.api.application.SystemManager;
-import me.siebe.flux.api.event.EventBus;
-import me.siebe.flux.api.event.EventBusProvider;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.renderer.Renderer;
-import me.siebe.flux.api.renderer.RendererProvider;
 import me.siebe.flux.api.renderer.pipeline.RenderPipeline;
 import me.siebe.flux.api.window.WindowBuilder;
 import me.siebe.flux.event.DefaultEventBus;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
+import me.siebe.flux.util.memory.NativeTracker;
 import me.siebe.flux.util.system.ProvidableSystem;
 import me.siebe.flux.util.time.Timer;
 
@@ -35,20 +31,8 @@ import me.siebe.flux.util.time.Timer;
  *   <li>Shutdown: {@link #destroy()}</li>
  * </ol>
  */
-public abstract class FluxApplication extends Application implements ProvidableSystem {
+public abstract class FluxApplication implements ProvidableSystem {
     private static final Logger logger = LoggerFactory.getLogger(FluxApplication.class, LoggingCategories.APPLICATION);
-
-    private static final SystemManager systemManager = new SystemManager();
-
-    @Override
-    public void registerEngineSystem(EngineSystem engineSystem) {
-        systemManager.registerEngineSystem(engineSystem);
-    }
-
-    @Override
-    public void unregisterEngineSystem(Class<? extends EngineSystem> clazz) {
-        systemManager.unregisterEngineSystem(clazz);
-    }
 
     // =================================================================================================================
     // Initialization related methods
@@ -76,7 +60,7 @@ public abstract class FluxApplication extends Application implements ProvidableS
             logger.info("Game successfully initialized");
 
             // These engine systems are typically registered inside initGameSystems()
-            systemManager.init();
+            AppContext.get().getSystemManager().init();
         } catch (Exception e) {
             logger.error("Something went wrong while initializing the application", e);
             throw e;
@@ -96,22 +80,27 @@ public abstract class FluxApplication extends Application implements ProvidableS
      */
     private void initEngineSystems() {
         logger.info("Initializing Engine Systems");
-        EventBus eventBus = new DefaultEventBus();
-        eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
-        eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
-        EventBusProvider.init(eventBus);
+        // Use FluxContext to be able to directly access the variables (package-private)
+        FluxContext ctx = FluxContext.get();
 
-        AppContext.withContextNoReturn(ctx -> {
-            setTimer(ctx, new Timer());
+        // Event bus initialization
+        ctx.eventBus = new DefaultEventBus();
+        ctx.eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
+        ctx.eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
 
-            // Window initialization
-            WindowBuilder windowBuilder = createWindowBuilder();
-            setWindow(ctx, windowBuilder.build());
-            ctx.getWindow().init();
+        // Timer initialization
+        ctx.timer = new Timer();
 
-            // Render pipeline initialization
-            RendererProvider.init(new Renderer(RenderPipeline.create()));
-        });
+        // Window initialization
+        WindowBuilder windowBuilder = createWindowBuilder();
+        ctx.window = windowBuilder.build();
+        ctx.getWindow().init();
+
+        // System manager initialization
+        ctx.systemManager = new SystemManager();
+
+        // Render pipeline initialization
+        ctx.renderer = new Renderer(RenderPipeline.create());
     }
 
     /**
@@ -144,9 +133,8 @@ public abstract class FluxApplication extends Application implements ProvidableS
                 while (!ctx.getWindow().shouldClose()) {
                     gameUpdate(ctx);
                     engineUpdate(ctx);
-                    systemManager.update();
 
-                    RendererProvider.get().render();
+                    ctx.getRenderer().render();
                 }
             });
         } catch (Exception e) {
@@ -175,7 +163,10 @@ public abstract class FluxApplication extends Application implements ProvidableS
 
         ctx.getWindow().update();
 
-        EventBusProvider.get().flush();
+        ctx.getEventBus().flush();
+
+        // MUST BE LAST UPDATE!!
+        ctx.getSystemManager().update();
     }
 
     /**
@@ -209,6 +200,8 @@ public abstract class FluxApplication extends Application implements ProvidableS
             destroyEngineSystems(ctx);
             destroyGameSystems();
         });
+
+        NativeTracker.report();
     }
 
     /**
@@ -221,8 +214,9 @@ public abstract class FluxApplication extends Application implements ProvidableS
      */
     private void destroyEngineSystems(final AppContext ctx) {
         ctx.getWindow().destroy();
+        ctx.getRenderer().destroy();
 
-        systemManager.destroy();
+        ctx.getSystemManager().destroy();
     }
 
     /**

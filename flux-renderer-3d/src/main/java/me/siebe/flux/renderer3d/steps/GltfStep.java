@@ -23,6 +23,8 @@ public class GltfStep implements RenderStep {
 
     @Override
     public void prepare(BaseRenderContext context) {
+        // TODO add a check (e.g. if (this.shader.isDeleted()) and only then reload from the ShaderLoader)
+        //  see GLResource class for the isDeleted() logic
         this.shader = getShader();
         shader.upload("uViewProj", context.getCamera().getViewProjectionMatrix());
 
@@ -42,5 +44,10 @@ public class GltfStep implements RenderStep {
         context.getRenderables().forEach(Renderable::render);
 
         shader.unbind();
+    }
+
+    @Override
+    public void destroy() {
+        shader.delete();
     }
 }

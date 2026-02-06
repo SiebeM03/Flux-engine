@@ -1,19 +1,38 @@
 package me.siebe.flux.util.assets;
 
+import me.siebe.flux.util.logging.Logger;
+import me.siebe.flux.util.logging.LoggerFactory;
+import me.siebe.flux.util.logging.config.LoggingCategories;
+import me.siebe.flux.util.memory.Copyable;
+
 import java.util.HashMap;
 
 public abstract class AssetPool<T> {
-    private HashMap<String, T> assets;
+    private static final Logger logger = LoggerFactory.getLogger(AssetPool.class, LoggingCategories.ASSETS);
+
+    final HashMap<String, T> assets;
 
     protected AssetPool() {
         assets = new HashMap<>();
     }
 
-    public T load(String identifier) {
-        // FIXME cannot render multiple models with the same key (only 1 instance is ever returned)
-        //  either support OpenGL instancing or just return a whole new copy
+    public final T load(String identifier) {
         if (assets.containsKey(identifier)) {
-            return assets.get(identifier);
+            T asset = assets.get(identifier);
+            if (shouldReturnClone()) {
+                try {
+                    if (asset instanceof Copyable<?> copyable) {
+                        @SuppressWarnings("unchecked")
+                        T assetClone = (T) copyable.copy();
+                        return assetClone;
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to clone asset {} with identifier {}, using original asset", asset, identifier);
+                    return asset;
+                }
+            } else {
+                return asset;
+            }
         }
         T asset = create(identifier);
         assets.put(identifier, asset);
@@ -55,4 +74,13 @@ public abstract class AssetPool<T> {
         return assets.put(identifier, asset);
     }
 
+    /**
+     * Determines if the asset should be cloned when loaded from the pool.
+     * Subclasses may override this method to return true if the asset should be cloned.
+     * By default, the asset is not cloned.
+     * @return true if the asset should be cloned, false otherwise
+     */
+    protected boolean shouldReturnClone() {
+        return false;
+    }
 }

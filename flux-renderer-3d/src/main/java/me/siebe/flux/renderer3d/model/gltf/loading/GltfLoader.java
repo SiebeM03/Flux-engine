@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -61,8 +60,8 @@ public class GltfLoader extends AssetPool<Model> {
     }
 
     @Override
-    public Model load(String identifier) {
-        return create(identifier);
+    protected boolean shouldReturnClone() {
+        return true;
     }
 
     public static GltfLoader get() {
@@ -149,7 +148,9 @@ public class GltfLoader extends AssetPool<Model> {
                 }
             }
 
-            out.addMesh(mesh);
+            if (!mesh.getPrimitives().isEmpty()) {
+                out.addMesh(mesh);
+            }
         }
 
         return out;
