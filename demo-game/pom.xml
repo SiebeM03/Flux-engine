@@ -32,7 +32,6 @@
             <artifactId>flux-renderer-3d</artifactId>
             <version>${flux.engine.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>

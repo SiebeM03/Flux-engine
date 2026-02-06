@@ -45,4 +45,9 @@ public class GltfStep implements RenderStep {
 
         shader.unbind();
     }
+
+    @Override
+    public void destroy() {
+        shader.delete();
+    }
 }

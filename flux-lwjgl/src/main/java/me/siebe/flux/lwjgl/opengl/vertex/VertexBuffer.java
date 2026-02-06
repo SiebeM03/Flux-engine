@@ -1,5 +1,6 @@
 package me.siebe.flux.lwjgl.opengl.vertex;
 
+import me.siebe.flux.lwjgl.opengl.GLResource;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
@@ -9,7 +10,7 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL15.*;
 
-public class VertexBuffer extends GLBuffer {
+public class VertexBuffer extends GLResource {
     private static final Logger logger = LoggerFactory.getLogger(VertexBuffer.class, LoggingCategories.RENDERER);
 
     private BufferLayout bufferLayout;

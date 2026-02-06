@@ -4,8 +4,13 @@ import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.lwjgl.opengl.OpenGLState;
 import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
 import me.siebe.flux.lwjgl.opengl.vertex.IndexBuffer;
+import me.siebe.flux.util.FluxColor;
 import me.siebe.flux.util.Transform;
 import me.siebe.flux.util.exceptions.Validator;
+import me.siebe.flux.util.logging.Logger;
+import me.siebe.flux.util.logging.LoggerFactory;
+import me.siebe.flux.util.logging.config.LoggingCategories;
+import me.siebe.flux.util.memory.Copyable;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
@@ -20,7 +25,9 @@ import java.util.Optional;
  * The Model class implements Renderable, allowing it to be used directly in the render pipeline.
  * Transform, scale, and rotation are handled separately by the scene manager, not stored here.
  */
-public class Model implements Renderable {
+public class Model implements Renderable, Copyable<Model> {
+    private static final Logger logger = LoggerFactory.getLogger(Model.class, LoggingCategories.ASSETS);
+
     /**
      * List of meshes that make up this model.
      */
@@ -31,6 +38,8 @@ public class Model implements Renderable {
     private String name;
 
     private Transform transform;
+
+    private boolean deleted = false;
 
     public Model() {
         this(new ArrayList<>(), null);
@@ -95,6 +104,10 @@ public class Model implements Renderable {
      */
     @Override
     public void render() {
+        if (deleted) {
+            logger.warn("Cannot render model that is deleted");
+            return;
+        }
         for (Mesh mesh : meshes) {
             renderMesh(mesh);
         }
@@ -145,14 +158,32 @@ public class Model implements Renderable {
         material.restoreOpenGLState();
     }
 
+    // Temporary util method to set the color for every Primitive in a single Model
+    public void setBaseColor(FluxColor color) {
+        getMeshes().forEach(mesh -> {
+            mesh.getPrimitives().forEach(primitive -> {
+                primitive.getMaterial().setBaseColor(color);
+            });
+        });
+    }
+
+    @Override
+    public Model copy() {
+        Model clone = new Model();
+        clone.setName(name);
+        clone.meshes.clear();
+        for (Mesh mesh : meshes) {
+            clone.meshes.add(mesh.copy());
+        }
+        return clone;
+    }
+
     /**
-     * Cleanup method called when the model is no longer needed.
-     * This can be used to release resources, but in this implementation,
-     * resource cleanup is typically handled by the renderer or resource manager.
+     * Destroys the model by deleting all its meshes.
      */
     @Override
     public void destroy() {
-        // Resource cleanup can be added here if needed
-        // Typically, VertexArray and Texture cleanup is handled by the renderer
+        deleted = true;
+        meshes.forEach(Mesh::delete);
     }
 }

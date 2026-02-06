@@ -1,8 +1,10 @@
 package me.siebe.flux.lwjgl.opengl.vertex;
 
+import me.siebe.flux.lwjgl.opengl.GLResource;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
+import me.siebe.flux.util.memory.Copyable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,7 @@ import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 import static org.lwjgl.opengl.GL45.glCreateVertexArrays;
 
-public class VertexArray extends GLBuffer {
+public class VertexArray extends GLResource implements Copyable<VertexArray> {
     private static final Logger logger = LoggerFactory.getLogger(VertexArray.class, LoggingCategories.RENDERER);
 
     private int vertexBufferIndex = 0;
@@ -28,7 +30,7 @@ public class VertexArray extends GLBuffer {
 
     @Override
     protected int getBindTarget() {
-        return 0;
+        return GL_VERTEX_ARRAY;
     }
 
     public List<VertexBuffer> getVertexBuffers() {
@@ -109,5 +111,22 @@ public class VertexArray extends GLBuffer {
         bind();
         indexBuffer.bind();
         this.indexBuffer = indexBuffer;
+    }
+
+    @Override
+    public VertexArray copy() {
+        addReference(); // Adding a new reference, the resource is only deleted if it has no references remaining
+        return this;
+    }
+
+    @Override
+    protected boolean deleteDependencies() {
+        boolean deleted = true;
+        for (VertexBuffer vertexBuffer : vertexBuffers) {
+            if (!vertexBuffer.delete()) {
+                deleted = false;
+            }
+        }
+        return deleted && indexBuffer.delete();
     }
 }

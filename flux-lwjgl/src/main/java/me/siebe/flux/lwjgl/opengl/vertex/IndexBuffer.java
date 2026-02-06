@@ -1,5 +1,6 @@
 package me.siebe.flux.lwjgl.opengl.vertex;
 
+import me.siebe.flux.lwjgl.opengl.GLResource;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
@@ -7,7 +8,7 @@ import me.siebe.flux.util.logging.config.LoggingCategories;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL45.glCreateBuffers;
 
-public class IndexBuffer extends GLBuffer {
+public class IndexBuffer extends GLResource {
     private static final Logger logger = LoggerFactory.getLogger(IndexBuffer.class, LoggingCategories.RENDERER);
 
     private int count;
