@@ -1,11 +1,10 @@
 package me.siebe.flux.core;
 
-import me.siebe.flux.api.event.EventBus;
-import me.siebe.flux.api.event.EventBusProvider;
+import me.siebe.flux.api.application.AppContext;
+import me.siebe.flux.api.application.SystemManager;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.renderer.Renderer;
-import me.siebe.flux.api.renderer.RendererProvider;
 import me.siebe.flux.api.renderer.pipeline.RenderPipeline;
 import me.siebe.flux.api.window.WindowBuilder;
 import me.siebe.flux.event.DefaultEventBus;
@@ -57,8 +56,13 @@ public abstract class FluxApplication implements ProvidableSystem {
             logger.info("Engine successfully initialized");
             StartupBanner.displayBanner();
             initGameSystems();
+            logger.info("Game successfully initialized");
+
+            // These engine systems are typically registered inside initGameSystems()
+            AppContext.get().getSystemManager().init();
         } catch (Exception e) {
             logger.error("Something went wrong while initializing the application", e);
+            throw e;
         }
     }
 
@@ -75,22 +79,27 @@ public abstract class FluxApplication implements ProvidableSystem {
      */
     private void initEngineSystems() {
         logger.info("Initializing Engine Systems");
-        EventBus eventBus = new DefaultEventBus();
-        eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
-        eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
-        EventBusProvider.init(eventBus);
+        // Use FluxContext to be able to directly access the variables (package-private)
+        FluxContext ctx = FluxContext.get();
 
-        AppContext.withContextNoReturn(ctx -> {
-            ctx.timer = new Timer();
+        // Event bus initialization
+        ctx.eventBus = new DefaultEventBus();
+        ctx.eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
+        ctx.eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
 
-            // Window initialization
-            WindowBuilder windowBuilder = createWindowBuilder();
-            ctx.window = windowBuilder.build();
-            ctx.window.init();
+        // Timer initialization
+        ctx.timer = new Timer();
 
-            // Render pipeline initialization
-            RendererProvider.init(new Renderer(RenderPipeline.create()));
-        });
+        // Window initialization
+        WindowBuilder windowBuilder = createWindowBuilder();
+        ctx.window = windowBuilder.build();
+        ctx.getWindow().init();
+
+        // System manager initialization
+        ctx.systemManager = new SystemManager();
+
+        // Render pipeline initialization
+        ctx.renderer = new Renderer(RenderPipeline.create());
     }
 
     /**
@@ -120,11 +129,11 @@ public abstract class FluxApplication implements ProvidableSystem {
     final void run() {
         try {
             AppContext.withContextNoReturn(ctx -> {
-                while (!ctx.window.shouldClose()) {
+                while (!ctx.getWindow().shouldClose()) {
                     gameUpdate(ctx);
                     engineUpdate(ctx);
 
-                    RendererProvider.get().render();
+                    ctx.getRenderer().render();
                 }
             });
         } catch (Exception e) {
@@ -148,12 +157,15 @@ public abstract class FluxApplication implements ProvidableSystem {
     private void engineUpdate(final AppContext ctx) {
         logger.trace("Updating Engine");
 
-        ctx.timer.update();
-        ctx.timer.print();
+        ctx.getTimer().update();
+        ctx.getTimer().print();
 
-        ctx.window.update();
+        ctx.getWindow().update();
 
-        EventBusProvider.get().flush();
+        ctx.getEventBus().flush();
+
+        // MUST BE LAST UPDATE!!
+        ctx.getSystemManager().update();
     }
 
     /**
@@ -198,7 +210,9 @@ public abstract class FluxApplication implements ProvidableSystem {
      * @param ctx the current application context containing engine state
      */
     private void destroyEngineSystems(final AppContext ctx) {
-        ctx.window.destroy();
+        ctx.getWindow().destroy();
+
+        ctx.getSystemManager().destroy();
     }
 
     /**

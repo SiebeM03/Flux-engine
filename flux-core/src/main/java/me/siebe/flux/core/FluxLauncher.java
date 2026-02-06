@@ -1,6 +1,7 @@
 package me.siebe.flux.core;
 
 
+import me.siebe.flux.api.application.AppContext;
 import me.siebe.flux.util.exceptions.ApplicationException;
 import me.siebe.flux.util.system.SystemProvider;
 import me.siebe.flux.util.system.SystemProviderType;
@@ -18,8 +19,8 @@ public class FluxLauncher {
         FluxApplication app = providers.stream().findFirst()
                 .orElseThrow(ApplicationException::noAppProviderImplementationFound);
 
-        // Store the application instance in AppContext
-        AppContext.get().setApplication(app);
+        // Make sure AppContext is initialized properly before starting the application lifecycle
+        AppContext.get();
         // Application lifecycle
         app.init();
         app.run();
