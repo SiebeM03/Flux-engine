@@ -1,30 +1,45 @@
 package me.siebe.flux.api.application;
 
 import me.siebe.flux.api.event.EventBus;
-import me.siebe.flux.api.event.EventBusProvider;
 import me.siebe.flux.api.renderer.Renderer;
-import me.siebe.flux.api.renderer.RendererProvider;
 import me.siebe.flux.api.window.Window;
-import me.siebe.flux.util.exceptions.ApplicationException;
+import me.siebe.flux.util.system.ProvidableSystem;
+import me.siebe.flux.util.system.SystemProvider;
+import me.siebe.flux.util.system.SystemProviderType;
 import me.siebe.flux.util.time.Timer;
 
 import java.util.function.Consumer;
 
-@Deprecated()
-public class AppContext {
+public abstract class AppContext implements ProvidableSystem {
+    protected static AppContext instance;
 
-    private static AppContext instance;
-
-    private Application application;
-    Window window;
-    Timer timer;
-    Renderer renderer;
-    EventBus eventBus;
-
-    private AppContext() {
+    protected AppContext() {
     }
 
+    public static AppContext get() {
+        if (instance == null) {
+            instance = SystemProvider.provide(AppContext.class, SystemProviderType.ENGINE_ONLY);
+        }
+        return instance;
+    }
 
+    // =================================================================================================================
+    // API methods
+    // =================================================================================================================
+    public abstract Window getWindow();
+
+    public abstract Renderer getRenderer();
+
+    public abstract Timer getTimer();
+
+    public abstract EventBus getEventBus();
+
+    public abstract SystemManager getSystemManager();
+
+
+    // =================================================================================================================
+    // Utility methods
+    // =================================================================================================================
     @FunctionalInterface
     public interface ContextCallback<R> {
         R apply(AppContext ctx);
@@ -35,44 +50,11 @@ public class AppContext {
         void apply(AppContext ctx);
     }
 
-    public static AppContext get() {
-        if (instance == null) instance = new AppContext();
-        return instance;
-    }
-
     public static <R> R withContext(ContextCallback<R> callback) {
         return callback.apply(get());
     }
 
     public static void withContextNoReturn(Consumer<AppContext> ctxConsumer) {
         ctxConsumer.accept(get());
-    }
-
-    public Application getApplication() {
-        if (this.application == null) throw ApplicationException.notInitialized();
-        return this.application;
-    }
-
-    public void setApplication(Application application) {
-        if (this.application != null) throw ApplicationException.alreadyInitialized();
-        this.application = application;
-    }
-
-    public Window getWindow() {
-        return window;
-    }
-
-    public Timer getTimer() {
-        return timer;
-    }
-
-    @Deprecated
-    public Renderer getRenderer() {
-        return RendererProvider.get();
-    }
-
-    @Deprecated
-    public EventBus getEventBus() {
-        return EventBusProvider.get();
     }
 }
