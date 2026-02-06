@@ -8,7 +8,6 @@ See also: [Flux Launcher](flux-launcher.md), [Implementing your application](imp
 ## Type and package
 
 - **Package:** `me.siebe.flux.core`
-- **Extends:** **Application** (flux-api)
 - **Implements:** **ProvidableSystem** (flux-util), so it can be discovered by **SystemProvider** when used as a custom
   implementation
 
@@ -60,7 +59,7 @@ Called **once** after **initEngineSystems()** and **StartupBanner**, and before 
 
 - Obtain **Renderer** from **AppContext** and set your **RenderContext**, add **RenderPipeline** steps.
 - Load models, textures, and other assets.
-- Register custom **EngineSystem** instances via **getApplication().registerEngineSystem(...)** if needed.
+- Register custom **EngineSystem** instances via **AppContext.get().getSystemManager().registerEngineSystem(...)** if needed.
 - Initialise game-specific subsystems (e.g. camera, input handlers).
 
 Engine systems you register here are initialised when **systemManager.init()** runs immediately after
@@ -71,7 +70,7 @@ Engine systems you register here are initialised when **systemManager.init()** r
 Called **every frame** before **engineUpdate(ctx)**, **systemManager.update()**, and rendering. Use it for:
 
 - Camera updates, input handling, physics, gameplay logic.
-- **ctx** gives access to **Window**, **Timer**, **Renderer**, **EventBus**, and **getApplication()**.
+- **ctx** gives access to **Window**, **Timer**, **Renderer**, **EventBus**, and **SystemManager** (e.g. for registering engine systems).
 
 Rendering uses the latest state because it runs after **gameUpdate** and **engineUpdate**.
 
@@ -86,7 +85,7 @@ Do not destroy engine-owned resources (e.g. the window); the engine has already 
 
 ## Optional: engine systems
 
-**FluxApplication** extends **Application**, which exposes:
+The **SystemManager** (obtained via **AppContext.get().getSystemManager()**) exposes:
 
 - **registerEngineSystem(EngineSystem)**
 - **unregisterEngineSystem(Class&lt;? extends EngineSystem&gt;)**

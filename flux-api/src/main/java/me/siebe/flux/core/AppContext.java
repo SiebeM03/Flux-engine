@@ -1,19 +1,17 @@
 package me.siebe.flux.core;
 
-import me.siebe.flux.api.systems.SystemManager;
 import me.siebe.flux.api.event.EventBus;
 import me.siebe.flux.api.renderer.Renderer;
+import me.siebe.flux.api.systems.SystemManager;
 import me.siebe.flux.api.window.Window;
-import me.siebe.flux.util.system.ProvidableSystem;
-import me.siebe.flux.util.system.SystemProvider;
-import me.siebe.flux.util.system.SystemProviderType;
 import me.siebe.flux.util.time.Timer;
 
 /**
- * Central application context providing access to core engine systems such as the window,
- * renderer, timer, event bus, and system manager. Implementations are provided by the engine
- * via {@link SystemProvider}; application code typically obtains the context through
- * {@link #get()} or the {@link #withContext(ContextCallback)} / {@link #withContextNoReturn(ContextCallbackNoReturn)}
+ * Central application context providing access to core engine systems such as window, renderer,
+ * timer, event bus, and system manager. The instance is lazily created when first requested
+ * and is populated by the engine during FluxApplication init.
+ * Application code typically obtains the context through {@link #get()} or the
+ * {@link #withContext(ContextCallback)} / {@link #withContextNoReturn(ContextCallbackNoReturn)}
  * utility methods.
  */
 public final class AppContext {
@@ -28,12 +26,6 @@ public final class AppContext {
     private AppContext() {
     }
 
-    /**
-     * Returns the current application context instance. The instance is lazily created by
-     * {@link SystemProvider} when first requested (engine-only type).
-     *
-     * @return the singleton application context, never {@code null}
-     */
     public static AppContext get() {
         if (instance == null) {
             instance = new AppContext();

@@ -37,7 +37,7 @@ ShaderHotReloader hotReloader = new ShaderHotReloader(
     "demo-game/src/main/resources",
     "flux-renderer-3d/src/main/resources"
 );
-AppContext.get().getApplication().registerEngineSystem(hotReloader);
+AppContext.get().getSystemManager().registerEngineSystem(hotReloader);
 ```
 
 Or with absolute **Path** instances:
@@ -46,7 +46,7 @@ Or with absolute **Path** instances:
 ShaderHotReloader hotReloader = new ShaderHotReloader(List.of(
     Paths.get("flux-renderer-3d/src/main/resources").toAbsolutePath()
 ));
-AppContext.get().getApplication().registerEngineSystem(hotReloader);
+AppContext.get().getSystemManager().registerEngineSystem(hotReloader);
 ```
 
 **ShaderHotReloader** implements **EngineSystem**: **init()** starts the watch thread, **update()** runs **processPendingReloads()** on the main thread (OpenGL thread), and **destroy()** stops the watch thread.
