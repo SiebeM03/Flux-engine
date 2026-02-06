@@ -1,7 +1,7 @@
 package me.siebe.flux.lwjgl.opengl.shader;
 
-import me.siebe.flux.api.application.Application;
 import me.siebe.flux.api.application.EngineSystem;
+import me.siebe.flux.api.application.SystemManager;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
@@ -30,13 +30,13 @@ import static java.nio.file.StandardWatchEventKinds.*;
  * <li>
  *     <b>VM options</b>: if option {@code flux.shader.hotreload.paths} is set, the values (comma-separated) are
  *     passed as strings to {@link #ShaderHotReloader(String...)} and it is automatically registered via
- *     {@link Application#registerEngineSystem(EngineSystem)}
+ *     {@link SystemManager#registerEngineSystem(EngineSystem)}
  * </li>
  * <li>
  *     <b>Manually</b>: you can also manually register a ShaderHotReloader from within your game code:
  *     <pre>{@code
  *     AppContext.get()
- *          .getApplication()
+ *          .getSystemManager
  *          .registerEngineSystem(new ShaderHotReloader(
  *              "src/main/resources"    // Add all folders you want to check
  *           );
@@ -150,10 +150,17 @@ public class ShaderHotReloader implements EngineSystem {
                     String relative = resourceRoot.relativize(fullPath).toString().replace('\\', '/');
                     String basePath = shaderBasePath(relative);
                     if (basePath != null) {
-                        pendingReloads.offer(new PendingReload(basePath, resourceRoot));
+                        // Check if a PendingReload value is already queued with the same basePath and resourceRoot
+                        boolean alreadyInQueue = pendingReloads.stream().anyMatch(p -> p.basePath.equals(basePath) && p.resourceRoot.equals(resourceRoot));
+                        if (!alreadyInQueue) {
+                            pendingReloads.offer(new PendingReload(basePath, resourceRoot));
+                        }
                     }
                 }
-                key.reset();
+                boolean valid = key.reset();
+                if (!valid) {
+                    logger.warn("WatchKey no longer valid for {}", eventDir);
+                }
             }
         } catch (ClosedWatchServiceException e) {
             // Normal when stopping
@@ -162,6 +169,14 @@ public class ShaderHotReloader implements EngineSystem {
         }
     }
 
+    /**
+     * Registers all subdirectories of the given directory to the watch service.
+     * <p>
+     * Newly created files or directories will not be registered at runtime, only modifications to shader files will trigger a reload.
+     *
+     * @param watchService The watch service to register files/directories to
+     * @param dir          The root directory to recursively check and register to the watch service
+     */
     private void registerRecursive(WatchService watchService, Path dir) throws IOException {
         Files.walkFileTree(dir, new SimpleFileVisitor<>() {
             @Override
