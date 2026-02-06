@@ -23,4 +23,8 @@ public class ApplicationException extends EngineException {
         return new ApplicationException("Multiple FluxApplication implementations were specified, " +
                 "you must have exactly 1 FluxApplication implementation");
     }
+
+    public static ApplicationException engineSystemAlreadyRegistered(Class<?> engineSystemClass) {
+        return new ApplicationException("Engine System of type " + engineSystemClass.getName() + " already registered");
+    }
 }
