@@ -10,7 +10,7 @@ destroy lifecycle. This section describes how to set up and run a Flux-based gam
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **FluxLauncher**      | Entry point with `main(String[])`. Discovers your `FluxApplication` subclass, stores it in **AppContext**, and runs init → run → destroy.                                                              |
 | **FluxApplication**   | Abstract base class for your game. Defines engine lifecycle (engine systems, window, render pipeline) and hooks: `initGameSystems()`, `gameUpdate()`, `destroyGameSystems()`, `createWindowBuilder()`. |
-| **AppContext**        | Holds the current application instance, window, timer, and provides access to **Renderer** and **EventBus**. Set by the launcher before init.                                                          |
+| **AppContext**        | Holds the current window, timer, renderer, eventbus and other engine systems. Set by the launcher before init.                                                                                         |
 | **Run configuration** | IntelliJ Application run config (e.g. `.idea/runConfigurations/Flux_Launcher.xml`) or Maven: main class **me.siebe.flux.core.FluxLauncher**, module/artifact = your game.                              |
 
 ## Documentation

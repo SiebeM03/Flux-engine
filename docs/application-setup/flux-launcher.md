@@ -1,7 +1,7 @@
 # Flux Launcher
 
 **FluxLauncher** is the main entry point for every Flux application. Its `main(String[])` discovers your
-**FluxApplication** implementation, stores it in **AppContext**, and runs the init → run → destroy lifecycle.
+**FluxApplication** implementation, and runs the init → run → destroy lifecycle.
 
 See also: [Flux Application](flux-application.md), [Implementing your application](implementing-your-app.md).
 
@@ -34,17 +34,6 @@ List<FluxApplication> providers = SystemProvider.provideAll(FluxApplication.clas
 
 So you must have **exactly one** class that extends **FluxApplication** and is not in `me.siebe.flux`.
 
-## Storing the application
-
-After discovery, the launcher stores the instance in **AppContext**:
-
-```java
-AppContext.get().setApplication(app);
-```
-
-This makes the application available to engine and game code (e.g. for registering **EngineSystem** instances).
-**AppContext** is set before **init()** is called.
-
 ## Lifecycle sequence
 
 The launcher then runs the full lifecycle:
@@ -52,7 +41,7 @@ The launcher then runs the full lifecycle:
 1. **app.init()** — Initialises engine systems (timer, window, OpenGL, event bus, render pipeline), then calls your
    **initGameSystems()** and initialises the **SystemManager** (engine systems).
 2. **app.run()** — Main loop: while the window is open, calls **gameUpdate(ctx)**, then **engineUpdate(ctx)**, then
-   **systemManager.update()**, then **RendererProvider.get().render()**.
+   **systemManager.update()**, then **AppContext.get().getRenderer().render()**.
 3. **app.destroy()** — Destroys engine systems (window, system manager), then calls your **destroyGameSystems()**.
 
 Any exception thrown during init is propagated (and typically terminates the process). Exceptions during the run loop
@@ -64,7 +53,6 @@ are caught and logged; destroy is still executed when the loop exits (e.g. windo
 |------|----------------------------------------------------------------------------------------------------|
 | 1    | Discover **FluxApplication** via **SystemProvider.provideAll(FluxApplication.class, CUSTOM_ONLY)** |
 | 2    | Validate exactly one implementation; else throw **ApplicationException**                           |
-| 3    | **AppContext.get().setApplication(app)**                                                           |
-| 4    | **app.init()**                                                                                     |
-| 5    | **app.run()**                                                                                      |
-| 6    | **app.destroy()**                                                                                  |
+| 3    | **app.init()**                                                                                     |
+| 4    | **app.run()**                                                                                      |
+| 5    | **app.destroy()**                                                                                  |

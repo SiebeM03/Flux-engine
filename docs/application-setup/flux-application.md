@@ -17,11 +17,11 @@ implementation.
 
 ## Lifecycle overview
 
-| Phase       | Engine (FluxApplication)                                                                                                                                     | Game (your override)                                                             |
-|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
-| **Init**    | **initEngineSystems()**: timer, event bus, window (from **createWindowBuilder()**), OpenGL, RendererProvider, RenderPipeline. Then **systemManager.init()**. | **initGameSystems()** — called once after engine systems are ready.              |
-| **Run**     | Each frame: **engineUpdate(ctx)** (timer, window update, event flush), **systemManager.update()**, **RendererProvider.get().render()**.                      | **gameUpdate(ctx)** — called once per frame **before** engine update and render. |
-| **Destroy** | **destroyEngineSystems(ctx)** (window destroy, **systemManager.destroy()**).                                                                                 | **destroyGameSystems()** — called once after engine systems are destroyed.       |
+| Phase       | Engine (FluxApplication)                                                                                    | Game (your override)                                                             |
+|-------------|-------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| **Init**    | **initEngineSystems()**: timer, event bus, window (from **createWindowBuilder()**), OpenGL, renderer.       | **initGameSystems()** — called once after engine systems are ready.              |
+| **Run**     | Each frame: **engineUpdate(ctx)** (timer, window update, event flush, system manager), **Renderer::render** | **gameUpdate(ctx)** — called once per frame **before** engine update and render. |
+| **Destroy** | **destroyEngineSystems(ctx)** (window destroy, **systemManager.destroy()**).                                | **destroyGameSystems()** — called once after engine systems are destroyed.       |
 
 Engine methods (**initEngineSystems**, **engineUpdate**, **destroyEngineSystems**) are **final** or **private**; you
 only implement the game hooks and **createWindowBuilder()**.
@@ -58,8 +58,7 @@ protected WindowBuilder createWindowBuilder() {
 
 Called **once** after **initEngineSystems()** and **StartupBanner**, and before **systemManager.init()**. Use it to:
 
-- Obtain **Renderer** from **AppContext** (or **RendererProvider**) and set your **RenderContext**, add
-  **RenderPipeline** steps.
+- Obtain **Renderer** from **AppContext** and set your **RenderContext**, add **RenderPipeline** steps.
 - Load models, textures, and other assets.
 - Register custom **EngineSystem** instances via **getApplication().registerEngineSystem(...)** if needed.
 - Initialise game-specific subsystems (e.g. camera, input handlers).
