@@ -127,6 +127,11 @@ public class VertexArray extends GLResource implements Copyable<VertexArray> {
                 deleted = false;
             }
         }
-        return deleted && indexBuffer.delete();
+        if (indexBuffer != null) {
+            if (!indexBuffer.delete()) {
+                deleted = false;
+            }
+        }
+        return deleted;
     }
 }

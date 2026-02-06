@@ -129,5 +129,5 @@ void main() {
     litColor += emissive;
 
     // Final color
-    FragColor = vec4(litColor, baseColor.a);
+    FragColor = vec4(baseColor.rgb, baseColor.a);
 }

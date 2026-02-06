@@ -30,10 +30,11 @@ public class Delay {
 
     public void update(float deltaTime) {
         if (paused) return;
-        if (isOver() && !autoReset) {
+
+        if (isOver()) {
+            if (autoReset) reset();
             return;
         }
-        reset();
         timePassed += deltaTime;
     }
 
