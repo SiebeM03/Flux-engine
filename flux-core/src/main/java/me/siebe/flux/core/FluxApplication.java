@@ -61,7 +61,7 @@ public abstract class FluxApplication implements ProvidableSystem {
             // These engine systems are typically registered inside initGameSystems()
             AppContext.get().getSystemManager().init();
         } catch (Exception e) {
-            logger.error("Something went wrong while initializing the application", e);
+            logger.error("Something went wrong while initializing the application");
             throw e;
         }
     }
