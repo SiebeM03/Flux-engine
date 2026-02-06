@@ -34,7 +34,7 @@ public class NativeTracker {
 
         leaks.forEach((tag, count) -> {
             if (count != 0) {
-                System.err.println("[LEAK] " + tag + ": " + count);
+                logger.error("[LEAK] {}: {}", tag, count);
             }
         });
     }
