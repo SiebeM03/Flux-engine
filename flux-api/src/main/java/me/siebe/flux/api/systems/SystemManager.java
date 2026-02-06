@@ -1,4 +1,4 @@
-package me.siebe.flux.api.application;
+package me.siebe.flux.api.systems;
 
 import me.siebe.flux.util.exceptions.ApplicationException;
 import me.siebe.flux.util.logging.Logger;

@@ -1,7 +1,7 @@
 package me.siebe.flux.lwjgl.opengl.shader;
 
-import me.siebe.flux.api.application.EngineSystem;
-import me.siebe.flux.api.application.SystemManager;
+import me.siebe.flux.api.systems.EngineSystem;
+import me.siebe.flux.api.systems.SystemManager;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;

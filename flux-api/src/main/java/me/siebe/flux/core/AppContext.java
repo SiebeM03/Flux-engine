@@ -1,5 +1,6 @@
-package me.siebe.flux.api.application;
+package me.siebe.flux.core;
 
+import me.siebe.flux.api.systems.SystemManager;
 import me.siebe.flux.api.event.EventBus;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.window.Window;
@@ -15,11 +16,16 @@ import me.siebe.flux.util.time.Timer;
  * {@link #get()} or the {@link #withContext(ContextCallback)} / {@link #withContextNoReturn(ContextCallbackNoReturn)}
  * utility methods.
  */
-public abstract class AppContext implements ProvidableSystem {
-    protected static AppContext instance;
+public final class AppContext {
+    private static AppContext instance;
 
-    /** Protected constructor for use by engine-provided implementations. */
-    protected AppContext() {
+    Window window;
+    Timer timer;
+    Renderer renderer;
+    EventBus eventBus;
+    SystemManager systemManager;
+
+    private AppContext() {
     }
 
     /**
@@ -30,7 +36,7 @@ public abstract class AppContext implements ProvidableSystem {
      */
     public static AppContext get() {
         if (instance == null) {
-            instance = SystemProvider.provide(AppContext.class, SystemProviderType.ENGINE_ONLY);
+            instance = new AppContext();
         }
         return instance;
     }
@@ -40,19 +46,19 @@ public abstract class AppContext implements ProvidableSystem {
     // =================================================================================================================
 
     /** Returns the application window. */
-    public abstract Window getWindow();
+    public Window getWindow() {return window;}
 
     /** Returns the renderer used for drawing. */
-    public abstract Renderer getRenderer();
+    public Renderer getRenderer() {return renderer;}
 
     /** Returns the application timer for frame timing and delta. */
-    public abstract Timer getTimer();
+    public Timer getTimer() {return timer;}
 
     /** Returns the event bus for publishing and subscribing to application events. */
-    public abstract EventBus getEventBus();
+    public EventBus getEventBus() {return eventBus;}
 
     /** Returns the system manager for registering and accessing application systems. */
-    public abstract SystemManager getSystemManager();
+    public SystemManager getSystemManager() {return systemManager;}
 
 
     // =================================================================================================================

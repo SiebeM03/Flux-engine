@@ -1,7 +1,7 @@
 package game.core.temp;
 
 import me.siebe.flux.api.camera.PerspectiveCamera;
-import me.siebe.flux.api.application.AppContext;
+import me.siebe.flux.core.AppContext;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 

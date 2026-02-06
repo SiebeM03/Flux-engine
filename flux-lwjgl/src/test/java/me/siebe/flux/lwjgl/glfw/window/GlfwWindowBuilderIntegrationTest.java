@@ -1,6 +1,6 @@
 package me.siebe.flux.lwjgl.glfw.window;
 
-import me.siebe.flux.api.application.AppContext;
+import me.siebe.flux.core.AppContext;
 import me.siebe.flux.api.event.EventBus;
 import me.siebe.flux.api.event.EventListenerRegistry;
 import me.siebe.flux.api.event.EventPoolRegistry;

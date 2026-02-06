@@ -1,11 +1,10 @@
 package me.siebe.flux.core;
 
-import me.siebe.flux.api.application.AppContext;
-import me.siebe.flux.api.application.SystemManager;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.renderer.pipeline.RenderPipeline;
+import me.siebe.flux.api.systems.SystemManager;
 import me.siebe.flux.api.window.WindowBuilder;
 import me.siebe.flux.event.DefaultEventBus;
 import me.siebe.flux.util.logging.Logger;
@@ -80,27 +79,27 @@ public abstract class FluxApplication implements ProvidableSystem {
      */
     private void initEngineSystems() {
         logger.info("Initializing Engine Systems");
-        // Use FluxContext to be able to directly access the variables (package-private)
-        FluxContext ctx = FluxContext.get();
 
-        // Event bus initialization
-        ctx.eventBus = new DefaultEventBus();
-        ctx.eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
-        ctx.eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
+        AppContext.withContextNoReturn(ctx -> {
+            // Event bus initialization
+            ctx.eventBus = new DefaultEventBus();
+            ctx.eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
+            ctx.eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
 
-        // Timer initialization
-        ctx.timer = new Timer();
+            // Timer initialization
+            ctx.timer = new Timer();
 
-        // Window initialization
-        WindowBuilder windowBuilder = createWindowBuilder();
-        ctx.window = windowBuilder.build();
-        ctx.getWindow().init();
+            // Window initialization
+            WindowBuilder windowBuilder = createWindowBuilder();
+            ctx.window = windowBuilder.build();
+            ctx.getWindow().init();
 
-        // System manager initialization
-        ctx.systemManager = new SystemManager();
+            // System manager initialization
+            ctx.systemManager = new SystemManager();
 
-        // Render pipeline initialization
-        ctx.renderer = new Renderer(RenderPipeline.create());
+            // Render pipeline initialization
+            ctx.renderer = new Renderer(RenderPipeline.create());
+        });
     }
 
     /**

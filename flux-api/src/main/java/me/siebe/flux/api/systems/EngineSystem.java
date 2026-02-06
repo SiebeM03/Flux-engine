@@ -1,4 +1,4 @@
-package me.siebe.flux.api.application;
+package me.siebe.flux.api.systems;
 
 public interface EngineSystem {
     default void init() {}

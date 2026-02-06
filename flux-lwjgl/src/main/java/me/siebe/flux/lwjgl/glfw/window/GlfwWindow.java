@@ -1,6 +1,6 @@
 package me.siebe.flux.lwjgl.glfw.window;
 
-import me.siebe.flux.api.application.AppContext;
+import me.siebe.flux.core.AppContext;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.window.Window;

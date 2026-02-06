@@ -4,7 +4,7 @@ import game.core.logging.GameCategories;
 import game.core.render.CustomRenderContext;
 import game.core.temp.TempCameraSetup;
 import game.core.temp.TerrainGenerator;
-import me.siebe.flux.api.application.AppContext;
+import me.siebe.flux.core.AppContext;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.api.window.Window;

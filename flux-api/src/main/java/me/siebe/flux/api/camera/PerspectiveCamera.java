@@ -1,6 +1,6 @@
 package me.siebe.flux.api.camera;
 
-import me.siebe.flux.api.application.AppContext;
+import me.siebe.flux.core.AppContext;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import org.joml.Matrix4f;
 
