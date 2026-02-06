@@ -24,6 +24,10 @@ public class FluxContext extends AppContext {
         }
     }
 
+    /**
+     * Returns the current FluxContext instance. This is a wrapper around the AppContext instance.
+     * @return the FluxContext instance
+     */
     public static FluxContext get() {
         return (FluxContext) AppContext.get();
     }
