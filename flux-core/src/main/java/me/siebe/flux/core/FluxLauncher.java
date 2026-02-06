@@ -19,8 +19,8 @@ public class FluxLauncher {
         FluxApplication app = providers.stream().findFirst()
                 .orElseThrow(ApplicationException::noAppProviderImplementationFound);
 
-        // Store the application instance in AppContext
-        AppContext.get().setApplication(app);
+        // Make sure AppContext is initialized properly before starting the application lifecycle
+        AppContext.get();
         // Application lifecycle
         app.init();
         app.run();

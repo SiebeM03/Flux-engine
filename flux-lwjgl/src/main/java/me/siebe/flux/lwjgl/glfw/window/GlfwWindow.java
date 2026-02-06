@@ -1,6 +1,6 @@
 package me.siebe.flux.lwjgl.glfw.window;
 
-import me.siebe.flux.api.event.EventBusProvider;
+import me.siebe.flux.api.application.AppContext;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.window.Window;
@@ -34,8 +34,8 @@ public class GlfwWindow implements Window {
         glfwSetFramebufferSizeCallback(getId(), this::sendFramebufferResizeEvent);
 
         // Register event listeners
-        EventBusProvider.get().getListenerRegistry().register(WindowResizeEvent.class, this::onWindowResize);
-        EventBusProvider.get().getListenerRegistry().register(FramebufferResizeEvent.class, this::onFramebufferResize);
+        AppContext.get().getEventBus().getListenerRegistry().register(WindowResizeEvent.class, this::onWindowResize);
+        AppContext.get().getEventBus().getListenerRegistry().register(FramebufferResizeEvent.class, this::onFramebufferResize);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class GlfwWindow implements Window {
 
     private void sendWindowResizeEvent(long windowId, int width, int height) {
         if (isValidSizeChange(width, height)) {
-            EventBusProvider.get().post(WindowResizeEvent.class, e -> e.set(config.width, config.height, width, height));
+            AppContext.get().getEventBus().post(WindowResizeEvent.class, e -> e.set(config.width, config.height, width, height));
         }
     }
 
@@ -57,7 +57,7 @@ public class GlfwWindow implements Window {
 
     private void sendFramebufferResizeEvent(long windowId, int width, int height) {
         if (isValidSizeChange(width, height)) {
-            EventBusProvider.get().post(FramebufferResizeEvent.class, e -> e.set(config.width, config.height, width, height));
+            AppContext.get().getEventBus().post(FramebufferResizeEvent.class, e -> e.set(config.width, config.height, width, height));
         }
     }
 
@@ -90,8 +90,8 @@ public class GlfwWindow implements Window {
         logger.info("Destroying GlfwWindow");
         glfwDestroyWindow(config.windowId);
 
-        EventBusProvider.get().getListenerRegistry().unregister(WindowResizeEvent.class, this::onWindowResize);
-        EventBusProvider.get().getListenerRegistry().unregister(FramebufferResizeEvent.class, this::onFramebufferResize);
+        AppContext.get().getEventBus().getListenerRegistry().unregister(WindowResizeEvent.class, this::onWindowResize);
+        AppContext.get().getEventBus().getListenerRegistry().unregister(FramebufferResizeEvent.class, this::onFramebufferResize);
     }
 
     private boolean isValidSizeChange(int newWidth, int newHeight) {
