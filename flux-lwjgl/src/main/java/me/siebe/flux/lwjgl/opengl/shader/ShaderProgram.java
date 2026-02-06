@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,20 +33,22 @@ public class ShaderProgram {
     /**
      * Creates a new shader program from vertex and fragment shader files.
      * <p>
-     * The shader files should be located in the resources directory.
-     * For example, if basePath is "shaders/basic", it will look for
-     * "shaders/basic.vert" and "shaders/basic.frag".
+     * When {@code resourceRoot} is null, shaders are loaded from the classpath
+     * (e.g. basePath "shaders/basic" → "shaders/basic.vert" and "shaders/basic.frag").
+     * When {@code resourceRoot} is non-null, shaders are read from the filesystem
+     * at {@code resourceRoot.resolve(basePath + ".vert")} and {@code ".frag"} (for hot-reload).
      *
-     * @param basePath the base path to the shader files (without extension)
+     * @param basePath     the base path to the shader files (without extension)
+     * @param resourceRoot optional filesystem root for shader files; null to use classpath
      * @throws ShaderException if the shaders cannot be loaded, compiled, or linked
      */
-    ShaderProgram(String basePath) {
+    ShaderProgram(String basePath, Path resourceRoot) {
         this.filename = basePath;
         this.attributes = new HashMap<>();
         this.uniforms = new HashMap<>();
 
-        String vertexSource = getFileContent(basePath + ".vert");
-        String fragmentSource = getFileContent(basePath + ".frag");
+        String vertexSource = getShaderSource(basePath + ".vert", resourceRoot);
+        String fragmentSource = getShaderSource(basePath + ".frag", resourceRoot);
 
         int vertexShader = compile(vertexSource, GL_VERTEX_SHADER);
         int fragmentShader = compile(fragmentSource, GL_FRAGMENT_SHADER);
@@ -57,7 +61,6 @@ public class ShaderProgram {
         logger.debug("Created shader program '{}' with {} attributes and {} uniforms",
                 filename, attributes.size(), uniforms.size());
     }
-
 
     public void bind() {
         ShaderProgram.ACTIVE_SHADER = this;
@@ -101,12 +104,21 @@ public class ShaderProgram {
         return program;
     }
 
-    private String getFileContent(String path) {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-            if (inputStream == null) {
-                throw new ShaderException("Shader file not found: " + path);
+    private static String getShaderSource(String resourcePath, Path resourceRoot) {
+        if (resourceRoot == null) {
+            try (InputStream inputStream = ShaderProgram.class.getClassLoader().getResourceAsStream(resourcePath)) {
+                if (inputStream == null) {
+                    throw new ShaderException("Shader file not found: " + resourcePath);
+                }
+                byte[] bytes = inputStream.readAllBytes();
+                return new String(bytes, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new ShaderException("Failed to read shader file: " + resourcePath, e);
             }
-            byte[] bytes = inputStream.readAllBytes();
+        }
+        Path path = resourceRoot.resolve(resourcePath);
+        try {
+            byte[] bytes = Files.readAllBytes(path);
             return new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new ShaderException("Failed to read shader file: " + path, e);
