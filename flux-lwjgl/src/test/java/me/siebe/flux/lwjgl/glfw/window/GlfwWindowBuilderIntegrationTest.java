@@ -1,7 +1,7 @@
 package me.siebe.flux.lwjgl.glfw.window;
 
+import me.siebe.flux.api.application.AppContext;
 import me.siebe.flux.api.event.EventBus;
-import me.siebe.flux.api.event.EventBusProvider;
 import me.siebe.flux.api.event.EventListenerRegistry;
 import me.siebe.flux.api.event.EventPoolRegistry;
 import me.siebe.flux.api.window.Window;
@@ -38,22 +38,20 @@ public class GlfwWindowBuilderIntegrationTest {
         primaryMonitorWidth = vidMode.width();
         primaryMonitorHeight = vidMode.height();
 
-        Mockito.mockStatic(EventBusProvider.class).when(EventBusProvider::get)
+        Mockito.mockStatic(AppContext.class).when(AppContext::get)
                 .thenAnswer(invocation -> {
-                    // Create a mock EventBus
-                    EventBus mockEventBus = mock(EventBus.class);
+                    AppContext appContext = mock(AppContext.class);
 
-                    // Allow test code to configure what happens for ListenerRegistry, etc.
-                    // Set up sensible defaults:
+                    // Mock event bus and getListenerRegistry and getEventPoolRegistry methods
+                    EventBus mockEventBus = mock(EventBus.class);
                     EventListenerRegistry mockListenerRegistry = mock(EventListenerRegistry.class);
                     EventPoolRegistry mockEventPoolRegistry = mock(EventPoolRegistry.class);
-
                     Mockito.when(mockEventBus.getListenerRegistry()).thenReturn(mockListenerRegistry);
                     Mockito.when(mockEventBus.getEventPoolRegistry()).thenReturn(mockEventPoolRegistry);
 
-                    // Test methods can further customize these mock as needed by calling
-                    // Mockito.reset(mockEventBus), etc., or using ArgumentCaptor
-                    return mockEventBus;
+                    // Mock AppContext.get().getEventBus() call to return mockEventBus
+                    Mockito.when(appContext.getEventBus()).thenReturn(mockEventBus);
+                    return appContext;
                 });
     }
 

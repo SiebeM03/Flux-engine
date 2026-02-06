@@ -1,6 +1,6 @@
 package me.siebe.flux.api.camera;
 
-import me.siebe.flux.api.event.EventBusProvider;
+import me.siebe.flux.api.application.AppContext;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import org.joml.Matrix4f;
 
@@ -16,7 +16,7 @@ public class PerspectiveCamera extends GenericCamera {
         this.near = near;
         this.far = far;
 
-        EventBusProvider.get().getListenerRegistry().register(FramebufferResizeEvent.class,
+        AppContext.get().getEventBus().getListenerRegistry().register(FramebufferResizeEvent.class,
                 e -> setAspectRatio(e.getNewWidth(), e.getNewHeight())
         );
     }
