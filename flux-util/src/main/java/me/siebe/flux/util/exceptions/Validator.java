@@ -4,7 +4,6 @@ import me.siebe.flux.util.io.FileIOException;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;

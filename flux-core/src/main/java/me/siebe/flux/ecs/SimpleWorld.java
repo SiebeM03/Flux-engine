@@ -5,7 +5,9 @@ import me.siebe.flux.api.ecs.Entity;
 import me.siebe.flux.api.ecs.Results;
 import me.siebe.flux.api.ecs.World;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

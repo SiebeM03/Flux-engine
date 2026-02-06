@@ -1,7 +1,7 @@
 package me.siebe.flux.api.camera;
 
-import me.siebe.flux.core.AppContext;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
+import me.siebe.flux.core.AppContext;
 import org.joml.Matrix4f;
 
 public class PerspectiveCamera extends GenericCamera {

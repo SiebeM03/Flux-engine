@@ -1,11 +1,11 @@
 package me.siebe.flux.lwjgl.glfw.window;
 
-import me.siebe.flux.core.AppContext;
 import me.siebe.flux.api.event.EventBus;
 import me.siebe.flux.api.event.EventListenerRegistry;
 import me.siebe.flux.api.event.EventPoolRegistry;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowMode;
+import me.siebe.flux.core.AppContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
