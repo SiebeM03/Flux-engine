@@ -14,8 +14,8 @@ public final class DefaultEventPool<E extends Event & Pooled> implements EventPo
     private final ArrayDeque<E> pool = new ArrayDeque<>();
     private final Supplier<E> factory;
 
-    // Keeps a Set of all events currently in the pool, this allows for O(1) lookups when trying to reset an event
-    // If the event is already in the pool (and this map), it means this event was already releaded so calling
+    // Keeps a Set of all events currently in the pool, this allows for O(1) lookups when trying to release an event.
+    // If the event is already in the pool (and this set), it means this event was already released, calling
     // release() will not do anything
     private final Set<E> inPool = Collections.newSetFromMap(new IdentityHashMap<>());
 
