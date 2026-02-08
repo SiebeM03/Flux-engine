@@ -106,6 +106,20 @@ public class DefaultEventPoolTest {
     }
 
     @Test
+    void release_WhenReleasedTwice_ShouldIgnoreSecondRelease() {
+        TestEvents.PooledEvent event = pool.acquire();
+        pool.release(event);
+        pool.release(event); // duplicate release, should be ignored
+
+        // Only one event in pool, so the first acquire will return the pooled event and the second will create a new one
+        TestEvents.PooledEvent first = pool.acquire();
+        TestEvents.PooledEvent second = pool.acquire();
+
+        assertSame(event, first);
+        assertNotSame(event, second);
+    }
+
+    @Test
     void acquire_AfterManyReleases_ShouldReuseOldestFirst() {
         // FIFO behavior - first released should be first acquired
         TestEvents.PooledEvent event1 = pool.acquire();
