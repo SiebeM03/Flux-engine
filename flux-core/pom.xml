@@ -28,6 +28,14 @@
             <artifactId>flux-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+
+        <!-- TODO get rid of this dependency, StartupBanner still uses it for OpenGL and GPU values -->
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengl</artifactId>
+            <version>${lwjgl.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
