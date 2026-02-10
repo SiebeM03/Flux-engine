@@ -5,15 +5,15 @@ import me.siebe.flux.util.logging.LoggerFactory;
 
 import java.util.Arrays;
 
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
-
 public final class Timer {
     private static final Logger logger = LoggerFactory.getLogger(Timer.class, "timer");
+
+    private final TimeProvider timeProvider;
 
     private double deltaTime;
     private double lastFrameTime;
     private double currentFrameTime;
-    private double startTime;
+    private final double startTime;
     private long frameCount;
 
     private final float DEFAULT_PRINT_DELAY = 1.0f;
@@ -24,9 +24,17 @@ public final class Timer {
     private int newFrameIndex;
     private final double[] frameTimes;
 
-    public Timer() {
+    /**
+     * Creates a timer using the given time provider.
+     * <p>
+     * For game related timing, use timer providers from WindowBuilder#getTimeProvider()
+     *
+     * @param timeProvider the source of time values
+     */
+    public Timer(TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
         this.deltaTime = 0.0;
-        this.startTime = glfwGetTime();
+        this.startTime = timeProvider.getTimeSeconds();
         this.lastFrameTime = startTime;
         this.currentFrameTime = lastFrameTime;
         this.frameCount = 0L;
@@ -38,9 +46,16 @@ public final class Timer {
         logger.debug("Initialized Timer");
     }
 
+    /**
+     * Creates a timer using {@link SystemNanoTimeProvider}.
+     * Suitable for tests and headless environments.
+     */
+    public Timer() {
+        this(new SystemNanoTimeProvider());
+    }
 
     public void update() {
-        this.currentFrameTime = glfwGetTime();
+        this.currentFrameTime = timeProvider.getTimeSeconds();
         this.deltaTime = this.currentFrameTime - this.lastFrameTime;
         this.lastFrameTime = this.currentFrameTime;
         this.frameCount++;

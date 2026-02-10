@@ -86,13 +86,13 @@ public abstract class FluxApplication implements ProvidableSystem {
             ctx.eventBus.getEventPoolRegistry().register(WindowResizeEvent.class, WindowResizeEvent::new);
             ctx.eventBus.getEventPoolRegistry().register(FramebufferResizeEvent.class, FramebufferResizeEvent::new);
 
-            // Timer initialization
-            ctx.timer = new Timer();
-
             // Window initialization
             WindowBuilder windowBuilder = createWindowBuilder();
             ctx.window = windowBuilder.build();
             ctx.getWindow().init();
+
+            // Timer initialization (can only be called after windowBuilder.build() is called (glfwInit())
+            ctx.timer = new Timer(windowBuilder.getTimeProvider());
 
             // System manager initialization
             ctx.systemManager = new SystemManager();

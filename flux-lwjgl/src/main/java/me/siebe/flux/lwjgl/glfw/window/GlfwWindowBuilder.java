@@ -3,10 +3,12 @@ package me.siebe.flux.lwjgl.glfw.window;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowBuilder;
 import me.siebe.flux.api.window.WindowPlatform;
+import me.siebe.flux.lwjgl.glfw.time.GlfwTimeProvider;
 import me.siebe.flux.util.exceptions.WindowException;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
+import me.siebe.flux.util.time.TimeProvider;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
@@ -18,6 +20,11 @@ public class GlfwWindowBuilder extends WindowBuilder {
 
     public GlfwWindowBuilder() {
         super(WindowPlatform.GLFW);
+    }
+
+    @Override
+    public TimeProvider getTimeProvider() {
+        return new GlfwTimeProvider();
     }
 
     @Override

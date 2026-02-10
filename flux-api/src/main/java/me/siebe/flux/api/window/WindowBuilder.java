@@ -2,6 +2,7 @@ package me.siebe.flux.api.window;
 
 
 import me.siebe.flux.util.system.ProvidableSystem;
+import me.siebe.flux.util.time.TimeProvider;
 
 public abstract class WindowBuilder implements ProvidableSystem {
     protected final WindowPlatform platform;
@@ -62,4 +63,6 @@ public abstract class WindowBuilder implements ProvidableSystem {
     }
 
     public abstract Window build();
+
+    public abstract TimeProvider getTimeProvider();
 }
