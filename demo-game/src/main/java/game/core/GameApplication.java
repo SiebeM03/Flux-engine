@@ -4,6 +4,8 @@ import game.core.logging.GameCategories;
 import game.core.render.CustomRenderContext;
 import game.core.temp.TempCameraSetup;
 import game.core.temp.TerrainGenerator;
+import me.siebe.flux.api.event.Event;
+import me.siebe.flux.api.event.traits.Pooled;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.api.window.Window;
@@ -23,6 +25,13 @@ public class GameApplication extends FluxApplication {
     private static final Logger logger = LoggerFactory.getLogger(GameApplication.class, GameCategories.APPLICATION);
 
     private TempCameraSetup cameraSetup;
+
+    static class TestEvent extends Event implements Pooled {
+        @Override
+        public void reset() {
+
+        }
+    }
 
     @Override
     protected void initGameSystems() {

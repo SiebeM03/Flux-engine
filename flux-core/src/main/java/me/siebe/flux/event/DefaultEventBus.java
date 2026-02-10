@@ -1,7 +1,6 @@
 package me.siebe.flux.event;
 
 import me.siebe.flux.api.event.*;
-import me.siebe.flux.api.event.EventListener;
 import me.siebe.flux.api.event.traits.Cancellable;
 import me.siebe.flux.api.event.traits.Pooled;
 import me.siebe.flux.api.event.traits.Queued;
@@ -9,7 +8,10 @@ import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
 
-import java.util.*;
+import java.util.ConcurrentModificationException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.function.Consumer;
 
 /**
@@ -52,12 +54,10 @@ public class DefaultEventBus implements EventBus {
     public <E extends Event & Pooled> void post(Class<E> eventType, Consumer<E> consumer) {
         try {
             E event = poolRegistry.acquire(eventType);
-            if (event == null) throw new IllegalStateException("No event registered for type " + eventType);
-
             consumer.accept(event); // Allows users to set event values
             post(event);
         } catch (Exception e) {
-            logger.error("Failed to acquire event for event type {}", eventType.getName(), e);
+            logger.error("Failed to post pooled event for event type {}", eventType.getName(), e);
         }
     }
 
@@ -67,19 +67,16 @@ public class DefaultEventBus implements EventBus {
         Class<E> eventType = (Class<E>) event.getClass();
 
         try {
-            Optional<List<EventListener<E>>> optListeners = listenerRegistry.get(eventType);
-            if (optListeners.isPresent()) {
-                List<EventListener<E>> listeners = optListeners.get();
-                logger.trace("Firing event {} to {} listeners", eventType.getName(), listeners.size());
+            List<EventListener<E>> listeners = listenerRegistry.get(eventType);
+            if (listeners == null || listeners.isEmpty()) return;
 
-                for (EventListener<E> listener : listeners) {
-                    if (event instanceof Cancellable cancellable && cancellable.isCancelled()) break;
+            for (EventListener<E> listener : listeners) {
+                if (event instanceof Cancellable cancellable && cancellable.isCancelled()) break;
 
-                    try {
-                        listener.onEvent(event);
-                    } catch (Exception e) {
-                        logger.error("Exception in listener {} while handling event {}", listener, eventType.getName(), e);
-                    }
+                try {
+                    listener.onEvent(event);
+                } catch (Exception e) {
+                    logger.error("Exception in listener {} while handling event {}", listener, eventType.getName(), e);
                 }
             }
         } catch (ConcurrentModificationException e) {

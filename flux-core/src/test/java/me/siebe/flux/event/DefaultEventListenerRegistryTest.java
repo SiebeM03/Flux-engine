@@ -25,7 +25,7 @@ public class DefaultEventListenerRegistryTest {
 
         registry.register(TestEvents.SimpleEvent.class, listener);
 
-        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class);
         assertNotNull(listeners);
         assertEquals(1, listeners.size());
         assertTrue(listeners.contains(listener));
@@ -41,7 +41,7 @@ public class DefaultEventListenerRegistryTest {
         registry.register(TestEvents.SimpleEvent.class, listener2);
         registry.register(TestEvents.SimpleEvent.class, listener3);
 
-        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class);
         assertNotNull(listeners);
         assertEquals(3, listeners.size());
         assertTrue(listeners.contains(listener1));
@@ -57,8 +57,8 @@ public class DefaultEventListenerRegistryTest {
         registry.register(TestEvents.SimpleEvent.class, simpleListener);
         registry.register(TestEvents.CancellableEvent.class, cancellableListener);
 
-        List<EventListener<TestEvents.SimpleEvent>> simpleListeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
-        List<EventListener<TestEvents.CancellableEvent>> cancellableListeners = registry.get(TestEvents.CancellableEvent.class).orElse(null);
+        List<EventListener<TestEvents.SimpleEvent>> simpleListeners = registry.get(TestEvents.SimpleEvent.class);
+        List<EventListener<TestEvents.CancellableEvent>> cancellableListeners = registry.get(TestEvents.CancellableEvent.class);
 
         assertNotNull(simpleListeners);
         assertNotNull(cancellableListeners);
@@ -69,8 +69,8 @@ public class DefaultEventListenerRegistryTest {
     }
 
     @Test
-    void get_WithNoListeners_ShouldReturnEmpty() {
-        assertTrue(registry.get(TestEvents.SimpleEvent.class).isEmpty());
+    void get_Old_WithNoListeners_ShouldReturnEmpty() {
+        assertNull(registry.get(TestEvents.SimpleEvent.class));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DefaultEventListenerRegistryTest {
         registry.register(TestEvents.SimpleEvent.class, listener);
         registry.unregister(TestEvents.SimpleEvent.class, listener);
 
-        assertTrue(registry.get(TestEvents.SimpleEvent.class).isEmpty());
+        assertNull(registry.get(TestEvents.SimpleEvent.class));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class DefaultEventListenerRegistryTest {
 
         registry.unregister(TestEvents.SimpleEvent.class, listener2);
 
-        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class);
         assertNotNull(listeners);
         assertEquals(2, listeners.size());
         assertTrue(listeners.contains(listener1));
@@ -111,7 +111,7 @@ public class DefaultEventListenerRegistryTest {
         registry.register(TestEvents.SimpleEvent.class, listener);
         registry.unregister(TestEvents.SimpleEvent.class, listener);
 
-        assertTrue(registry.get(TestEvents.SimpleEvent.class).isEmpty());
+        assertNull(registry.get(TestEvents.SimpleEvent.class));
     }
 
     @Test
@@ -125,7 +125,7 @@ public class DefaultEventListenerRegistryTest {
             registry.unregister(TestEvents.SimpleEvent.class, listener2);
         });
 
-        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class);
         assertNotNull(listeners);
         assertEquals(1, listeners.size());
         assertTrue(listeners.contains(listener1));
@@ -147,7 +147,7 @@ public class DefaultEventListenerRegistryTest {
         registry.register(TestEvents.SimpleEvent.class, listener);
         registry.register(TestEvents.SimpleEvent.class, listener);
 
-        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class);
         assertNotNull(listeners);
         assertEquals(2, listeners.size());
     }
@@ -160,7 +160,7 @@ public class DefaultEventListenerRegistryTest {
         registry.register(TestEvents.SimpleEvent.class, listener);
         registry.unregister(TestEvents.SimpleEvent.class, listener);
 
-        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class);
         assertNotNull(listeners);
         assertEquals(1, listeners.size());
         assertTrue(listeners.contains(listener));
@@ -172,7 +172,7 @@ public class DefaultEventListenerRegistryTest {
     //        EventListener<TestEvents.SimpleEvent> listener = e -> {};
     //        registry.register(TestEvents.SimpleEvent.class, listener);
     //
-    //        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+    //        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class);
     //        assertNotNull(listeners);
     //
     //        // The list should be modifiable (it's an ArrayList internally)
@@ -222,7 +222,7 @@ public class DefaultEventListenerRegistryTest {
         registry.register(TestEvents.SimpleEvent.class, listener2);
         registry.register(TestEvents.SimpleEvent.class, listener3);
 
-        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class);
         assertNotNull(listeners);
         assertEquals(listener1, listeners.get(0));
         assertEquals(listener2, listeners.get(1));
@@ -237,7 +237,7 @@ public class DefaultEventListenerRegistryTest {
             registry.register(TestEvents.SimpleEvent.class, listener);
         }
 
-        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+        List<EventListener<TestEvents.SimpleEvent>> listeners = registry.get(TestEvents.SimpleEvent.class);
         assertNotNull(listeners);
         assertEquals(100, listeners.size());
 
@@ -245,7 +245,7 @@ public class DefaultEventListenerRegistryTest {
             registry.unregister(TestEvents.SimpleEvent.class, listener);
         }
 
-        listeners = registry.get(TestEvents.SimpleEvent.class).orElse(null);
+        listeners = registry.get(TestEvents.SimpleEvent.class);
         assertNotNull(listeners);
         assertEquals(50, listeners.size());
     }
@@ -262,9 +262,9 @@ public class DefaultEventListenerRegistryTest {
         registry.register(TestEvents.PooledEvent.class, pooledListener);
         registry.register(TestEvents.QueuedEvent.class, queuedListener);
 
-        assertTrue(registry.get(TestEvents.SimpleEvent.class).isPresent());
-        assertTrue(registry.get(TestEvents.CancellableEvent.class).isPresent());
-        assertTrue(registry.get(TestEvents.PooledEvent.class).isPresent());
-        assertTrue(registry.get(TestEvents.QueuedEvent.class).isPresent());
+        assertNotNull(registry.get(TestEvents.SimpleEvent.class));
+        assertNotNull(registry.get(TestEvents.CancellableEvent.class));
+        assertNotNull(registry.get(TestEvents.PooledEvent.class));
+        assertNotNull(registry.get(TestEvents.QueuedEvent.class));
     }
 }
