@@ -12,6 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * Default implementation of {@link EventPoolRegistry} that creates a {@link DefaultEventPool}
+ * per registered event type, using the supplied factory when the pool is empty.
+ */
 public class DefaultEventPoolRegistry implements EventPoolRegistry {
     private static final Logger logger = LoggerFactory.getLogger(DefaultEventPoolRegistry.class, LoggingCategories.EVENT);
 
