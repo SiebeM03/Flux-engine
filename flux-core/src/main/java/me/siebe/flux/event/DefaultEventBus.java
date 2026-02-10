@@ -12,14 +12,24 @@ import me.siebe.flux.util.logging.config.LoggingCategories;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * Default implementation of {@link EventBus}.
+ * <p>
+ * Dispatches events to listeners registered via {@link #getListenerRegistry()}. Events implementing
+ * {@link Queued} are enqueued until {@link #flush()} is called; others are delivered immediately.
+ * Pooled events are acquired from and released to {@link #getEventPoolRegistry()}. For
+ * {@link Cancellable} events, delivery stops once a listener cancels the event.
+ */
 public class DefaultEventBus implements EventBus {
     private static final Logger logger = LoggerFactory.getLogger(DefaultEventBus.class, LoggingCategories.EVENT);
 
-    // Data variables
     private final EventListenerRegistry listenerRegistry;
     private final Queue<Event> eventQueue;
     private final EventPoolRegistry poolRegistry;
 
+    /**
+     * Creates a new event bus with a default listener registry, event queue, and pool registry.
+     */
     public DefaultEventBus() {
         listenerRegistry = new DefaultEventListenerRegistry();
         eventQueue = new LinkedList<>();

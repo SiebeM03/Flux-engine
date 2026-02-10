@@ -12,6 +12,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Default implementation of {@link EventListenerRegistry} using a concurrent map keyed by event
+ * type and copy-on-write lists for thread-safe registration and iteration.
+ */
 public class DefaultEventListenerRegistry implements EventListenerRegistry {
     private static final Logger logger = LoggerFactory.getLogger(DefaultEventListenerRegistry.class);
 
