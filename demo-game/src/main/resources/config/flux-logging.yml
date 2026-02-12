@@ -4,6 +4,7 @@ categories:
   timer: INFO
   renderer: ERROR
   assets: DEBUG
+  input: TRACE
 
 startupBannerConfig:
   enabled: true

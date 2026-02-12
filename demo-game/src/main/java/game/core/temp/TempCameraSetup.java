@@ -19,6 +19,8 @@ public class TempCameraSetup {
     private float yaw = -90.0f;
     private float pitch = 0.0f;
 
+    private final CameraMoveController moveController = new CameraMoveController();
+
     public void init() {
         AppContext.withContextNoReturn(ctx -> {
             camera = new PerspectiveCamera(ctx.getWindow().getAspectRatio(), 0.1f, 1000.f);
@@ -77,24 +79,12 @@ public class TempCameraSetup {
         Vector3f up = new Vector3f(camera.getUp());
         Vector3f newPosition = new Vector3f(position);
 
-        if (GLFW.glfwGetKey(windowId, GLFW.GLFW_KEY_W) == GLFW.GLFW_PRESS) {
-            newPosition.add(new Vector3f(direction).mul(moveSpeed));
-        }
-        if (GLFW.glfwGetKey(windowId, GLFW.GLFW_KEY_S) == GLFW.GLFW_PRESS) {
-            newPosition.sub(new Vector3f(direction).mul(moveSpeed));
-        }
-        if (GLFW.glfwGetKey(windowId, GLFW.GLFW_KEY_A) == GLFW.GLFW_PRESS) {
-            newPosition.sub(new Vector3f(right).mul(moveSpeed));
-        }
-        if (GLFW.glfwGetKey(windowId, GLFW.GLFW_KEY_D) == GLFW.GLFW_PRESS) {
-            newPosition.add(new Vector3f(right).mul(moveSpeed));
-        }
-        if (GLFW.glfwGetKey(windowId, GLFW.GLFW_KEY_SPACE) == GLFW.GLFW_PRESS) {
-            newPosition.add(new Vector3f(up).mul(moveSpeed));
-        }
-        if (GLFW.glfwGetKey(windowId, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS) {
-            newPosition.sub(new Vector3f(up).mul(moveSpeed));
-        }
+        if (moveController.isMoveForwardHeld()) newPosition.add(new Vector3f(direction).mul(moveSpeed));
+        if (moveController.isMoveBackwardHeld()) newPosition.sub(new Vector3f(direction).mul(moveSpeed));
+        if (moveController.isMoveLeftHeld()) newPosition.sub(new Vector3f(right).mul(moveSpeed));
+        if (moveController.isMoveRightHeld()) newPosition.add(new Vector3f(right).mul(moveSpeed));
+        if (moveController.isMoveUpHeld()) newPosition.add(new Vector3f(up).mul(moveSpeed));
+        if (moveController.isMoveDownHeld()) newPosition.sub(new Vector3f(up).mul(moveSpeed));
 
         camera.setPosition(newPosition);
 

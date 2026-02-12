@@ -2,6 +2,7 @@ package me.siebe.flux.core;
 
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
+import me.siebe.flux.api.input.Input;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.renderer.pipeline.RenderPipeline;
 import me.siebe.flux.api.systems.SystemManager;
@@ -160,6 +161,7 @@ public abstract class FluxApplication implements ProvidableSystem {
         ctx.getTimer().update();
         ctx.getTimer().print();
 
+        Input.update();
         ctx.getWindow().update();
 
         ctx.getEventBus().flush();

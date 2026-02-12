@@ -2,6 +2,10 @@ package me.siebe.flux.lwjgl.glfw.window;
 
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
+import me.siebe.flux.api.input.Input;
+import me.siebe.flux.api.input.keyboard.Key;
+import me.siebe.flux.api.input.keyboard.Modifier;
+import me.siebe.flux.api.input.keyboard.event.KeyPressEvent;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowConfig;
 import me.siebe.flux.core.AppContext;
@@ -29,6 +33,10 @@ public class GlfwWindow implements Window {
         OpenGLState.enableDepthTest();
         OpenGLState.setViewport(0, 0, config.width, config.height);
 
+        Input.init(
+                new GlfwKeyboard(getId())
+        );
+
         // Register window event callbacks
         glfwSetWindowSizeCallback(getId(), this::sendWindowResizeEvent);
         glfwSetFramebufferSizeCallback(getId(), this::sendFramebufferResizeEvent);
@@ -36,6 +44,11 @@ public class GlfwWindow implements Window {
         // Register event listeners
         AppContext.get().getEventBus().getListenerRegistry().register(WindowResizeEvent.class, this::onWindowResize);
         AppContext.get().getEventBus().getListenerRegistry().register(FramebufferResizeEvent.class, this::onFramebufferResize);
+
+        AppContext.get().getEventBus().getListenerRegistry().register(KeyPressEvent.class, e -> {
+            if (!e.isKey(Key.KEY_ESCAPE)) return;
+            glfwSetWindowShouldClose(getId(), true);
+        });
     }
 
     @Override
