@@ -1,8 +1,8 @@
 package me.siebe.flux.lwjgl.glfw.window;
 
-import me.siebe.flux.api.input.keyboard.Key;
+import me.siebe.flux.api.input.enums.Key;
+import me.siebe.flux.api.input.enums.Modifier;
 import me.siebe.flux.api.input.keyboard.Keyboard;
-import me.siebe.flux.api.input.keyboard.Modifier;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
@@ -16,32 +16,20 @@ class GlfwKeyboard extends Keyboard {
     private static final Logger logger = LoggerFactory.getLogger(GlfwKeyboard.class, LoggingCategories.INPUT);
 
     GlfwKeyboard(long windowId) {
-        glfwSetKeyCallback(windowId, (window, key, scancode, action, mods) -> {
-            Key fluxKey = toKey(key);
-            Set<Modifier> fluxMods = toModifiers(mods);
-
-            logger.trace("Keycode: {}, FluxKey: {}, Action: {}, Mods: {}", key, fluxKey, action, fluxMods);
-
-            switch (action) {
-                case GLFW_PRESS -> onKeyPress(toKey(key), toModifiers(mods));
-                case GLFW_RELEASE -> onKeyRelease(toKey(key), toModifiers(mods));
-                case GLFW_REPEAT -> onKeyRepeat(toKey(key), toModifiers(mods));
-            }
-        });
+        glfwSetKeyCallback(windowId, this::keyCallback);
     }
 
-    @Override
-    protected void onKeyPress(Key key, Set<Modifier> modifiers) {
-        super.onKeyPress(key, modifiers);
-    }
-    @Override
-    protected void onKeyRelease(Key key, Set<Modifier> modifiers) {
-        super.onKeyRelease(key, modifiers);
-    }
+    private void keyCallback(long window, int key, int scancode, int action, int mods) {
+        Key fluxKey = toKey(key);
+        Set<Modifier> fluxMods = toModifiers(mods);
 
-    @Override
-    protected void onKeyRepeat(Key key, Set<Modifier> modifiers) {
-        super.onKeyRepeat(key, modifiers);
+        logger.trace("Keycode: {}, FluxKey: {}, Action: {}, Mods: {}", key, fluxKey, action, fluxMods);
+
+        switch (action) {
+            case GLFW_PRESS -> onKeyPress(fluxKey, fluxMods);
+            case GLFW_RELEASE -> onKeyRelease(fluxKey, fluxMods);
+            case GLFW_REPEAT -> onKeyRepeat(fluxKey, fluxMods);
+        }
     }
 
     private Set<Modifier> toModifiers(int mods) {
@@ -180,6 +168,7 @@ class GlfwKeyboard extends Keyboard {
             case GLFW_KEY_F23 -> Key.KEY_F23;
             case GLFW_KEY_F24 -> Key.KEY_F24;
             case GLFW_KEY_F25 -> Key.KEY_F25;
+
             default -> null;
         };
     }

@@ -1,4 +1,4 @@
-package me.siebe.flux.api.input.keyboard;
+package me.siebe.flux.api.input.enums;
 
 public enum Key {
     // Letters

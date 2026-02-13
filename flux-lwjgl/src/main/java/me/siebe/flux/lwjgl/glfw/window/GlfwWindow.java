@@ -3,8 +3,7 @@ package me.siebe.flux.lwjgl.glfw.window;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.input.Input;
-import me.siebe.flux.api.input.keyboard.Key;
-import me.siebe.flux.api.input.keyboard.Modifier;
+import me.siebe.flux.api.input.enums.Key;
 import me.siebe.flux.api.input.keyboard.event.KeyPressEvent;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowConfig;
@@ -34,6 +33,7 @@ public class GlfwWindow implements Window {
         OpenGLState.setViewport(0, 0, config.width, config.height);
 
         Input.init(
+                new GlfwMouse(getId()),
                 new GlfwKeyboard(getId())
         );
 
@@ -91,6 +91,11 @@ public class GlfwWindow implements Window {
     @Override
     public int getHeight() {
         return config.height;
+    }
+
+    @Override
+    public int getTargetFps() {
+        return config.targetFps;
     }
 
     @Override

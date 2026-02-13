@@ -1,7 +1,7 @@
 package game.core.temp;
 
 import me.siebe.flux.api.input.InputController;
-import me.siebe.flux.api.input.keyboard.Key;
+import me.siebe.flux.api.input.enums.Key;
 
 public class CameraMoveController extends InputController {
     public boolean isMoveForwardHeld() {

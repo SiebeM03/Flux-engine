@@ -2,8 +2,8 @@ package me.siebe.flux.api.input.keyboard.event;
 
 import me.siebe.flux.api.event.Event;
 import me.siebe.flux.api.event.traits.Pooled;
-import me.siebe.flux.api.input.keyboard.Key;
-import me.siebe.flux.api.input.keyboard.Modifier;
+import me.siebe.flux.api.input.enums.Key;
+import me.siebe.flux.api.input.enums.Modifier;
 
 import java.util.Set;
 
@@ -36,6 +36,7 @@ abstract class KeyEvent extends Event implements Pooled {
     }
 
     public boolean hasModifier(Modifier modifier) {
+        if (this.modifiers == null) return false;
         return modifiers.contains(modifier);
     }
 }

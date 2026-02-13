@@ -1,5 +1,7 @@
 package me.siebe.flux.api.input.keyboard;
 
+import me.siebe.flux.api.input.enums.Key;
+import me.siebe.flux.api.input.enums.Modifier;
 import me.siebe.flux.api.input.keyboard.event.KeyPressEvent;
 import me.siebe.flux.api.input.keyboard.event.KeyReleaseEvent;
 import me.siebe.flux.core.AppContext;
@@ -8,10 +10,10 @@ import java.util.BitSet;
 import java.util.Set;
 
 public abstract class Keyboard {
-    protected final BitSet keysPressedThisFrame;
-    protected final BitSet keysRepeatedThisFrame;
-    protected final BitSet keysReleasedThisFrame;
-    protected final BitSet keysDown;
+    private final BitSet keysPressedThisFrame;
+    private final BitSet keysRepeatedThisFrame;
+    private final BitSet keysReleasedThisFrame;
+    private final BitSet keysDown;
 
     protected Keyboard() {
         int keyCount = Key.values().length;
