@@ -68,6 +68,7 @@ public class Mouse {
         this.buttonsDown = new BitSet(buttonCount);
         this.buttonsPressedThisFrame = new BitSet(buttonCount);
         this.buttonsReleasedThisFrame = new BitSet(buttonCount);
+
         this.x = new Delta<>(0f);
         this.y = new Delta<>(0f);
     }
@@ -81,6 +82,53 @@ public class Mouse {
     public boolean isButtonDown(MouseButton button) {
         return buttonsDown.get(button.ordinal());
     }
+
+    public float normalizedX() {
+        return x.getCurrentValue();
+    }
+
+    public float normalizedY() {
+        return y.getCurrentValue();
+    }
+
+    public float screenX() {
+        return normalizedX() * AppContext.get().getWindow().getWidth();
+    }
+
+    public float screenY() {
+        return normalizedY() * AppContext.get().getWindow().getHeight();
+    }
+
+    public float normalizedDeltaX() {
+        // Skip first frame since x.lastValue() will be 0 while x.currentValue() is the actual cursor position.
+        // This would return an incorrect delta value on frame 1
+        if (AppContext.get().getTimer().getFrameCount() == 0) return 0;
+        return (float) x.getDelta();
+    }
+
+    public float normalizedDeltaY() {
+        // Skip first frame since x.lastValue() will be 0 while x.currentValue() is the actual cursor position.
+        // This would return an incorrect delta value on frame 1
+        if (AppContext.get().getTimer().getFrameCount() == 0) return 0;
+        return (float) y.getDelta();
+    }
+
+    public float deltaX() {
+        return normalizedDeltaX() * AppContext.get().getWindow().getWidth();
+    }
+
+    public float deltaY() {
+        return normalizedDeltaY() * AppContext.get().getWindow().getHeight() * -1;
+    }
+
+    public float scrollX() {
+        return scrollX;
+    }
+
+    public float scrollY() {
+        return scrollY;
+    }
+
 
     /**
      * Called once per frame: commits pending position to {@link #x}/{@link #y}, clears per-frame button and scroll state.

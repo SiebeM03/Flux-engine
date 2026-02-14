@@ -1,6 +1,7 @@
 package game.core.temp;
 
 import me.siebe.flux.api.camera.PerspectiveCamera;
+import me.siebe.flux.api.input.Input;
 import me.siebe.flux.core.AppContext;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -13,9 +14,6 @@ public class TempCameraSetup {
     private PerspectiveCamera camera;
     private float cameraSpeed = 5.0f;
     private float mouseSensitivity = 0.1f;
-    private double lastMouseX = 0;
-    private double lastMouseY = 0;
-    private boolean firstMouse = true;
     private float yaw = -90.0f;
     private float pitch = 0.0f;
 
@@ -33,26 +31,11 @@ public class TempCameraSetup {
     }
 
     public void update(final AppContext ctx) {
-        long windowId = ctx.getWindow().getId();
         float deltaTime = (float) ctx.getTimer().getDeltaTime();
         float moveSpeed = cameraSpeed * deltaTime;
 
-        // Mouse input for camera rotation (must be done first to update direction)
-        double[] mouseX = new double[1];
-        double[] mouseY = new double[1];
-        GLFW.glfwGetCursorPos(windowId, mouseX, mouseY);
-
-        if (firstMouse) {
-            lastMouseX = mouseX[0];
-            lastMouseY = mouseY[0];
-            firstMouse = false;
-        }
-
-        float xOffset = (float) (mouseX[0] - lastMouseX) * mouseSensitivity;
-        float yOffset = (float) (lastMouseY - mouseY[0]) * mouseSensitivity;
-
-        lastMouseX = mouseX[0];
-        lastMouseY = mouseY[0];
+        float xOffset = Input.mouse().deltaX() * mouseSensitivity;
+        float yOffset = Input.mouse().deltaY() * mouseSensitivity;
 
         yaw += xOffset;
         pitch += yOffset;
