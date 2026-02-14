@@ -1,5 +1,8 @@
 package me.siebe.flux.api.input.enums;
 
+/**
+ * Mouse button identifiers. Used with {@link me.siebe.flux.api.input.mouse.Mouse} and mouse button events.
+ */
 public enum MouseButton {
     MOUSE_MIDDLE,
     MOUSE_LEFT,

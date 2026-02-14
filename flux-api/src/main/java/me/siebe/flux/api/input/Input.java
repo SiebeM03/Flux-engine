@@ -10,10 +10,24 @@ import me.siebe.flux.api.input.mouse.event.MouseClickEvent;
 import me.siebe.flux.api.input.mouse.event.MouseReleaseEvent;
 import me.siebe.flux.core.AppContext;
 
+/**
+ * Central access point for keyboard and mouse input.
+ * <p>
+ * Call {@link #init(Mouse, Keyboard)} once at startup with backend-specific implementations (e.g. GLFW).
+ * Call {@link #nextFrame()} once per frame so per-frame state (key press/release, mouse deltas, scroll) is updated.
+ * Use {@link #keyboard()} and {@link #mouse()} to poll state or subscribe to input events on the event bus.
+ */
 public class Input {
     private static Mouse mouse;
     private static Keyboard keyboard;
 
+    /**
+     * Initialises the input system with the given keyboard and mouse implementations and registers
+     * input event types with the event bus. Must be called once before using {@link #keyboard()} or {@link #mouse()}.
+     *
+     * @param mouse    backend-specific mouse implementation (e.g. GLFW)
+     * @param keyboard backend-specific keyboard implementation (e.g. GLFW)
+     */
     public static void init(Mouse mouse, Keyboard keyboard) {
         EventPoolRegistry eventPoolRegistry = AppContext.get().getEventBus().getEventPoolRegistry();
 
@@ -27,15 +41,29 @@ public class Input {
         eventPoolRegistry.register(KeyReleaseEvent.class, KeyReleaseEvent::new);
     }
 
-    public static void update() {
-        keyboard.update();
-        mouse.update();
+    /**
+     * Advances input state to the next frame. Clears per-frame flags (key/mouse press/release, scroll, deltas).
+     * Must be called once per frame, typically done by FluxApplication at the start of the update loop.
+     */
+    public static void nextFrame() {
+        keyboard.nextFrame();
+        mouse.nextFrame();
     }
 
+    /**
+     * Returns the current keyboard instance. Valid after {@link #init(Mouse, Keyboard)}.
+     *
+     * @return the keyboard implementation
+     */
     public static Keyboard keyboard() {
         return keyboard;
     }
 
+    /**
+     * Returns the current mouse instance. Valid after {@link #init(Mouse, Keyboard)}.
+     *
+     * @return the mouse implementation
+     */
     public static Mouse mouse() {
         return mouse;
     }

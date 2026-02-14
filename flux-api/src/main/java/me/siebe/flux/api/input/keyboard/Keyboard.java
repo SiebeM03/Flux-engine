@@ -1,59 +1,52 @@
 package me.siebe.flux.api.input.keyboard;
 
 import me.siebe.flux.api.input.enums.Key;
-import me.siebe.flux.api.input.enums.Modifier;
-import me.siebe.flux.api.input.keyboard.event.KeyPressEvent;
-import me.siebe.flux.api.input.keyboard.event.KeyReleaseEvent;
-import me.siebe.flux.core.AppContext;
 
-import java.util.BitSet;
-import java.util.Set;
+/**
+ * Read-only view of keyboard state: which keys are held down and per-frame press/release/repeat.
+ * <p>
+ * Per-frame flags ({@link #isKeyPressed}, {@link #isKeyReleased}, {@link #isKeyRepeated}) are cleared
+ * when {@link #nextFrame()} is called, typically via {@link me.siebe.flux.api.input.Input#nextFrame()}.
+ */
+public interface Keyboard {
+    /**
+     * Returns whether the given key is currently held down.
+     *
+     * @param key the key to check
+     * @return true if the key is down
+     */
+    boolean isKeyDown(Key key);
 
-public abstract class Keyboard {
-    private final BitSet keysPressedThisFrame;
-    private final BitSet keysRepeatedThisFrame;
-    private final BitSet keysReleasedThisFrame;
-    private final BitSet keysDown;
+    /**
+     * Returns whether the key was pressed this frame (transition from released to pressed).
+     * Cleared on {@link #nextFrame()}.
+     *
+     * @param key the key to check
+     * @return true if the key was pressed this frame
+     */
+    boolean isKeyPressed(Key key);
 
-    protected Keyboard() {
-        int keyCount = Key.values().length;
-        this.keysPressedThisFrame = new BitSet(keyCount);
-        this.keysRepeatedThisFrame = new BitSet(keyCount);
-        this.keysReleasedThisFrame = new BitSet(keyCount);
-        this.keysDown = new BitSet(keyCount);
-    }
+    /**
+     * Returns whether the key was released this frame (transition from pressed to released).
+     * Cleared on {@link #nextFrame()}.
+     *
+     * @param key the key to check
+     * @return true if the key was released this frame
+     */
+    boolean isKeyReleased(Key key);
 
-    public boolean isKeyDown(Key key) {
-        return keysDown.get(key.ordinal());
-    }
+    /**
+     * Returns whether the key generated a repeat event this frame (held down, OS repeat).
+     * Cleared on {@link #nextFrame()}.
+     *
+     * @param key the key to check
+     * @return true if the key repeated this frame
+     */
+    boolean isKeyRepeated(Key key);
 
-    public void update() {
-        keysReleasedThisFrame.clear();
-        keysPressedThisFrame.clear();
-        keysRepeatedThisFrame.clear();
-    }
-
-    protected void onKeyPress(Key key, Set<Modifier> modifiers) {
-        if (key == null) return;
-
-        keysDown.set(key.ordinal());
-        keysPressedThisFrame.set(key.ordinal());
-
-        AppContext.get().getEventBus().post(KeyPressEvent.class, e -> e.set(key, modifiers));
-    }
-
-    protected void onKeyRelease(Key key, Set<Modifier> modifiers) {
-        if (key == null) return;
-
-        keysDown.clear(key.ordinal());
-        keysReleasedThisFrame.set(key.ordinal());
-
-        AppContext.get().getEventBus().post(KeyReleaseEvent.class, e -> e.set(key, modifiers));
-    }
-
-    protected void onKeyRepeat(Key key, Set<Modifier> modifiers) {
-        if (key == null) return;
-
-        keysRepeatedThisFrame.set(key.ordinal());
-    }
+    /**
+     * Advances internal state to the next frame (clears press/release/repeat flags).
+     * Called by {@link me.siebe.flux.api.input.Input#nextFrame()}.
+     */
+    void nextFrame();
 }

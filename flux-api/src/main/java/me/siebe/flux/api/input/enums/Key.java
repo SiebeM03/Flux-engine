@@ -1,5 +1,9 @@
 package me.siebe.flux.api.input.enums;
 
+/**
+ * Keyboard key identifiers. Matches common physical keys across platforms; used with {@link me.siebe.flux.api.input.keyboard.Keyboard}
+ * and keyboard events. Layout-dependent characters (e.g. which symbol appears when pressing a key) are not represented here.
+ */
 public enum Key {
     // Letters
     KEY_A,

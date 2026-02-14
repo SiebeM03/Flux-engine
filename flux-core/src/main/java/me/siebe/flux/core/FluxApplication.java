@@ -161,7 +161,7 @@ public abstract class FluxApplication implements ProvidableSystem {
         ctx.getTimer().update();
         ctx.getTimer().print();
 
-        Input.update();
+        Input.nextFrame();
         ctx.getWindow().update();
 
         ctx.getEventBus().flush();

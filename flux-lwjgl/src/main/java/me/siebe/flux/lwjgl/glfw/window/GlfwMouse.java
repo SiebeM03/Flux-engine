@@ -2,6 +2,7 @@ package me.siebe.flux.lwjgl.glfw.window;
 
 import me.siebe.flux.api.input.enums.Modifier;
 import me.siebe.flux.api.input.enums.MouseButton;
+import me.siebe.flux.api.input.mouse.AbstractMouse;
 import me.siebe.flux.api.input.mouse.Mouse;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
@@ -11,17 +12,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_MOD_CAPS_LOCK;
-import static org.lwjgl.glfw.GLFW.GLFW_MOD_NUM_LOCK;
-import static org.lwjgl.glfw.GLFW.GLFW_MOD_SUPER;
 
-public class GlfwMouse extends Mouse {
+public class GlfwMouse extends AbstractMouse {
     private static final Logger logger = LoggerFactory.getLogger(GlfwMouse.class, LoggingCategories.INPUT);
 
     GlfwMouse(long windowId) {
         glfwSetMouseButtonCallback(windowId, this::mouseButtonCallback);
         glfwSetCursorPosCallback(windowId, this::mousePosCallback);
         glfwSetScrollCallback(windowId, this::scrollCallback);
+
+        double[] mouseX = new double[1];
+        double[] mouseY = new double[1];
+        glfwGetCursorPos(windowId, mouseX, mouseY);
+        setInitialMousePos(mouseX[0], mouseY[0]);
     }
 
     private void mouseButtonCallback(long window, int button, int action, int mods) {

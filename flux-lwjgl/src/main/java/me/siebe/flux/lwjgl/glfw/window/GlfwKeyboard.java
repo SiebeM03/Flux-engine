@@ -2,6 +2,7 @@ package me.siebe.flux.lwjgl.glfw.window;
 
 import me.siebe.flux.api.input.enums.Key;
 import me.siebe.flux.api.input.enums.Modifier;
+import me.siebe.flux.api.input.keyboard.AbstractKeyboard;
 import me.siebe.flux.api.input.keyboard.Keyboard;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
@@ -12,7 +13,7 @@ import java.util.Set;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-class GlfwKeyboard extends Keyboard {
+class GlfwKeyboard extends AbstractKeyboard {
     private static final Logger logger = LoggerFactory.getLogger(GlfwKeyboard.class, LoggingCategories.INPUT);
 
     GlfwKeyboard(long windowId) {
