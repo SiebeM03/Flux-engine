@@ -3,8 +3,6 @@ defaultLevel: DEBUG
 categories:
   timer: INFO
   renderer: ERROR
-  assets: DEBUG
-  input: TRACE
   opengl: INFO
 
 startupBannerConfig:
