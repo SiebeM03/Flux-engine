@@ -34,14 +34,6 @@ public class DefaultEventListenerRegistry implements EventListenerRegistry {
             listenersMap.put(eventType, listeners);
         }
         listeners.add(listener);
-//        get(eventType).ifPresentOrElse(
-//                list -> list.add(listener),
-//                () -> {
-//                    List<EventListener<E>> newList = new CopyOnWriteArrayList<>();
-//                    newList.add(listener);
-//                    listeners.put(eventType, newList);
-//                }
-//        );
     }
 
     @Override
