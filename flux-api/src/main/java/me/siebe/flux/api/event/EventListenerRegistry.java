@@ -32,12 +32,11 @@ public interface EventListenerRegistry {
     <E extends Event> void unregister(Class<E> eventType, EventListener<E> listener);
 
     /**
-     * Returns the list of listeners registered for the given event type, if any.
+     * Returns the list of listeners registered for the given event type, or null if none registered.
      *
      * @param eventType the event class
      * @param <E>       the event type
-     * @return an optional containing the list of listeners, or empty if none are registered
+     * @return a list of listeners, or null if none are registered
      */
-    // TODO check why Optional was used here and possibly refactor to return null when needed (consistent with EventPoolRegistry)
-    <E extends Event> Optional<List<EventListener<E>>> get(Class<E> eventType);
+    <E extends Event> List<EventListener<E>> get(Class<E> eventType);
 }

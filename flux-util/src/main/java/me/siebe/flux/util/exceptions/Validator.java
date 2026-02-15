@@ -22,12 +22,15 @@ public final class Validator {
     }
 
     public static <T> T notNull(T value, Supplier<String> nameSupplier) throws NullPointerException {
+        return notNull(value, nameSupplier.get() + " must not be null");
+    }
+
+    public static <T> T notNull(T value, String message) throws NullPointerException {
         if (value == null) {
-            fail(nameSupplier.get() + " must not be null", NullPointerException.class);
+            fail(message, NullPointerException.class);
         }
         return value;
     }
-
 
     // =================================================================================================================
     // Number comparison
