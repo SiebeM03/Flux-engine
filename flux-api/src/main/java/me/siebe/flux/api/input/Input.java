@@ -1,5 +1,6 @@
 package me.siebe.flux.api.input;
 
+import me.siebe.flux.api.event.EventListenerRegistry;
 import me.siebe.flux.api.event.EventPoolRegistry;
 import me.siebe.flux.api.input.keyboard.Keyboard;
 import me.siebe.flux.api.input.keyboard.event.KeyPressEvent;
@@ -8,6 +9,13 @@ import me.siebe.flux.api.input.mouse.Mouse;
 import me.siebe.flux.api.input.mouse.event.DoubleClickEvent;
 import me.siebe.flux.api.input.mouse.event.MouseClickEvent;
 import me.siebe.flux.api.input.mouse.event.MouseReleaseEvent;
+import me.siebe.flux.api.input.devices.keyboard.Keyboard;
+import me.siebe.flux.api.input.devices.keyboard.event.KeyPressEvent;
+import me.siebe.flux.api.input.devices.keyboard.event.KeyReleaseEvent;
+import me.siebe.flux.api.input.devices.mouse.Mouse;
+import me.siebe.flux.api.input.devices.mouse.event.DoubleClickEvent;
+import me.siebe.flux.api.input.devices.mouse.event.MouseClickEvent;
+import me.siebe.flux.api.input.devices.mouse.event.MouseReleaseEvent;
 import me.siebe.flux.core.AppContext;
 
 /**
@@ -39,6 +47,17 @@ public class Input {
         Input.keyboard = keyboard;
         eventPoolRegistry.register(KeyPressEvent.class, KeyPressEvent::new);
         eventPoolRegistry.register(KeyReleaseEvent.class, KeyReleaseEvent::new);
+
+        Input.controller = controller;
+        eventPoolRegistry.register(GamepadButtonPressEvent.class, GamepadButtonPressEvent::new);
+        eventPoolRegistry.register(GamepadButtonReleaseEvent.class, GamepadButtonReleaseEvent::new);
+
+        Input.manager = new InputManager();
+
+        EventListenerRegistry eventListenerRegistry = AppContext.get().getEventBus().getListenerRegistry();
+        eventListenerRegistry.register(MouseClickEvent.class, e -> activeDevice = InputType.KEYBOARD_MOUSE);
+        eventListenerRegistry.register(KeyPressEvent.class, e -> activeDevice = InputType.KEYBOARD_MOUSE);
+        eventListenerRegistry.register(GamepadButtonPressEvent.class, e -> activeDevice = InputType.CONTROLLER);
     }
 
     /**
