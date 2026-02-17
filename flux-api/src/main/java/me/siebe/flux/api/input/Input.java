@@ -47,17 +47,6 @@ public class Input {
         Input.keyboard = keyboard;
         eventPoolRegistry.register(KeyPressEvent.class, KeyPressEvent::new);
         eventPoolRegistry.register(KeyReleaseEvent.class, KeyReleaseEvent::new);
-
-        Input.controller = controller;
-        eventPoolRegistry.register(GamepadButtonPressEvent.class, GamepadButtonPressEvent::new);
-        eventPoolRegistry.register(GamepadButtonReleaseEvent.class, GamepadButtonReleaseEvent::new);
-
-        Input.manager = new InputManager();
-
-        EventListenerRegistry eventListenerRegistry = AppContext.get().getEventBus().getListenerRegistry();
-        eventListenerRegistry.register(MouseClickEvent.class, e -> activeDevice = InputType.KEYBOARD_MOUSE);
-        eventListenerRegistry.register(KeyPressEvent.class, e -> activeDevice = InputType.KEYBOARD_MOUSE);
-        eventListenerRegistry.register(GamepadButtonPressEvent.class, e -> activeDevice = InputType.CONTROLLER);
     }
 
     /**
