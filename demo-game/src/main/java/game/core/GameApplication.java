@@ -3,7 +3,9 @@ package game.core;
 import game.core.logging.GameCategories;
 import game.core.render.CustomRenderContext;
 import game.core.temp.TempCameraSetup;
+import game.core.temp.TempPauseSetup;
 import game.core.temp.TerrainGenerator;
+import me.siebe.flux.api.input.Input;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.api.window.Window;
@@ -19,10 +21,13 @@ import me.siebe.flux.util.logging.LoggerFactory;
 
 import java.util.ArrayList;
 
+import static game.core.temp.input.InputContexts.GAME_CONTEXT;
+
 public class GameApplication extends FluxApplication {
     private static final Logger logger = LoggerFactory.getLogger(GameApplication.class, GameCategories.APPLICATION);
 
     private TempCameraSetup cameraSetup;
+    private TempPauseSetup pauseSetup;
 
     @Override
     protected void initGameSystems() {
@@ -44,12 +49,25 @@ public class GameApplication extends FluxApplication {
 
         this.cameraSetup = new TempCameraSetup();
         this.cameraSetup.init();
+
+        this.pauseSetup = new TempPauseSetup();
+        this.pauseSetup.init();
+
+        Input.manager().pushContext(GAME_CONTEXT);
     }
 
     @Override
     protected void gameUpdate(final AppContext ctx) {
         logger.trace("Updating Game");
         this.cameraSetup.update(ctx);
+        this.pauseSetup.update();
+
+        if (AppContext.get().getTimer().getFrameCount() == 15000) {
+            pauseSetup.pause();
+        }
+        if (AppContext.get().getTimer().getFrameCount() == 45000) {
+            pauseSetup.unpause();
+        }
     }
 
     @Override

@@ -2,6 +2,10 @@ package me.siebe.flux.api.input;
 
 import me.siebe.flux.api.event.EventListenerRegistry;
 import me.siebe.flux.api.event.EventPoolRegistry;
+import me.siebe.flux.api.input.context.InputManager;
+import me.siebe.flux.api.input.devices.controller.Controller;
+import me.siebe.flux.api.input.devices.controller.event.GamepadButtonPressEvent;
+import me.siebe.flux.api.input.devices.controller.event.GamepadButtonReleaseEvent;
 import me.siebe.flux.api.input.devices.keyboard.Keyboard;
 import me.siebe.flux.api.input.devices.keyboard.event.KeyPressEvent;
 import me.siebe.flux.api.input.devices.keyboard.event.KeyReleaseEvent;
@@ -9,18 +13,22 @@ import me.siebe.flux.api.input.devices.mouse.Mouse;
 import me.siebe.flux.api.input.devices.mouse.event.DoubleClickEvent;
 import me.siebe.flux.api.input.devices.mouse.event.MouseClickEvent;
 import me.siebe.flux.api.input.devices.mouse.event.MouseReleaseEvent;
+import me.siebe.flux.api.input.enums.InputType;
 import me.siebe.flux.core.AppContext;
 
 /**
  * Central access point for keyboard and mouse input.
  * <p>
  * Call {@link #init(Mouse, Keyboard)} once at startup with backend-specific implementations (e.g. GLFW).
- * Call {@link #nextFrame()} once per frame so per-frame state (key press/release, mouse deltas, scroll) is updated.
  * Use {@link #keyboard()} and {@link #mouse()} to poll state or subscribe to input events on the event bus.
  */
 public class Input {
+    private static InputManager manager;
     private static Mouse mouse;
     private static Keyboard keyboard;
+    private static Controller controller;
+
+    private static InputType activeDevice = InputType.KEYBOARD_MOUSE;
 
     /**
      * Initialises the input system with the given keyboard and mouse implementations and registers
@@ -29,7 +37,7 @@ public class Input {
      * @param mouse    backend-specific mouse implementation (e.g. GLFW)
      * @param keyboard backend-specific keyboard implementation (e.g. GLFW)
      */
-    public static void init(Mouse mouse, Keyboard keyboard) {
+    public static void init(Mouse mouse, Keyboard keyboard, Controller controller) {
         EventPoolRegistry eventPoolRegistry = AppContext.get().getEventBus().getEventPoolRegistry();
 
         Input.mouse = mouse;
@@ -40,6 +48,17 @@ public class Input {
         Input.keyboard = keyboard;
         eventPoolRegistry.register(KeyPressEvent.class, KeyPressEvent::new);
         eventPoolRegistry.register(KeyReleaseEvent.class, KeyReleaseEvent::new);
+
+        Input.controller = controller;
+        eventPoolRegistry.register(GamepadButtonPressEvent.class, GamepadButtonPressEvent::new);
+        eventPoolRegistry.register(GamepadButtonReleaseEvent.class, GamepadButtonReleaseEvent::new);
+
+        Input.manager = new InputManager();
+
+        EventListenerRegistry eventListenerRegistry = AppContext.get().getEventBus().getListenerRegistry();
+        eventListenerRegistry.register(MouseClickEvent.class, e -> activeDevice = InputType.KEYBOARD_MOUSE);
+        eventListenerRegistry.register(KeyPressEvent.class, e -> activeDevice = InputType.KEYBOARD_MOUSE);
+        eventListenerRegistry.register(GamepadButtonPressEvent.class, e -> activeDevice = InputType.CONTROLLER);
     }
 
     /**
@@ -49,6 +68,7 @@ public class Input {
     public static void endFrame() {
         keyboard.endFrame();
         mouse.endFrame();
+        controller.endFrame();
     }
 
     /**
@@ -58,6 +78,7 @@ public class Input {
     public static void beginFrame() {
         keyboard.beginFrame();
         mouse.beginFrame();
+        controller.beginFrame();
     }
 
     /**
@@ -76,5 +97,15 @@ public class Input {
      */
     public static Mouse mouse() {
         return mouse;
+    }
+
+    public static Controller controller() {return controller;}
+
+    public static InputManager manager() {
+        return manager;
+    }
+
+    public static InputType activeDevice() {
+        return activeDevice;
     }
 }
