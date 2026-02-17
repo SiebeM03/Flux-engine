@@ -27,6 +27,8 @@ public interface Window {
         return (float) getWidth() / (float) getHeight();
     }
 
+    int getTargetFps();
+
     long getId();
 
     static WindowBuilder builder(WindowPlatform platform) {

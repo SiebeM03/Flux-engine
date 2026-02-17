@@ -28,6 +28,7 @@ public interface LoggingCategories {
 
     String EVENT = "event";
     String WINDOW = "window";
+    String INPUT = "input";
 
     String MEMORY = "memory";
 }

@@ -51,6 +51,7 @@ public class GlfwWindowBuilderIntegrationTest {
 
                     // Mock AppContext.get().getEventBus() call to return mockEventBus
                     Mockito.when(appContext.getEventBus()).thenReturn(mockEventBus);
+                    Mockito.when(appContext.getWindow()).thenReturn(mock(Window.class));
                     return appContext;
                 });
     }
