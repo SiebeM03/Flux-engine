@@ -34,7 +34,8 @@ public class GlfwWindow implements Window {
 
         Input.init(
                 new GlfwMouse(getId()),
-                new GlfwKeyboard(getId())
+                new GlfwKeyboard(getId()),
+                new GlfwController(GLFW_JOYSTICK_2)
         );
 
         // Register window event callbacks
