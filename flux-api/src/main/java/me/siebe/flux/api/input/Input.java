@@ -2,6 +2,10 @@ package me.siebe.flux.api.input;
 
 import me.siebe.flux.api.event.EventListenerRegistry;
 import me.siebe.flux.api.event.EventPoolRegistry;
+import me.siebe.flux.api.input.context.InputManager;
+import me.siebe.flux.api.input.devices.controller.Controller;
+import me.siebe.flux.api.input.devices.controller.event.GamepadButtonPressEvent;
+import me.siebe.flux.api.input.devices.controller.event.GamepadButtonReleaseEvent;
 import me.siebe.flux.api.input.devices.keyboard.Keyboard;
 import me.siebe.flux.api.input.devices.keyboard.event.KeyPressEvent;
 import me.siebe.flux.api.input.devices.keyboard.event.KeyReleaseEvent;
@@ -49,7 +53,6 @@ public class Input {
     public static void endFrame() {
         keyboard.endFrame();
         mouse.endFrame();
-        controller.endFrame();
     }
 
     /**
@@ -59,7 +62,6 @@ public class Input {
     public static void beginFrame() {
         keyboard.beginFrame();
         mouse.beginFrame();
-        controller.beginFrame();
     }
 
     /**
