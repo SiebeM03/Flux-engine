@@ -39,6 +39,8 @@ public class Input {
         Input.keyboard = keyboard;
         eventPoolRegistry.register(KeyPressEvent.class, KeyPressEvent::new);
         eventPoolRegistry.register(KeyReleaseEvent.class, KeyReleaseEvent::new);
+    }
+
     /**
      * Advances input state to the next frame. Clears per-frame flags (key/mouse press/release, scroll, deltas).
      * Must be called once per frame, typically done by FluxApplication before the window is updated.
@@ -46,18 +48,17 @@ public class Input {
     public static void endFrame() {
         keyboard.endFrame();
         mouse.endFrame();
+        controller.endFrame();
     }
 
     /**
      * Update input states from the current frame.
      * Must be called once per frame, typically done by FluxApplication after the window is updated.
      */
-    public static void nextFrame() {
-        keyboard.nextFrame();
-        mouse.nextFrame();
     public static void beginFrame() {
         keyboard.beginFrame();
         mouse.beginFrame();
+        controller.beginFrame();
     }
 
     /**
