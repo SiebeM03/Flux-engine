@@ -2,13 +2,6 @@ package me.siebe.flux.api.input;
 
 import me.siebe.flux.api.event.EventListenerRegistry;
 import me.siebe.flux.api.event.EventPoolRegistry;
-import me.siebe.flux.api.input.keyboard.Keyboard;
-import me.siebe.flux.api.input.keyboard.event.KeyPressEvent;
-import me.siebe.flux.api.input.keyboard.event.KeyReleaseEvent;
-import me.siebe.flux.api.input.mouse.Mouse;
-import me.siebe.flux.api.input.mouse.event.DoubleClickEvent;
-import me.siebe.flux.api.input.mouse.event.MouseClickEvent;
-import me.siebe.flux.api.input.mouse.event.MouseReleaseEvent;
 import me.siebe.flux.api.input.devices.keyboard.Keyboard;
 import me.siebe.flux.api.input.devices.keyboard.event.KeyPressEvent;
 import me.siebe.flux.api.input.devices.keyboard.event.KeyReleaseEvent;
