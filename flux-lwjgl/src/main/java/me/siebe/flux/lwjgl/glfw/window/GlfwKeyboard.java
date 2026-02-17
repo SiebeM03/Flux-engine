@@ -2,8 +2,7 @@ package me.siebe.flux.lwjgl.glfw.window;
 
 import me.siebe.flux.api.input.enums.Key;
 import me.siebe.flux.api.input.enums.Modifier;
-import me.siebe.flux.api.input.keyboard.AbstractKeyboard;
-import me.siebe.flux.api.input.keyboard.Keyboard;
+import me.siebe.flux.api.input.devices.keyboard.AbstractKeyboard;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;

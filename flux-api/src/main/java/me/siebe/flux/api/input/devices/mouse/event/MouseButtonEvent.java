@@ -1,4 +1,4 @@
-package me.siebe.flux.api.input.mouse.event;
+package me.siebe.flux.api.input.devices.mouse.event;
 
 import me.siebe.flux.api.event.Event;
 import me.siebe.flux.api.event.traits.Pooled;

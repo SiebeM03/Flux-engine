@@ -1,15 +1,16 @@
-package me.siebe.flux.api.input.mouse;
+package me.siebe.flux.api.input.devices.mouse;
 
+import me.siebe.flux.api.input.devices.InputDevice;
 import me.siebe.flux.api.input.enums.MouseButton;
 
 /**
  * Read-only view of mouse state: buttons, cursor position (normalized and screen space), movement deltas, and scroll.
  * <p>
  * Position and deltas are updated when the backend calls into the implementation (e.g. {@link AbstractMouse})
- * and are committed at frame boundaries when {@link #nextFrame()} is called. Scroll values are device-dependent
+ * and are committed at frame boundaries when {@link #beginFrame()} is called. Scroll values are device-dependent
  * (mouse wheel vs trackpad); see the implementation class for details.
  */
-public interface Mouse {
+public interface Mouse extends InputDevice {
     /**
      * Returns whether the given button is currently held down.
      *
@@ -103,10 +104,4 @@ public interface Mouse {
      * @return scroll Y (positive = up, negative = down typically)
      */
     float scrollY();
-
-    /**
-     * Advances internal state to the next frame (commits position, clears per-frame scroll/deltas).
-     * Called by {@link me.siebe.flux.api.input.Input#nextFrame()}; this should not be called manually.
-     */
-    void nextFrame();
 }

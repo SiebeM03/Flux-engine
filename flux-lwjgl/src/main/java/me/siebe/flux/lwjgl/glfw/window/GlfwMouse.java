@@ -2,8 +2,7 @@ package me.siebe.flux.lwjgl.glfw.window;
 
 import me.siebe.flux.api.input.enums.Modifier;
 import me.siebe.flux.api.input.enums.MouseButton;
-import me.siebe.flux.api.input.mouse.AbstractMouse;
-import me.siebe.flux.api.input.mouse.Mouse;
+import me.siebe.flux.api.input.devices.mouse.AbstractMouse;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;

@@ -1,9 +1,9 @@
-package me.siebe.flux.api.input.keyboard;
+package me.siebe.flux.api.input.devices.keyboard;
 
+import me.siebe.flux.api.input.devices.keyboard.event.KeyPressEvent;
+import me.siebe.flux.api.input.devices.keyboard.event.KeyReleaseEvent;
 import me.siebe.flux.api.input.enums.Key;
 import me.siebe.flux.api.input.enums.Modifier;
-import me.siebe.flux.api.input.keyboard.event.KeyPressEvent;
-import me.siebe.flux.api.input.keyboard.event.KeyReleaseEvent;
 import me.siebe.flux.core.AppContext;
 
 import java.util.BitSet;
@@ -24,7 +24,6 @@ public abstract class AbstractKeyboard implements Keyboard {
     private final BitSet keysReleasedThisFrame;
     private final BitSet keysDown;
 
-    /** Creates the key state bit sets. Backends should register their callbacks in a subclass constructor. */
     protected AbstractKeyboard() {
         int keyCount = Key.values().length;
         this.keysPressedThisFrame = new BitSet(keyCount);
@@ -33,6 +32,10 @@ public abstract class AbstractKeyboard implements Keyboard {
         this.keysDown = new BitSet(keyCount);
     }
 
+
+    // =================================================================================================================
+    // State getter methods
+    // =================================================================================================================
     @Override
     public boolean isKeyDown(Key key) {
         return keysDown.get(key.ordinal());
@@ -53,13 +56,32 @@ public abstract class AbstractKeyboard implements Keyboard {
         return keysRepeatedThisFrame.get(key.ordinal());
     }
 
+
+    // =================================================================================================================
+    // Update methods
+    // =================================================================================================================
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Clears per-frame key states
+     */
     @Override
-    public void nextFrame() {
+    public void endFrame() {
         keysReleasedThisFrame.clear();
         keysPressedThisFrame.clear();
         keysRepeatedThisFrame.clear();
     }
 
+    @Override
+    public void beginFrame() {
+        // Do nothing, keyboard state is changed using glfwPollEvents() which is called right before this method.
+        // The keyboard state should already be updated by now
+    }
+
+
+    // =================================================================================================================
+    // Input callback handlers
+    // =================================================================================================================
     /**
      * Called by the backend when a key is pressed. Updates state and posts {@link KeyPressEvent}.
      *

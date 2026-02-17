@@ -1,4 +1,4 @@
-package me.siebe.flux.api.input.mouse.event;
+package me.siebe.flux.api.input.devices.mouse.event;
 
 /**
  * Event posted when the left mouse button is clicked twice within the double-click time threshold
