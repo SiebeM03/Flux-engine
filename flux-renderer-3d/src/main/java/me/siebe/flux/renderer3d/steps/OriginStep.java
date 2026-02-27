@@ -2,14 +2,14 @@ package me.siebe.flux.renderer3d.steps;
 
 import me.siebe.flux.api.renderer.context.BaseRenderContext;
 import me.siebe.flux.api.renderer.pipeline.RenderStep;
-import me.siebe.flux.lwjgl.opengl.OpenGLState;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderDataType;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderLoader;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
-import me.siebe.flux.lwjgl.opengl.vertex.BufferElement;
-import me.siebe.flux.lwjgl.opengl.vertex.BufferLayout;
-import me.siebe.flux.lwjgl.opengl.vertex.VertexArray;
-import me.siebe.flux.lwjgl.opengl.vertex.VertexBuffer;
+import me.siebe.flux.opengl.OpenGLState;
+import me.siebe.flux.opengl.shader.ShaderDataType;
+import me.siebe.flux.opengl.shader.ShaderLoader;
+import me.siebe.flux.opengl.shader.ShaderProgram;
+import me.siebe.flux.opengl.vertex.BufferElement;
+import me.siebe.flux.opengl.vertex.BufferLayout;
+import me.siebe.flux.opengl.vertex.VertexArray;
+import me.siebe.flux.opengl.vertex.VertexBuffer;
 
 public class OriginStep implements RenderStep {
     private ShaderProgram shader;

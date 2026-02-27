@@ -28,14 +28,15 @@
             <artifactId>flux-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-
-        <!-- TODO get rid of this dependency, StartupBanner still uses it for OpenGL and GPU values -->
-        <dependency>
-            <groupId>org.lwjgl</groupId>
-            <artifactId>lwjgl-opengl</artifactId>
-            <version>${lwjgl.version}</version>
-        </dependency>
     </dependencies>
 
+    <!-- Used to read maven properties (e.g. project.version or lwjgl.version) from resource files such as application.properties -->
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
 </project>

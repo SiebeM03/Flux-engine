@@ -1,7 +1,7 @@
 package game.core.temp;
 
-import me.siebe.flux.lwjgl.opengl.shader.ShaderDataType;
-import me.siebe.flux.lwjgl.opengl.vertex.*;
+import me.siebe.flux.opengl.shader.ShaderDataType;
+import me.siebe.flux.opengl.vertex.*;
 import me.siebe.flux.renderer3d.model.data.Material;
 import me.siebe.flux.renderer3d.model.data.Mesh;
 import me.siebe.flux.renderer3d.model.data.Model;

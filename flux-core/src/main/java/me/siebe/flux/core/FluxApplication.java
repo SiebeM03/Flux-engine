@@ -7,6 +7,8 @@ import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.renderer.pipeline.RenderPipeline;
 import me.siebe.flux.api.systems.SystemManager;
 import me.siebe.flux.api.window.WindowBuilder;
+import me.siebe.flux.core.system.StartupBanner;
+import me.siebe.flux.core.system.SystemInfoService;
 import me.siebe.flux.event.DefaultEventBus;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
@@ -53,9 +55,11 @@ public abstract class FluxApplication implements ProvidableSystem {
         logger.info("Initializing Application");
 
         try {
+            SystemInfoService.populateStartupBanner();
             initEngineSystems();
             logger.info("Engine successfully initialized");
-            StartupBanner.displayBanner();
+            StartupBanner.render();
+
             initGameSystems();
             logger.info("Game successfully initialized");
 

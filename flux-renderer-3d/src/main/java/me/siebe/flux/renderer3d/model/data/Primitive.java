@@ -1,6 +1,6 @@
 package me.siebe.flux.renderer3d.model.data;
 
-import me.siebe.flux.lwjgl.opengl.vertex.VertexArray;
+import me.siebe.flux.opengl.vertex.VertexArray;
 import me.siebe.flux.util.exceptions.Validator;
 import me.siebe.flux.util.memory.Copyable;
 
