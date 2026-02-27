@@ -33,7 +33,9 @@ public class InputContext {
     }
 
     BooleanInputAction getDigitalAction(String actionName) {
-        return digitalActions.get(actionName).get(Input.activeDevice());
+        Map<InputType, BooleanInputAction> map = digitalActions.get(actionName);
+        if (map == null) return null;
+        return map.get(Input.activeDevice());
     }
 
     FloatInputAction getAnalogAction(String actionName) {

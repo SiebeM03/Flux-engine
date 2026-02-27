@@ -10,7 +10,7 @@ public class MouseClickAction extends BooleanInputAction {
     private final MouseButton button;
     private final Modifier[] modifiers;
 
-    public MouseClickAction(MouseButton button, Modifier[] modifiers) {
+    public MouseClickAction(MouseButton button, Modifier... modifiers) {
         this.button = button;
         this.modifiers = modifiers;
     }

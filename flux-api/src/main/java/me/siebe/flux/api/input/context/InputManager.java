@@ -60,28 +60,4 @@ public class InputManager {
         }
         return 0.0f;
     }
-
-//    public Vector2f getActionDelta(String actionName) {
-//        return getActionAxis(actionName, MouseMoveAction.class);
-//    }
-//
-//    public Vector2f getActionScroll(String actionName) {
-//        return getActionAxis(actionName, MouseScrollAction.class);
-//    }
-//
-//    private Vector2f getActionAxis(String actionName, Class<? extends InputAction> actionType) {
-//        for (InputContext context : contextStack) {
-//            if (!context.isEnabled()) continue;
-//
-//            InputAction action = context.getDigitalAction(actionName);
-//            if (action == null) {
-//                if (context.shouldConsumeInput()) return new Vector2f();
-//                continue;
-//            }
-//
-//            if (actionType.isAssignableFrom(action.getClass())) return action.getValue();
-//            if (context.shouldConsumeInput()) return new Vector2f();
-//        }
-//        return new Vector2f();
-//    }
 }

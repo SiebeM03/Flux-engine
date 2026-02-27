@@ -1,8 +1,8 @@
 package me.siebe.flux.glfw.window;
 
+import me.siebe.flux.api.input.devices.keyboard.AbstractKeyboard;
 import me.siebe.flux.api.input.enums.Key;
 import me.siebe.flux.api.input.enums.Modifier;
-import me.siebe.flux.api.input.devices.keyboard.AbstractKeyboard;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
@@ -21,6 +21,10 @@ class GlfwKeyboard extends AbstractKeyboard {
 
     private void keyCallback(long window, int key, int scancode, int action, int mods) {
         Key fluxKey = toKey(key);
+        if (fluxKey == null) {
+            logger.error("Invalid key received: {}. Make sure it is registered in GlfwKeyboard::toKey()", key);
+            return;
+        }
         Set<Modifier> fluxMods = toModifiers(mods);
 
         logger.trace("Keycode: {}, FluxKey: {}, Action: {}, Mods: {}", key, fluxKey, action, fluxMods);

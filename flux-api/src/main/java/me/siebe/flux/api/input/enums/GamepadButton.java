@@ -19,7 +19,7 @@ public enum GamepadButton {
     DPAD_DOWN,
     DPAD_LEFT;
 
-
+    // Playstation conversions
     public static final GamepadButton PS_CIRCLE = B;
     public static final GamepadButton PS_CROSS = A;
     public static final GamepadButton PS_SQUARE = X;

@@ -1,8 +1,8 @@
 package me.siebe.flux.glfw.window;
 
+import me.siebe.flux.api.input.devices.mouse.AbstractMouse;
 import me.siebe.flux.api.input.enums.Modifier;
 import me.siebe.flux.api.input.enums.MouseButton;
-import me.siebe.flux.api.input.devices.mouse.AbstractMouse;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
@@ -28,6 +28,10 @@ public class GlfwMouse extends AbstractMouse {
 
     private void mouseButtonCallback(long window, int button, int action, int mods) {
         MouseButton fluxButton = toMouseButton(button);
+        if (fluxButton == null) {
+            logger.error("Invalid mouse button received: {}. Make sure it is registered in GlfwMouse::toMouseButton()", button);
+            return;
+        }
         Set<Modifier> fluxMods = toModifiers(mods);
 
         logger.trace("ButtonCode: {}, FluxButton: {}, Action: {}, Mods: {}", button, fluxButton, action, fluxMods);
