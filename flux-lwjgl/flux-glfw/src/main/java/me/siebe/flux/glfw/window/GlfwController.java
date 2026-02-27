@@ -1,4 +1,4 @@
-package me.siebe.flux.lwjgl.glfw.window;
+package me.siebe.flux.glfw.window;
 
 import me.siebe.flux.api.input.devices.controller.AbstractController;
 import me.siebe.flux.api.input.devices.controller.Controller;
