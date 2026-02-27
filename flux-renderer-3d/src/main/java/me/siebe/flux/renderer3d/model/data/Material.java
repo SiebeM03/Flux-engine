@@ -1,8 +1,8 @@
 package me.siebe.flux.renderer3d.model.data;
 
-import me.siebe.flux.lwjgl.opengl.OpenGLState;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
-import me.siebe.flux.lwjgl.opengl.texture.Texture;
+import me.siebe.flux.opengl.OpenGLState;
+import me.siebe.flux.opengl.shader.ShaderProgram;
+import me.siebe.flux.opengl.texture.Texture;
 import me.siebe.flux.util.FluxColor;
 import me.siebe.flux.util.ValueUtils;
 import me.siebe.flux.util.memory.Copyable;

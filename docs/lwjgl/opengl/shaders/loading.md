@@ -5,7 +5,7 @@ shader by a **base path** (no extension); the loader resolves `.vert` and `.frag
 
 ## ShaderLoader
 
-- **Package:** `me.siebe.flux.lwjgl.opengl.shader`
+- **Package:** `me.siebe.flux.opengl.shader`
 - **Singleton:** `ShaderLoader.get()`
 - **Extends:** `AssetPool<ShaderProgram>` (from `flux-util`)
 

@@ -1,9 +1,9 @@
 package me.siebe.flux.renderer3d.model.data;
 
 import me.siebe.flux.api.renderer.data.Renderable;
-import me.siebe.flux.lwjgl.opengl.OpenGLState;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
-import me.siebe.flux.lwjgl.opengl.vertex.IndexBuffer;
+import me.siebe.flux.opengl.OpenGLState;
+import me.siebe.flux.opengl.shader.ShaderProgram;
+import me.siebe.flux.opengl.vertex.IndexBuffer;
 import me.siebe.flux.util.FluxColor;
 import me.siebe.flux.util.Transform;
 import me.siebe.flux.util.exceptions.Validator;

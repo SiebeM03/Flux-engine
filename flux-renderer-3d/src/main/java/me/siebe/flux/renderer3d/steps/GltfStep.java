@@ -4,8 +4,8 @@ import me.siebe.flux.api.renderer.context.BaseRenderContext;
 import me.siebe.flux.api.renderer.data.Renderable;
 import me.siebe.flux.api.renderer.pipeline.RenderStep;
 import me.siebe.flux.core.AppContext;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderLoader;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderProgram;
+import me.siebe.flux.opengl.shader.ShaderLoader;
+import me.siebe.flux.opengl.shader.ShaderProgram;
 import org.joml.Vector3f;
 
 // TODO rename to a more generic name as it will support more than just GLTF models in the future

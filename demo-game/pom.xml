@@ -29,6 +29,16 @@
         </dependency>
         <dependency>
             <groupId>me.siebe</groupId>
+            <artifactId>flux-opengl</artifactId>
+            <version>${flux.engine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.siebe</groupId>
+            <artifactId>flux-glfw</artifactId>
+            <version>${flux.engine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.siebe</groupId>
             <artifactId>flux-renderer-3d</artifactId>
             <version>${flux.engine.version}</version>
         </dependency>

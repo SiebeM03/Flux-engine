@@ -5,7 +5,7 @@ to upload uniform values with type checking.
 
 ## ShaderDataType
 
-**Package:** `me.siebe.flux.lwjgl.opengl.shader`
+**Package:** `me.siebe.flux.opengl.shader`
 
 Enum of GLSL-like types used for both attributes and (where applicable) uniforms:
 
@@ -31,7 +31,7 @@ Methods:
 
 ## ShaderUniform
 
-**Package:** `me.siebe.flux.lwjgl.opengl.shader`
+**Package:** `me.siebe.flux.opengl.shader`
 
 Record: `ShaderUniform(String name, int location, int glType, int size)`.
 
@@ -73,7 +73,7 @@ and dispatch to the corresponding **ShaderUniform** method. Any other type throw
 
 ## ShaderAttribute
 
-**Package:** `me.siebe.flux.lwjgl.opengl.shader`
+**Package:** `me.siebe.flux.opengl.shader`
 
 Record: `ShaderAttribute(String name, int location, ShaderDataType type, int size)`.
 

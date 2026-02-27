@@ -3,9 +3,9 @@ package me.siebe.flux.renderer3d.model.gltf.loading;
 import de.javagl.jgltf.model.*;
 import de.javagl.jgltf.model.io.GltfModelReader;
 import de.javagl.jgltf.model.v2.MaterialModelV2;
-import me.siebe.flux.lwjgl.opengl.shader.ShaderDataType;
-import me.siebe.flux.lwjgl.opengl.texture.Texture;
-import me.siebe.flux.lwjgl.opengl.vertex.*;
+import me.siebe.flux.opengl.shader.ShaderDataType;
+import me.siebe.flux.opengl.texture.Texture;
+import me.siebe.flux.opengl.vertex.*;
 import me.siebe.flux.renderer3d.model.data.Material;
 import me.siebe.flux.renderer3d.model.data.Mesh;
 import me.siebe.flux.renderer3d.model.data.Model;
@@ -30,7 +30,7 @@ import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL11.*;
+import static de.javagl.jgltf.model.GltfConstants.*;
 
 /**
  * Utility class for loading GLTF (GL Transmission Format) 3D models and converting them
@@ -565,7 +565,7 @@ public class GltfLoader extends AssetPool<Model> {
         So we always use RGBA format when we requested 4 channels
         */
 
-        Texture texture = new Texture(w, h, GL_TEXTURE_2D, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+        Texture texture = new Texture(w, h, GL_TEXTURE_2D, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
         texture.bind();
         // Typical GLTF filters:
         // - GL_TEXTURE_MIN_FILTER: 9987 -> GL_LINEAR_MIPMAP_LINEAR

@@ -1,5 +1,6 @@
 package me.siebe.flux.core;
 
+import me.siebe.flux.core.system.StartupBanner;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
