@@ -1,11 +1,11 @@
 package me.siebe.flux.api.input.devices.controller.actions;
 
 import me.siebe.flux.api.input.Input;
-import me.siebe.flux.api.input.actions.AnalogInputAction;
+import me.siebe.flux.api.input.actions.FloatInputAction;
 import me.siebe.flux.api.input.enums.GamepadButton;
 import me.siebe.flux.api.input.enums.InputType;
 
-public class GamepadButtonAxisInput extends AnalogInputAction {
+public class GamepadButtonAxisInput extends FloatInputAction {
     private GamepadButton negativeButton;
     private GamepadButton positiveButton;
 
@@ -15,7 +15,7 @@ public class GamepadButtonAxisInput extends AnalogInputAction {
     }
 
     @Override
-    public float getValue() {
+    public Float getValue() {
         float value = 0.0f;
         if (Input.controller().isButtonDown(positiveButton)) {
             value += 1.0f;

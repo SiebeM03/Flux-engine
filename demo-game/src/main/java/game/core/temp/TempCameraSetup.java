@@ -7,6 +7,8 @@ import me.siebe.flux.util.ValueUtils;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import static game.core.temp.input.GameContext.*;
+
 /**
  * This is a temporary camera setup to simplify debugging of the render systems
  */
@@ -39,17 +41,18 @@ public class TempCameraSetup {
         Vector3f up = new Vector3f(camera.getUp());
         Vector3f newPosition = new Vector3f(camera.getPosition());
 
-        float inputMoveForward = Input.manager().getActionValue("move_forward");
-        float inputMoveRight = Input.manager().getActionValue("move_right");
-        float inputMoveUp = Input.manager().getActionValue("move_up");
+        float inputMoveForward = Input.manager().getActionValue(MOVE_FORWARD);
+        float inputMoveRight = Input.manager().getActionValue(MOVE_RIGHT);
+        float inputMoveUp = Input.manager().getActionValue(MOVE_UP);
+        System.out.println(inputMoveForward);
 
         newPosition.add(new Vector3f(direction).mul(inputMoveForward).mul(moveSpeed));
         newPosition.add(new Vector3f(right).mul(inputMoveRight).mul(moveSpeed));
         newPosition.add(new Vector3f(up).mul(inputMoveUp).mul(moveSpeed));
 
         // Mouse input for camera movement
-        float xOffset = Input.manager().getActionValue("look_horizontal") * mouseSensitivity;
-        float yOffset = Input.manager().getActionValue("look_vertical") * mouseSensitivity;
+        float xOffset = Input.manager().getActionValue(LOOK_HORIZONTAL) * mouseSensitivity;
+        float yOffset = Input.manager().getActionValue(LOOK_VERTICAL) * mouseSensitivity;
 
         yaw += xOffset;
         pitch += yOffset;

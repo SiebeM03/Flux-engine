@@ -1,11 +1,11 @@
 package me.siebe.flux.api.input.devices.controller.actions;
 
 import me.siebe.flux.api.input.Input;
-import me.siebe.flux.api.input.actions.DigitalInputAction;
+import me.siebe.flux.api.input.actions.BooleanInputAction;
 import me.siebe.flux.api.input.enums.GamepadButton;
 import me.siebe.flux.api.input.enums.InputType;
 
-public class GamepadButtonInput extends DigitalInputAction {
+public class GamepadButtonInput extends BooleanInputAction {
     private final GamepadButton button;
 
     public GamepadButtonInput(GamepadButton button) {
@@ -13,7 +13,7 @@ public class GamepadButtonInput extends DigitalInputAction {
     }
 
     @Override
-    public boolean isActive() {
+    public Boolean getValue() {
         return Input.controller().isButtonDown(button);
     }
 

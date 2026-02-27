@@ -4,7 +4,6 @@ categories:
   timer: INFO
   renderer: ERROR
   opengl: INFO
-  input: trace
 
 startupBannerConfig:
   enabled: true

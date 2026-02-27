@@ -1,8 +1,8 @@
 package me.siebe.flux.api.input.context;
 
 import me.siebe.flux.api.input.Input;
-import me.siebe.flux.api.input.actions.AnalogInputAction;
-import me.siebe.flux.api.input.actions.DigitalInputAction;
+import me.siebe.flux.api.input.actions.BooleanInputAction;
+import me.siebe.flux.api.input.actions.FloatInputAction;
 import me.siebe.flux.api.input.actions.InputAction;
 import me.siebe.flux.api.input.enums.InputType;
 
@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class InputContext {
     private final String name;
-    private final Map<String, Map<InputType, DigitalInputAction>> digitalActions = new HashMap<>();
-    private final Map<String, Map<InputType, AnalogInputAction>> analogActions = new HashMap<>();
+    private final Map<String, Map<InputType, BooleanInputAction>> digitalActions = new HashMap<>();
+    private final Map<String, Map<InputType, FloatInputAction>> analogActions = new HashMap<>();
 
     private boolean enabled = true;
     private boolean consumeInput = false;
@@ -21,23 +21,23 @@ public class InputContext {
         this.name = name;
     }
 
-    public void bind(String actionName, InputAction action) {
-        if (action instanceof DigitalInputAction digitalAction) {
-            Map<InputType, DigitalInputAction> map = digitalActions.computeIfAbsent(actionName, k -> new HashMap<>());
+    public void bind(String actionName, InputAction<?> action) {
+        if (action instanceof BooleanInputAction digitalAction) {
+            Map<InputType, BooleanInputAction> map = digitalActions.computeIfAbsent(actionName, k -> new HashMap<>());
             map.put(action.getTargetDevice(), digitalAction);
         }
-        if (action instanceof AnalogInputAction analogAction) {
-            Map<InputType, AnalogInputAction> map = analogActions.computeIfAbsent(actionName, k -> new HashMap<>());
+        if (action instanceof FloatInputAction analogAction) {
+            Map<InputType, FloatInputAction> map = analogActions.computeIfAbsent(actionName, k -> new HashMap<>());
             map.put(analogAction.getTargetDevice(), analogAction);
         }
     }
 
-    public DigitalInputAction getDigitalAction(String actionName) {
+    BooleanInputAction getDigitalAction(String actionName) {
         return digitalActions.get(actionName).get(Input.activeDevice());
     }
 
-    public AnalogInputAction getAnalogAction(String actionName) {
-        Map<InputType, AnalogInputAction> map = analogActions.get(actionName);
+    FloatInputAction getAnalogAction(String actionName) {
+        Map<InputType, FloatInputAction> map = analogActions.get(actionName);
         if (map == null) return null;
         return map.get(Input.activeDevice());
     }

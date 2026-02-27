@@ -1,12 +1,10 @@
 package me.siebe.flux.api.input.context;
 
-import me.siebe.flux.api.input.actions.AnalogInputAction;
-import me.siebe.flux.api.input.actions.DigitalInputAction;
-import me.siebe.flux.api.input.actions.InputAction;
+import me.siebe.flux.api.input.actions.BooleanInputAction;
+import me.siebe.flux.api.input.actions.FloatInputAction;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
-import org.joml.Vector2f;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -36,13 +34,13 @@ public class InputManager {
         for (InputContext context : contextStack) {
             if (!context.isEnabled()) continue;
 
-            DigitalInputAction action = context.getDigitalAction(actionName);
+            BooleanInputAction action = context.getDigitalAction(actionName);
             if (action == null) {
                 if (context.shouldConsumeInput()) return false;
                 continue;
             }
 
-            if (action.isActive()) return true;
+            if (action.getValue()) return true;
             if (context.shouldConsumeInput()) return false;
         }
         return false;
@@ -52,7 +50,7 @@ public class InputManager {
         for (InputContext context : contextStack) {
             if (!context.isEnabled()) continue;
 
-            AnalogInputAction action = context.getAnalogAction(actionName);
+            FloatInputAction action = context.getAnalogAction(actionName);
             if (action == null) {
                 if (context.shouldConsumeInput()) return 0.0f;
                 continue;

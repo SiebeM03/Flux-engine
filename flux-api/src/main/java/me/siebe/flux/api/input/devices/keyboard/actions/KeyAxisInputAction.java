@@ -1,11 +1,11 @@
 package me.siebe.flux.api.input.devices.keyboard.actions;
 
 import me.siebe.flux.api.input.Input;
-import me.siebe.flux.api.input.actions.AnalogInputAction;
+import me.siebe.flux.api.input.actions.FloatInputAction;
 import me.siebe.flux.api.input.enums.InputType;
 import me.siebe.flux.api.input.enums.Key;
 
-public class KeyAxisInputAction extends AnalogInputAction {
+public class KeyAxisInputAction extends FloatInputAction {
     private final Key positiveKey;
     private final Key negativeKey;
 
@@ -15,7 +15,7 @@ public class KeyAxisInputAction extends AnalogInputAction {
     }
 
     @Override
-    public float getValue() {
+    public Float getValue() {
         float value = 0.0f;
         if (Input.keyboard().isKeyDown(positiveKey)) {
             value += 1.0f;

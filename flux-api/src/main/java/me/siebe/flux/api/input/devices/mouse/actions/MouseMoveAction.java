@@ -1,10 +1,10 @@
 package me.siebe.flux.api.input.devices.mouse.actions;
 
 import me.siebe.flux.api.input.Input;
-import me.siebe.flux.api.input.actions.AnalogInputAction;
+import me.siebe.flux.api.input.actions.FloatInputAction;
 import me.siebe.flux.api.input.enums.InputType;
 
-public class MouseMoveAction extends AnalogInputAction {
+public class MouseMoveAction extends FloatInputAction {
     private final char axis;
 
     public MouseMoveAction(char axis) {
@@ -12,7 +12,7 @@ public class MouseMoveAction extends AnalogInputAction {
     }
 
     @Override
-    public float getValue() {
+    public Float getValue() {
         if (axis == 'x') {
             return Input.mouse().deltaX();
         } else if (axis == 'y') {

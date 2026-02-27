@@ -2,7 +2,7 @@ package game.core.temp;
 
 import me.siebe.flux.api.input.Input;
 import me.siebe.flux.core.AppContext;
-import me.siebe.flux.lwjgl.opengl.OpenGLState;
+import me.siebe.flux.opengl.OpenGLState;
 import me.siebe.flux.renderer3d.steps.ClearStep;
 import me.siebe.flux.util.ValueUtils;
 
