@@ -32,7 +32,6 @@ public class TempPauseSetup {
         blue += (Input.manager().getActionValue(CHANGE_BLUE) * 0.0005f);
         blue = ValueUtils.clampedValue(blue, 0.0f, 1.0f);
         ClearStep.uiColor.setB(blue);
-        System.out.println(Input.manager().getActionValue(CHANGE_BLUE));
 
         OpenGLState.setClearColor(ClearStep.uiColor);
     }
