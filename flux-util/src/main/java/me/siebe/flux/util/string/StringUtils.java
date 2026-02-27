@@ -1,6 +1,9 @@
 package me.siebe.flux.util.string;
 
+import me.siebe.flux.util.logging.Logger;
+
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 public class StringUtils {
     public static String toString(final Object obj, boolean expanded) {
@@ -48,6 +51,8 @@ public class StringUtils {
 
 
     private static boolean shouldShowField(Object obj, Field field) {
+        if (Logger.class.isAssignableFrom(field.getType())) return false;
+        if (Modifier.isStatic(field.getModifiers())) return false;
         if (field.getName().equals("serialVersionUID")) return false;
         return true;
     }
