@@ -44,7 +44,6 @@ public class TempCameraSetup {
         float inputMoveForward = Input.manager().getActionValue(MOVE_FORWARD);
         float inputMoveRight = Input.manager().getActionValue(MOVE_RIGHT);
         float inputMoveUp = Input.manager().getActionValue(MOVE_UP);
-        System.out.println(inputMoveForward);
 
         newPosition.add(new Vector3f(direction).mul(inputMoveForward).mul(moveSpeed));
         newPosition.add(new Vector3f(right).mul(inputMoveRight).mul(moveSpeed));

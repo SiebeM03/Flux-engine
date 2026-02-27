@@ -5,6 +5,7 @@ import me.siebe.flux.api.input.devices.controller.actions.GamepadAxisInput;
 import me.siebe.flux.api.input.devices.controller.actions.GamepadButtonAxisInput;
 import me.siebe.flux.api.input.devices.keyboard.actions.KeyAxisInputAction;
 import me.siebe.flux.api.input.devices.mouse.actions.MouseMoveAction;
+import me.siebe.flux.api.input.enums.Axis2D;
 import me.siebe.flux.api.input.enums.GamepadAxis;
 import me.siebe.flux.api.input.enums.GamepadButton;
 import me.siebe.flux.api.input.enums.Key;
@@ -24,8 +25,8 @@ public class GameContext extends InputContext {
         bind(MOVE_FORWARD, new KeyAxisInputAction(Key.KEY_W, Key.KEY_S));         // W = forward, S = backward
         bind(MOVE_UP, new KeyAxisInputAction(Key.KEY_SPACE, Key.KEY_LEFT_SHIFT)); // SPACE = up, SHIFT = down
 
-        bind(LOOK_HORIZONTAL, new MouseMoveAction('x'));
-        bind(LOOK_VERTICAL, new MouseMoveAction('y'));
+        bind(LOOK_HORIZONTAL, new MouseMoveAction(Axis2D.X));
+        bind(LOOK_VERTICAL, new MouseMoveAction(Axis2D.Y));
 
 
         // Controller

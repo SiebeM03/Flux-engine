@@ -1,14 +1,14 @@
 package game.core.temp;
 
 import me.siebe.flux.api.input.Input;
+import me.siebe.flux.api.input.context.InputManager;
 import me.siebe.flux.core.AppContext;
 import me.siebe.flux.opengl.OpenGLState;
 import me.siebe.flux.renderer3d.steps.ClearStep;
 import me.siebe.flux.util.ValueUtils;
 
 import static game.core.temp.input.InputContexts.PAUSE_CONTEXT;
-import static game.core.temp.input.PauseContext.CHANGE_GREEN;
-import static game.core.temp.input.PauseContext.UNPAUSE;
+import static game.core.temp.input.PauseContext.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class TempPauseSetup {
@@ -29,9 +29,10 @@ public class TempPauseSetup {
         green = ValueUtils.clampedValue(green, 0.0f, 1.0f);
         ClearStep.uiColor.setG(green);
 
-//        blue += (Input.manager().getActionScroll(CHANGE_BLUE).y * 0.1f);
-//        blue = ValueUtils.clampedValue(blue, 0.0f, 1.0f);
-//        ClearStep.uiColor.setB(blue);
+        blue += (Input.manager().getActionValue(CHANGE_BLUE) * 0.0005f);
+        blue = ValueUtils.clampedValue(blue, 0.0f, 1.0f);
+        ClearStep.uiColor.setB(blue);
+        System.out.println(Input.manager().getActionValue(CHANGE_BLUE));
 
         OpenGLState.setClearColor(ClearStep.uiColor);
     }
