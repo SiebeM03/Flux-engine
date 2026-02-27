@@ -8,6 +8,7 @@ import me.siebe.flux.util.FluxColor;
 public class ClearStep implements RenderStep {
 
     private final FluxColor clearColor;
+    public static final FluxColor uiColor = new FluxColor(1.0f, 0.1f, 0.1f);
 
     public ClearStep() {
         this.clearColor = new FluxColor(0.1f, 0.1f, 0.1f);
