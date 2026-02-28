@@ -1,4 +1,4 @@
-package game.core.temp;
+package game.core.demos.render.terrain;
 
 import me.siebe.flux.opengl.shader.ShaderDataType;
 import me.siebe.flux.opengl.vertex.*;
@@ -13,6 +13,54 @@ import me.siebe.flux.util.logging.LoggerFactory;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Procedural terrain mesh generator.
+ *
+ * <p>
+ * This class generates a grid-based terrain model with randomly generated
+ * heights using a deterministic seed. The resulting terrain includes
+ * positions, normals, texture coordinates, and tangents, making it
+ * suitable for advanced lighting techniques such as normal mapping.
+ * </p>
+ *
+ * <h2>Features</h2>
+ * <ul>
+ *     <li>Deterministic terrain generation using a configurable seed</li>
+ *     <li>Automatic index generation for triangle-based rendering</li>
+ *     <li>Per-vertex normal calculation</li>
+ *     <li>Per-vertex tangent calculation</li>
+ *     <li>Configurable terrain width, depth, scale, and maximum height</li>
+ * </ul>
+ *
+ * <h2>Vertex Layout</h2>
+ * Each vertex contains the following attributes:
+ * <ul>
+ *     <li>Position (vec3)</li>
+ *     <li>Normal (vec3)</li>
+ *     <li>Texture coordinates (vec2)</li>
+ *     <li>Tangent (vec4, including handedness)</li>
+ * </ul>
+ *
+ * <h2>Generation Process</h2>
+ * <ol>
+ *     <li>Create a regular grid of vertices.</li>
+ *     <li>Assign random heights to each vertex.</li>
+ *     <li>Generate triangle indices for the grid.</li>
+ *     <li>Compute smooth normals by accumulating triangle face normals.</li>
+ *     <li>Compute tangents based on position and UV deltas.</li>
+ *     <li>Build the required OpenGL buffers and wrap them in a {@code Model}.</li>
+ * </ol>
+ *
+ * <p>
+ * The terrain is returned as a {@code Model} containing a single mesh and
+ * primitive, using a simple olive-colored material by default.
+ * </p>
+ *
+ * <p>
+ * The height generation logic can be replaced or extended (e.g., Perlin noise,
+ * simplex noise, heightmaps) for more realistic terrain.
+ * </p>
+ */
 public class TerrainGenerator {
     private static final Logger logger = LoggerFactory.getLogger(TerrainGenerator.class);
 
@@ -130,7 +178,6 @@ public class TerrainGenerator {
     }
 
 
-
     // =====================================================
     // NORMAL CALCULATION
     // =====================================================
@@ -142,9 +189,9 @@ public class TerrainGenerator {
             int i1 = indices[i + 1] * 12;
             int i2 = indices[i + 2] * 12;
 
-            float[] v0 = { v[i0], v[i0 + 1], v[i0 + 2] };
-            float[] v1 = { v[i1], v[i1 + 1], v[i1 + 2] };
-            float[] v2 = { v[i2], v[i2 + 1], v[i2 + 2] };
+            float[] v0 = {v[i0], v[i0 + 1], v[i0 + 2]};
+            float[] v1 = {v[i1], v[i1 + 1], v[i1 + 2]};
+            float[] v2 = {v[i2], v[i2 + 1], v[i2 + 2]};
 
             float[] edge1 = subtract(v1, v0);
             float[] edge2 = subtract(v2, v0);
@@ -161,7 +208,7 @@ public class TerrainGenerator {
 
         // Normalize all normals
         for (int i = 0; i < v.length; i += 12) {
-            float[] n = { v[i + 3], v[i + 4], v[i + 5] };
+            float[] n = {v[i + 3], v[i + 4], v[i + 5]};
             normalize(n);
             v[i + 3] = n[0];
             v[i + 4] = n[1];
@@ -180,13 +227,13 @@ public class TerrainGenerator {
             int i1 = indices[i + 1] * 12;
             int i2 = indices[i + 2] * 12;
 
-            float[] p0 = { v[i0], v[i0 + 1], v[i0 + 2] };
-            float[] p1 = { v[i1], v[i1 + 1], v[i1 + 2] };
-            float[] p2 = { v[i2], v[i2 + 1], v[i2 + 2] };
+            float[] p0 = {v[i0], v[i0 + 1], v[i0 + 2]};
+            float[] p1 = {v[i1], v[i1 + 1], v[i1 + 2]};
+            float[] p2 = {v[i2], v[i2 + 1], v[i2 + 2]};
 
-            float[] uv0 = { v[i0 + 6], v[i0 + 7] };
-            float[] uv1 = { v[i1 + 6], v[i1 + 7] };
-            float[] uv2 = { v[i2 + 6], v[i2 + 7] };
+            float[] uv0 = {v[i0 + 6], v[i0 + 7]};
+            float[] uv1 = {v[i1 + 6], v[i1 + 7]};
+            float[] uv2 = {v[i2 + 6], v[i2 + 7]};
 
             float[] edge1 = subtract(p1, p0);
             float[] edge2 = subtract(p2, p0);
@@ -207,10 +254,10 @@ public class TerrainGenerator {
             normalize(tangent);
 
             for (int j : new int[]{i0, i1, i2}) {
-                v[j + 8]  += tangent[0];
-                v[j + 9]  += tangent[1];
+                v[j + 8] += tangent[0];
+                v[j + 9] += tangent[1];
                 v[j + 10] += tangent[2];
-                v[j + 11]  = 1.0f;
+                v[j + 11] = 1.0f;
             }
         }
     }
@@ -231,7 +278,7 @@ public class TerrainGenerator {
     }
 
     private static void normalize(float[] v) {
-        float len = (float) Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+        float len = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         if (len == 0) return;
         v[0] /= len;
         v[1] /= len;

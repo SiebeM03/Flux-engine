@@ -1,4 +1,4 @@
-package game.core.temp.input;
+package game.core.demos.input.contexts;
 
 import me.siebe.flux.api.input.context.InputContext;
 

@@ -1,4 +1,4 @@
-package game.core.render;
+package game.core.demos.render;
 
 import me.siebe.flux.api.renderer.context.BaseRenderContext;
 import me.siebe.flux.api.renderer.data.Renderable;
