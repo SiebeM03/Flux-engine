@@ -15,6 +15,7 @@ import me.siebe.flux.api.window.WindowPlatform;
 import me.siebe.flux.core.AppContext;
 import me.siebe.flux.core.FluxApplication;
 import me.siebe.flux.renderer3d.steps.GltfStep;
+import me.siebe.flux.renderer3d.steps.UiRenderStep;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
@@ -26,7 +27,6 @@ public class GameApplication extends FluxApplication {
 
     private List<Demo> demos = List.of(
             new CameraControllerDemo(),
-            new PauseActionsDemo(),
             new GltfLoadingDemo(),
             new TerrainDemo()
     );
@@ -40,6 +40,7 @@ public class GameApplication extends FluxApplication {
         renderer.setRenderContext(new CustomRenderContext());
         renderer.getRenderContext().setRenderables(new ArrayList<>());
         renderer.getPipeline().addStep(new GltfStep());
+        renderer.getPipeline().addStep(new UiRenderStep());
 
         demos.forEach(Demo::init);
     }

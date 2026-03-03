@@ -4,6 +4,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class FluxColor {
+    public static final FluxColor TRANSPARENT = new FluxColor(0, 0, 0, 0);
     public static final FluxColor WHITE = new FluxColor(1.0f, 1.0f, 1.0f);
     public static final FluxColor BLACK = new FluxColor(0.0f, 0.0f, 0.0f);
     public static final FluxColor RED = new FluxColor(1.0f, 0.0f, 0.0f);

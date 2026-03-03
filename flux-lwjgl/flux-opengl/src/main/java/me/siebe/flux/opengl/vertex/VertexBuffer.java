@@ -50,9 +50,6 @@ public class VertexBuffer extends GLResource {
     public void setData(float[] data) {
         bind();
 
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
-        buffer.put(data).flip();
-
         glBufferSubData(GL_ARRAY_BUFFER, 0, data);
         this.size = data.length;
     }
