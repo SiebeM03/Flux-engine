@@ -2,7 +2,6 @@ package game.core;
 
 import game.core.demos.Demo;
 import game.core.demos.input.camera_controller.CameraControllerDemo;
-import game.core.demos.input.pause_actions.PauseActionsDemo;
 import game.core.demos.render.CustomRenderContext;
 import game.core.demos.render.gltf.GltfLoadingDemo;
 import game.core.demos.render.terrain.TerrainDemo;
@@ -26,7 +25,6 @@ public class GameApplication extends FluxApplication {
 
     private List<Demo> demos = List.of(
             new CameraControllerDemo(),
-            new PauseActionsDemo(),
             new GltfLoadingDemo(),
             new TerrainDemo()
     );

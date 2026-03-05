@@ -36,4 +36,11 @@ public class IndexBuffer extends GLResource {
     public int getCount() {
         return count;
     }
+
+    public void setData(int[] data) {
+        bind();
+
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, data);
+        this.count = data.length;
+    }
 }
