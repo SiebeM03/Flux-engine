@@ -61,17 +61,17 @@ public class GlfwWindowTest {
     }
 
     @Test
-    void windowResize_postsResizeEvent() {
+    void windowResize_postsResizeEvent() throws InterruptedException {
         window.init();
 
         // Set window size
         glfwSetWindowSize(window.getId(), 500, 450);
-        try {
-            Thread.sleep(50); // 50 ms to let events propagate
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
+        // Poll events so the callback fires
+        for (int i = 0; i < 5; i++) {
+            glfwPollEvents();
+            Thread.sleep(10);
         }
-        glfwPollEvents();
 
         // Assert that FramebufferResizeEvent and WindowResizeEvent are both called 1 time
         if (AppContext.get().getEventBus() instanceof RecordingEventBus eventBus) {
