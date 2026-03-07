@@ -10,11 +10,6 @@
     </parent>
 
     <artifactId>flux-ui</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>flux-ui-api</module>
-        <module>flux-ui-core</module>
-    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -26,6 +21,17 @@
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.siebe</groupId>
+            <artifactId>flux-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.siebe</groupId>
+            <artifactId>flux-opengl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

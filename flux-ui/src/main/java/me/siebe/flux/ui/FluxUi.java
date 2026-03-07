@@ -1,5 +1,8 @@
 package me.siebe.flux.ui;
 
+import me.siebe.flux.api.ui.UIScene;
+import me.siebe.flux.api.ui.Ui;
+
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -13,6 +16,15 @@ public class FluxUi implements Ui {
         return scene;
     }
 
+    @Override
+    public void pushScene(UIScene scene) {
+        scenes.push(scene);
+    }
+
+    @Override
+    public UIScene popScene() {
+        return scenes.pop();
+    }
 
     @Override
     public Queue<UIScene> getScenes() {

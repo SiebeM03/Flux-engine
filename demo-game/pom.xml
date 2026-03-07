@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>me.siebe</groupId>
-            <artifactId>flux-ui-core</artifactId>
+            <artifactId>flux-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

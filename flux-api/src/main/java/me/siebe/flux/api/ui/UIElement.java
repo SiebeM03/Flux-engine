@@ -1,4 +1,4 @@
-package me.siebe.flux.ui;
+package me.siebe.flux.api.ui;
 
 import me.siebe.flux.util.FluxColor;
 

@@ -1,13 +1,14 @@
 package me.siebe.flux.ui.render;
 
+import me.siebe.flux.api.ui.UIElement;
+import me.siebe.flux.api.ui.UIScene;
 import me.siebe.flux.opengl.shader.ShaderDataType;
 import me.siebe.flux.opengl.vertex.*;
-import me.siebe.flux.ui.UIElement;
-import me.siebe.flux.ui.UIScene;
 import me.siebe.flux.util.data.buffer.FloatBuffer;
 import me.siebe.flux.util.data.buffer.IntBuffer;
 
 class UiSceneRenderDataBuilder {
+    private static final int MAX_QUADS_PER_SCENE = 1_000;
     private FloatBuffer vertexData;
     private IntBuffer indexData;
 
@@ -27,11 +28,11 @@ class UiSceneRenderDataBuilder {
                 new BufferElement("aPos", ShaderDataType.Float2, false),
                 new BufferElement("aColor", ShaderDataType.Float4, false)
         );
-        vertexBuffer = new VertexBuffer(128);
+        vertexBuffer = new VertexBuffer(MAX_QUADS_PER_SCENE * 4 * bufferLayout.getComponentCount() * Float.BYTES);
         vertexBuffer.setLayout(bufferLayout);
         vertexArray.addVertexBuffer(vertexBuffer);
         // EBO
-        indexBuffer = new IndexBuffer(new int[0]);
+        indexBuffer = new IndexBuffer(new int[MAX_QUADS_PER_SCENE * 6]);
         vertexArray.setIndexBuffer(indexBuffer);
     }
 

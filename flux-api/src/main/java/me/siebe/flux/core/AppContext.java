@@ -4,7 +4,7 @@ import me.siebe.flux.api.event.EventBus;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.systems.SystemManager;
 import me.siebe.flux.api.window.Window;
-import me.siebe.flux.ui.Ui;
+import me.siebe.flux.api.ui.Ui;
 import me.siebe.flux.util.time.Timer;
 
 /**

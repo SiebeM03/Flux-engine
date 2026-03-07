@@ -23,12 +23,6 @@
             <artifactId>flux-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>me.siebe</groupId>
-            <artifactId>flux-ui-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
 </project>

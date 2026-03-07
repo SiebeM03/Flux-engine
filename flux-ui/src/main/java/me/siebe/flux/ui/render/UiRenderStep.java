@@ -7,7 +7,7 @@ import me.siebe.flux.core.AppContext;
 import me.siebe.flux.opengl.OpenGLState;
 import me.siebe.flux.opengl.shader.ShaderLoader;
 import me.siebe.flux.opengl.shader.ShaderProgram;
-import me.siebe.flux.ui.UIScene;
+import me.siebe.flux.api.ui.UIScene;
 import me.siebe.flux.util.DirtyValue;
 import org.joml.Matrix4f;
 
@@ -45,8 +45,8 @@ public class UiRenderStep implements RenderStep {
         shader = getShader();
         shader.bind();
         OpenGLState.disableDepthTest();
-        OpenGLState.enableBlend();
-        OpenGLState.setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        OpenGLState.enableBlend();
+//        OpenGLState.setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         shader.upload("uProjection", projectionMatrix.get());
     }

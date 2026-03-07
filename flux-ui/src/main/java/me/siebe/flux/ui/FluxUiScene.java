@@ -1,5 +1,8 @@
 package me.siebe.flux.ui;
 
+import me.siebe.flux.api.ui.UIElement;
+import me.siebe.flux.api.ui.UIScene;
+
 public class FluxUiScene implements UIScene {
     private UIElement root;
 

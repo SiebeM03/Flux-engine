@@ -1,4 +1,4 @@
-package me.siebe.flux.ui;
+package me.siebe.flux.api.ui;
 
 public interface UIScene {
     void setRoot(UIElement root);

@@ -14,6 +14,9 @@ import me.siebe.flux.api.window.WindowPlatform;
 import me.siebe.flux.core.AppContext;
 import me.siebe.flux.core.FluxApplication;
 import me.siebe.flux.renderer3d.steps.GltfStep;
+import me.siebe.flux.ui.builder.UiBuilder;
+import me.siebe.flux.ui.render.UiRenderStep;
+import me.siebe.flux.util.FluxColor;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
@@ -38,6 +41,36 @@ public class GameApplication extends FluxApplication {
         renderer.setRenderContext(new CustomRenderContext());
         renderer.getRenderContext().setRenderables(new ArrayList<>());
         renderer.getPipeline().addStep(new GltfStep());
+        renderer.getPipeline().addStep(new UiRenderStep());
+
+//        UIScene scene = AppContext.get().getUi().createScene();
+//        UiContainer container = new UiContainer();
+//        container.setWidth(700);
+//        container.setHeight(700);
+//        container.setBackground(FluxColor.RED);
+//        scene.setRoot(container);
+
+        AppContext.get().getUi().createScene().setRoot(
+                UiBuilder.container()
+                        .width(700)
+                        .height(400)
+                        .background(FluxColor.RED)
+                        .child(UiBuilder.container()
+                                .width(200)
+                                .height(200)
+                                .x(100)
+                                .y(100)
+                                .background(FluxColor.BLUE)
+                                .build())
+                        .child(UiBuilder.container()
+                                .width(200)
+                                .height(200)
+                                .background(FluxColor.GREEN)
+                                .x(400)
+                                .y(100)
+                                .build())
+                        .build()
+        );
 
         demos.forEach(Demo::init);
     }
