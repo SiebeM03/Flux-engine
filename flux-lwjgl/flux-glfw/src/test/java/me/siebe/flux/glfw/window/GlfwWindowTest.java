@@ -66,6 +66,11 @@ public class GlfwWindowTest {
 
         // Set window size
         glfwSetWindowSize(window.getId(), 500, 450);
+        try {
+            Thread.sleep(50); // 50 ms to let events propagate
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         glfwPollEvents();
 
         // Assert that FramebufferResizeEvent and WindowResizeEvent are both called 1 time
