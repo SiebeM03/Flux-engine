@@ -1,23 +1,24 @@
 package me.siebe.flux.glfw.window;
 
-import me.siebe.flux.api.event.EventBus;
-import me.siebe.flux.api.event.EventListenerRegistry;
-import me.siebe.flux.api.event.EventPoolRegistry;
 import me.siebe.flux.api.window.Window;
 import me.siebe.flux.api.window.WindowMode;
-import me.siebe.flux.core.AppContext;
+import me.siebe.flux.core.HeadlessContextInjector;
+import me.siebe.flux.test.implementations.event.TestEventBus;
+import me.siebe.flux.test.junit.FluxTestHarnessExtension;
+import me.siebe.flux.test.junit.OpenGLResetExtension;
+import me.siebe.flux.test.junit.StartupBannerMockExtension;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL.getCapabilities;
-import static org.mockito.Mockito.mock;
 
+@ExtendWith({StartupBannerMockExtension.class, OpenGLResetExtension.class})
 public class GlfwWindowBuilderIntegrationTest {
     private static boolean glfwInitialized = false;
     private static long primaryMonitorWidth;
@@ -37,23 +38,6 @@ public class GlfwWindowBuilderIntegrationTest {
         assertNotNull(vidMode, "Primary monitor video mode cannot be null");
         primaryMonitorWidth = vidMode.width();
         primaryMonitorHeight = vidMode.height();
-
-        Mockito.mockStatic(AppContext.class).when(AppContext::get)
-                .thenAnswer(invocation -> {
-                    AppContext appContext = mock(AppContext.class);
-
-                    // Mock event bus and getListenerRegistry and getEventPoolRegistry methods
-                    EventBus mockEventBus = mock(EventBus.class);
-                    EventListenerRegistry mockListenerRegistry = mock(EventListenerRegistry.class);
-                    EventPoolRegistry mockEventPoolRegistry = mock(EventPoolRegistry.class);
-                    Mockito.when(mockEventBus.getListenerRegistry()).thenReturn(mockListenerRegistry);
-                    Mockito.when(mockEventBus.getEventPoolRegistry()).thenReturn(mockEventPoolRegistry);
-
-                    // Mock AppContext.get().getEventBus() call to return mockEventBus
-                    Mockito.when(appContext.getEventBus()).thenReturn(mockEventBus);
-                    Mockito.when(appContext.getWindow()).thenReturn(mock(Window.class));
-                    return appContext;
-                });
     }
 
     @AfterAll
@@ -80,6 +64,7 @@ public class GlfwWindowBuilderIntegrationTest {
     }
 
     @Test
+    @ExtendWith(FluxTestHarnessExtension.class)
     void testWindowInitCreatesCapabilities() {
         Window window = new GlfwWindowBuilder()
                 .title("Test Window")
@@ -88,6 +73,8 @@ public class GlfwWindowBuilderIntegrationTest {
                 .height(200, 100, 600)
                 .hidden()
                 .build();
+
+        HeadlessContextInjector.inject(window, null, null, new TestEventBus(), null);
 
         // Ensure OpenGL context does not exist
         assertThrows(IllegalStateException.class, GL::getCapabilities, "OpenGL capabilities should throw IllegalStateException when the window is not initialized");
@@ -134,12 +121,11 @@ public class GlfwWindowBuilderIntegrationTest {
                 .hidden()
                 .build();
 
-        long id = window.getId();
         assertEquals(300, window.getWidth());
         assertEquals(200, window.getHeight());
 
         // Trigger resize event
-        glfwSetWindowSize(id, 500, 450);
+        glfwSetWindowSize(window.getId(), 500, 450);
 
         // Poll events so the callback fires
         for (int i = 0; i < 5; i++) {
@@ -150,6 +136,7 @@ public class GlfwWindowBuilderIntegrationTest {
         assertEquals(500, window.getWidth());
         assertEquals(450, window.getHeight());
     }
+
 
     @Test
     void testWindowCloseListener() throws InterruptedException {

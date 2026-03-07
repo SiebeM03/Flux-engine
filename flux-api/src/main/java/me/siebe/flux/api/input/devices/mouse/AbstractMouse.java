@@ -197,7 +197,7 @@ public abstract class AbstractMouse implements Mouse {
     /**
      * If the time since the last left click is within {@link #DOUBLE_CLICK_THRESHOLD_SECONDS}, posts a {@link DoubleClickEvent}.
      */
-    private void tryFireDoubleClick(MouseButton button, Set<Modifier> modifiers) {
+    protected void tryFireDoubleClick(MouseButton button, Set<Modifier> modifiers) {
         double now = AppContext.get().getTimer().getTotalTime();
         if (now - lastLeftClickTime <= DOUBLE_CLICK_THRESHOLD_SECONDS) {
             AppContext.get().getEventBus().post(DoubleClickEvent.class, e -> e.set(button, modifiers, x.getCurrentValue(), y.getCurrentValue()));

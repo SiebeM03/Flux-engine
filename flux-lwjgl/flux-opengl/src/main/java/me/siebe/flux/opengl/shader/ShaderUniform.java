@@ -1,6 +1,9 @@
 package me.siebe.flux.opengl.shader;
 
 import me.siebe.flux.util.exceptions.ShaderException;
+import me.siebe.flux.util.logging.Logger;
+import me.siebe.flux.util.logging.LoggerFactory;
+import me.siebe.flux.util.logging.config.LoggingCategories;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 
@@ -14,6 +17,8 @@ public record ShaderUniform(
         int glType,
         int size
 ) {
+    private static final Logger logger = LoggerFactory.getLogger(ShaderUniform.class, LoggingCategories.SHADER);
+
     private static void checkLocation(int location) {
         if (location < 0) throw new ShaderException("Uniform location is invalid (inactive or optimized out).");
     }
@@ -84,6 +89,9 @@ public record ShaderUniform(
     public void upload(int[] array) {
         checkLocation(location);
         validateType(GL_INT);
+        if (array.length > size) {
+            logger.warn("Tried uploading an array of size {}, but the shader uniform expects size {}. The overflowing values will be ignored.", array.length, size);
+        }
         glUniform1iv(location, array);
     }
 
