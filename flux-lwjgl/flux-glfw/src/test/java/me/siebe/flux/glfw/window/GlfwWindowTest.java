@@ -72,6 +72,11 @@ public class GlfwWindowTest {
             throw new RuntimeException(e);
         }
         glfwPollEvents();
+        try {
+            Thread.sleep(50); // 50 ms to let events propagate
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         // Assert that FramebufferResizeEvent and WindowResizeEvent are both called 1 time
         if (AppContext.get().getEventBus() instanceof RecordingEventBus eventBus) {
