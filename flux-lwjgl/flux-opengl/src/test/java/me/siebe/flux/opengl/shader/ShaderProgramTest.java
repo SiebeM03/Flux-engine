@@ -48,6 +48,7 @@ public class ShaderProgramTest {
     }
 
     @Test
+    @Order(2)
     void correctProgram_uniformsLoaded() {
         // Unused uniforms are filtered out of this list by OpenGL
         // uniform float unusedUniformInVert;
@@ -81,6 +82,7 @@ public class ShaderProgramTest {
     }
 
     @Test
+    @Order(2)
     void correctProgram_attributesLoaded() {
         Map<String, ShaderAttribute> attributes = correctShader.attributes;
 
@@ -104,6 +106,7 @@ public class ShaderProgramTest {
     }
 
     @Test
+    @Order(2)
     void shaderBind_setsActiveShader() {
         ShaderProgram.ACTIVE_SHADER = null;
 
@@ -114,6 +117,7 @@ public class ShaderProgramTest {
     }
 
     @Test
+    @Order(2)
     void shaderUniformUpload_uploadsCorrectType() {
         correctShader.uniforms.put("matrix4f", new ShaderUniform("matrix4f", 0, GL_FLOAT_MAT4, 1));
         correctShader.uniforms.put("matrix3f", new ShaderUniform("matrix3f", 0, GL_FLOAT_MAT3, 1));
