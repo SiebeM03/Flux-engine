@@ -58,6 +58,7 @@ public class ShaderProgramTest {
 
         // Random uniforms also don't exist
         assertNull(correctShader.getUniform("someRandomUniform"));
+        correctShader.uniforms.values().forEach(System.err::println);
 
         assertEquals(3, correctShader.uniforms.size());
 
