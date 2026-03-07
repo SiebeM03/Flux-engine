@@ -7,5 +7,5 @@ uniform float[3] arrayUniform;
 out vec4 color;
 
 void main() {
-    color = vec4(arrayUniform[1], usedUniformInFrag);
+    color = vec4(arrayUniform[2], usedUniformInFrag);
 }
