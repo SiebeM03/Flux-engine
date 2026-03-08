@@ -28,6 +28,13 @@
             <artifactId>flux-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>me.siebe</groupId>
+            <artifactId>flux-test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <!-- Used to read maven properties (e.g. project.version or lwjgl.version) from resource files such as application.properties -->

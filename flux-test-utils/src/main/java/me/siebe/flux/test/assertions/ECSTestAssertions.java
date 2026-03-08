@@ -28,6 +28,61 @@ public final class ECSTestAssertions {
     }
 
     /**
+     * Asserts that the query returned no results.
+     */
+    public static void assertResultsEmpty(Results<?> results) {
+        assertResultCount(results, 0);
+    }
+
+    /**
+     * Asserts that the query returned exactly one result and runs the consumer on it.
+     *
+     * @param results      query results
+     * @param assertResult consumer to assert on the single result row (e.g. With1, With2)
+     * @throws AssertionError if count is not 1 or if the consumer throws
+     */
+    public static <R> void assertSingleResult(Results<R> results, Consumer<R> assertResult) {
+        var list = results.stream().toList();
+        if (list.size() != 1) {
+            throw new AssertionError("Expected exactly one result, but got " + list.size());
+        }
+        if (assertResult != null) {
+            assertResult.accept(list.getFirst());
+        }
+    }
+
+    /**
+     * Finds the result row for the given entity and runs the consumer on it.
+     * Works for any query result type (With1, With2, With3, With4).
+     *
+     * @throws AssertionError if the entity is not found or appears more than once
+     */
+    public static <R> void assertResultContainsEntity(Results<R> results, Entity entity, Consumer<R> assertResult) {
+        var list = results.stream()
+                .filter(r -> getEntity(r).equals(entity))
+                .toList();
+        if (list.isEmpty()) {
+            throw new AssertionError("Expected result for entity " + entity.getId() + ", but found none");
+        }
+        if (list.size() > 1) {
+            throw new AssertionError("Expected single result for entity " + entity.getId() + ", but found " + list.size());
+        }
+        if (assertResult != null) {
+            assertResult.accept(list.getFirst());
+        }
+    }
+
+    private static Entity getEntity(Object row) {
+        return switch (row) {
+            case Results.With1<?> w -> w.entity();
+            case Results.With2<?, ?> w -> w.entity();
+            case Results.With3<?, ?, ?> w -> w.entity();
+            case Results.With4<?, ?, ?, ?> w -> w.entity();
+            default -> throw new AssertionError("Unexpected result row type: " + (row == null ? "null" : row.getClass().getName()));
+        };
+    }
+
+    /**
      * Asserts that the world has exactly one entity with the given component type, then
      * runs the consumer on that component for further checks.
      *

@@ -16,9 +16,6 @@ public class OpenGLResetExtension implements AfterEachCallback {
         }
     }
 
-    public OpenGLResetExtension() {
-    }
-
     @Override
     public void afterEach(ExtensionContext context) {
         try {
