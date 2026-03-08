@@ -112,11 +112,6 @@ public class SimpleWorldTest {
         assertHasComponent(entity, TestComponents.Velocity.class, foundVelocity -> {
             assertEquals(velocity, foundVelocity);
         });
-
-//        assertTrue(entity.has(TestComponents.Position.class));
-//        assertTrue(entity.has(TestComponents.Velocity.class));
-//        assertEquals(10f, entity.get(TestComponents.Position.class).x);
-//        assertEquals(1f, entity.get(TestComponents.Velocity.class).dx);
     }
 
     @Test
@@ -130,9 +125,6 @@ public class SimpleWorldTest {
 
         assertHasComponent(entity, TestComponents.Position.class);
         assertHasComponent(entity, TestComponents.Velocity.class);
-
-//        assertTrue(entity.has(TestComponents.Position.class));
-//        assertTrue(entity.has(TestComponents.Velocity.class));
     }
 
     @Test
