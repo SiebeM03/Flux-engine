@@ -16,8 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static me.siebe.flux.test.assertions.EventTestAssertions.*;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
+import static org.lwjgl.glfw.GLFW.*;
 
 @ExtendWith({StartupBannerMockExtension.class, OpenGLResetExtension.class})
 public class GlfwWindowTest {
@@ -67,11 +66,13 @@ public class GlfwWindowTest {
         // Set window size
         glfwSetWindowSize(window.getId(), 500, 450);
 
-        // Poll events so the callback fires
-        for (int i = 0; i < 5; i++) {
-            glfwPollEvents();
-            Thread.sleep(10);
-        }
+        // Wait for GLFW to deliver the event
+        glfwWaitEventsTimeout(0.1);
+//        // Poll events so the callback fires
+//        for (int i = 0; i < 5; i++) {
+//            glfwPollEvents();
+//            Thread.sleep(10);
+//        }
 
         // Assert that FramebufferResizeEvent and WindowResizeEvent are both called 1 time
         if (AppContext.get().getEventBus() instanceof RecordingEventBus eventBus) {
