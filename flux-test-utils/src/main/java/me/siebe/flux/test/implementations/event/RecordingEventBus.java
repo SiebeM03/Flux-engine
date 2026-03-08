@@ -26,7 +26,6 @@ public final class RecordingEventBus implements EventBus {
 
     @Override
     public <E extends Event> void post(E event) {
-        System.err.println("POSTED EVENT " + event.getClass().getSimpleName());
         if (event != null) {
             recorded.add(new RecordedEvent(event.getClass(), event.toString()));
         }
@@ -35,7 +34,6 @@ public final class RecordingEventBus implements EventBus {
 
     @Override
     public <E extends Event & Pooled> void post(Class<E> eventType, Consumer<E> consumer) {
-        System.err.println("POSTED EVENT " + eventType.getSimpleName());
         recorded.add(new RecordedEvent(eventType, "[pooled]"));
         delegate.post(eventType, consumer);
     }
