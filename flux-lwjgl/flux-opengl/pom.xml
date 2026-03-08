@@ -47,5 +47,14 @@
             <artifactId>lwjgl-stb</artifactId>
             <classifier>${lwjgl.natives}</classifier>
         </dependency>
+
+
+        <dependency>
+            <groupId>me.siebe</groupId>
+            <artifactId>flux-test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>

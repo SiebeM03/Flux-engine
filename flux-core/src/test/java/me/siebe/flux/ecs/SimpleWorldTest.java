@@ -6,6 +6,7 @@ import me.siebe.flux.api.ecs.World;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static me.siebe.flux.test.assertions.ECSTestAssertions.assertHasComponent;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SimpleWorldTest {
@@ -98,15 +99,19 @@ public class SimpleWorldTest {
 
     @Test
     void createEntity_WithComponents_ShouldAttachComponents() {
+        TestComponents.Position position = new TestComponents.Position(10, 20);
+        TestComponents.Velocity velocity = new TestComponents.Velocity(1, 2);
         Entity entity = world.createEntity(
                 new TestComponents.Position(10, 20),
                 new TestComponents.Velocity(1, 2)
         );
 
-        assertTrue(entity.has(TestComponents.Position.class));
-        assertTrue(entity.has(TestComponents.Velocity.class));
-        assertEquals(10f, entity.get(TestComponents.Position.class).x);
-        assertEquals(1f, entity.get(TestComponents.Velocity.class).dx);
+        assertHasComponent(entity, TestComponents.Position.class, foundPosition -> {
+            assertEquals(position, foundPosition);
+        });
+        assertHasComponent(entity, TestComponents.Velocity.class, foundVelocity -> {
+            assertEquals(velocity, foundVelocity);
+        });
     }
 
     @Test
@@ -118,8 +123,8 @@ public class SimpleWorldTest {
                 null
         );
 
-        assertTrue(entity.has(TestComponents.Position.class));
-        assertTrue(entity.has(TestComponents.Velocity.class));
+        assertHasComponent(entity, TestComponents.Position.class);
+        assertHasComponent(entity, TestComponents.Velocity.class);
     }
 
     @Test
@@ -388,6 +393,10 @@ public class SimpleWorldTest {
         for (int i = 0; i < count; i++) {
             Entity entity = world.getEntity(i);
             assertNotNull(entity);
+            int finalI = i;
+            assertHasComponent(entity, TestComponents.Position.class, pos -> {
+                assertEquals(finalI, pos.x);
+            });
             assertEquals(i, entity.get(TestComponents.Position.class).x);
         }
     }

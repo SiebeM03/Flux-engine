@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static me.siebe.flux.test.assertions.ECSTestAssertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WorldQueryTest {
@@ -34,54 +35,46 @@ public class WorldQueryTest {
     void findEntitiesWith_SingleComponent_WithNoEntities_ShouldReturnEmpty_Results() {
         Results<With1<TestComponents.Position>> results = world.findEntitiesWith(TestComponents.Position.class);
 
-        assertNotNull(results);
-        assertFalse(results.iterator().hasNext());
+        assertResultsEmpty(results);
     }
 
     @Test
     void findEntitiesWith_SingleComponent_WithMatchingEntities_ShouldReturnResults() {
-        Entity entity1 = world.createEntity(new TestComponents.Position(1, 1));
-        Entity entity2 = world.createEntity(new TestComponents.Position(2, 2));
-        Entity entity3 = world.createEntity(new TestComponents.Position(3, 3), new TestComponents.Velocity(3, 3));
+        TestComponents.Position entity1Position = new TestComponents.Position(1, 1);
+        Entity entity1 = world.createEntity(entity1Position);
+
+        TestComponents.Position entity2Position = new TestComponents.Position(2, 2);
+        Entity entity2 = world.createEntity(entity2Position);
+
+        TestComponents.Position entity3Position = new TestComponents.Position(3, 3);
+        TestComponents.Velocity entity3Velocity = new TestComponents.Velocity(3, 3);
+        Entity entity3 = world.createEntity(entity3Position, entity3Velocity);
 
         Results<With1<TestComponents.Position>> results = world.findEntitiesWith(TestComponents.Position.class);
+        assertResultCount(results, 3);
 
-        List<With1<TestComponents.Position>> list = new ArrayList<>();
-        results.iterator().forEachRemaining(list::add);
-
-        assertEquals(3, list.size());
-
-        assertTrue(list.stream().anyMatch(r -> r.entity().equals(entity1)));
-        With1<TestComponents.Position> w1 = list.stream()
-                .filter(r -> r.entity().equals(entity1)).findFirst().orElseThrow();
-        assertEquals(1, w1.comp().x);
-        assertEquals(1, w1.comp().y);
-        assertEquals(entity1, w1.entity());
-
-        assertTrue(list.stream().anyMatch(r -> r.entity().equals(entity2)));
-        With1<TestComponents.Position> w2 = list.stream()
-                .filter(r -> r.entity().equals(entity2)).findFirst().orElseThrow();
-        assertEquals(2, w2.comp().x);
-        assertEquals(2, w2.comp().y);
-        assertEquals(entity2, w2.entity());
-
-        assertTrue(list.stream().anyMatch(r -> r.entity().equals(entity3)));
-        With1<TestComponents.Position> w3 = list.stream()
-                .filter(r -> r.entity().equals(entity3)).findFirst().orElseThrow();
-        assertEquals(3, w3.comp().x);
-        assertEquals(3, w3.comp().y);
-        assertEquals(entity3, w3.entity());
+        assertResultContainsEntity(results, entity1, r -> {
+            assertEquals(entity1Position, r.comp());
+            assertEquals(entity1, r.entity());
+        });
+        assertResultContainsEntity(results, entity2, r -> {
+            assertEquals(entity2Position, r.comp());
+            assertEquals(entity2, r.entity());
+        });
+        assertResultContainsEntity(results, entity3, r -> {
+            assertEquals(entity3Position, r.comp());
+            assertEquals(entity3, r.entity());
+        });
     }
 
     @Test
     void findEntitiesWith_SingleComponentShouldReturnCorrectComponents() {
         world.createEntity(new TestComponents.Position(10, 20));
 
-        Results<With1<TestComponents.Position>> results = world.findEntitiesWith(TestComponents.Position.class);
-
-        With1<TestComponents.Position> w1 = results.iterator().next();
-        assertEquals(10f, w1.comp().x);
-        assertEquals(20f, w1.comp().y);
+        assertOneEntityWith(world, TestComponents.Position.class, pos -> {
+            assertEquals(10f, pos.x);
+            assertEquals(20f, pos.y);
+        });
     }
 
     @Test
@@ -90,8 +83,9 @@ public class WorldQueryTest {
 
         Results<With1<TestComponents.Position>> results = world.findEntitiesWith(TestComponents.Position.class);
 
-        With1<TestComponents.Position> result = results.iterator().next();
-        assertEquals(entity.getId(), result.entity().getId());
+        assertSingleResult(results, r -> {
+            assertEquals(entity.getId(), r.entity().getId());
+        });
     }
 
     @Test
@@ -105,10 +99,7 @@ public class WorldQueryTest {
 
         Results<With1<TestComponents.Position>> results = world.findEntitiesWith(TestComponents.Position.class);
 
-        List<With1<TestComponents.Position>> list = new ArrayList<>();
-        results.iterator().forEachRemaining(list::add);
-
-        assertEquals(2, list.size());
+        assertResultCount(results, 2);
     }
 
 
@@ -121,39 +112,34 @@ public class WorldQueryTest {
         Results<With2<TestComponents.Position, TestComponents.Velocity>> results =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class);
 
-        assertFalse(results.iterator().hasNext());
+        assertResultsEmpty(results);
     }
 
     @Test
     void findEntitiesWith_TwoComponents_WithMatchingEntities_ShouldReturnResults() {
-        Entity entity1 = world.createEntity(new TestComponents.Position(1, 1), new TestComponents.Velocity(2, 2));
-        Entity entity2 = world.createEntity(new TestComponents.Position(3, 3), new TestComponents.Velocity(4, 4));
+        TestComponents.Position entity1Position = new TestComponents.Position(1, 1);
+        TestComponents.Velocity entity1Velocity = new TestComponents.Velocity(2, 2);
+        Entity entity1 = world.createEntity(entity1Position, entity1Velocity);
+
+        TestComponents.Position entity2Position = new TestComponents.Position(3, 3);
+        TestComponents.Velocity entity2Velocity = new TestComponents.Velocity(4, 4);
+        Entity entity2 = world.createEntity(entity2Position, entity2Velocity);
 
         Results<With2<TestComponents.Position, TestComponents.Velocity>> results =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class);
 
-        List<With2<TestComponents.Position, TestComponents.Velocity>> list = new ArrayList<>();
-        results.iterator().forEachRemaining(list::add);
+        assertResultCount(results, 2);
 
-        assertEquals(2, list.size());
-
-        assertTrue(list.stream().anyMatch(r -> r.entity().equals(entity1)));
-        With2<TestComponents.Position, TestComponents.Velocity> w1 = list.stream()
-                .filter(r -> r.entity().equals(entity1)).findFirst().orElseThrow();
-        assertEquals(1, w1.comp1().x);
-        assertEquals(1, w1.comp1().y);
-        assertEquals(2, w1.comp2().dx);
-        assertEquals(2, w1.comp2().dy);
-        assertEquals(entity1, w1.entity());
-
-        assertTrue(list.stream().anyMatch(r -> r.entity().equals(entity2)));
-        With2<TestComponents.Position, TestComponents.Velocity> w2 = list.stream()
-                .filter(r -> r.entity().equals(entity2)).findFirst().orElseThrow();
-        assertEquals(3, w2.comp1().x);
-        assertEquals(3, w2.comp1().y);
-        assertEquals(4, w2.comp2().dx);
-        assertEquals(4, w2.comp2().dy);
-        assertEquals(entity2, w2.entity());
+        assertResultContainsEntity(results, entity1, r -> {
+            assertEquals(entity1Position, r.comp1());
+            assertEquals(entity1Velocity, r.comp2());
+            assertEquals(entity1, r.entity());
+        });
+        assertResultContainsEntity(results, entity2, r -> {
+            assertEquals(entity2Position, r.comp1());
+            assertEquals(entity2Velocity, r.comp2());
+            assertEquals(entity2, r.entity());
+        });
     }
 
     @Test
@@ -163,11 +149,12 @@ public class WorldQueryTest {
         Results<With2<TestComponents.Position, TestComponents.Velocity>> results =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class);
 
-        With2<TestComponents.Position, TestComponents.Velocity> result = results.iterator().next();
-        assertEquals(10f, result.comp1().x);
-        assertEquals(20f, result.comp1().y);
-        assertEquals(30f, result.comp2().dx);
-        assertEquals(40f, result.comp2().dy);
+        assertSingleResult(results, r -> {
+            assertEquals(10f, r.comp1().x);
+            assertEquals(20f, r.comp1().y);
+            assertEquals(30f, r.comp2().dx);
+            assertEquals(40f, r.comp2().dy);
+        });
     }
 
     @Test
@@ -179,11 +166,9 @@ public class WorldQueryTest {
         Results<With2<TestComponents.Position, TestComponents.Velocity>> results =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class);
 
-        List<With2<TestComponents.Position, TestComponents.Velocity>> list = new ArrayList<>();
-        results.iterator().forEachRemaining(list::add);
-
-        assertEquals(1, list.size());
-        assertEquals(3f, list.getFirst().comp1().x);
+        assertSingleResult(results, r -> {
+            assertEquals(3f, r.comp1().x);
+        });
     }
 
     @Test
@@ -194,7 +179,7 @@ public class WorldQueryTest {
         Results<With2<TestComponents.Position, TestComponents.Velocity>> results =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class);
 
-        assertFalse(results.iterator().hasNext());
+        assertResultsEmpty(results);
     }
 
 
@@ -207,70 +192,55 @@ public class WorldQueryTest {
         Results<With3<TestComponents.Position, TestComponents.Velocity, TestComponents.Health>> results =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class, TestComponents.Health.class);
 
-        assertFalse(results.iterator().hasNext());
+        assertResultsEmpty(results);
     }
 
     @Test
     void findEntitiesWith_ThreeComponents_WithMatchingEntities_ShouldReturnResults() {
-        Entity entity1 = world.createEntity(
-                new TestComponents.Position(1, 1),
-                new TestComponents.Velocity(1, 1),
-                new TestComponents.Health(100, 100)
-        );
-        Entity entity2 = world.createEntity(
-                new TestComponents.Position(2, 2),
-                new TestComponents.Velocity(2, 2),
-                new TestComponents.Health(200, 200)
-        );
+        TestComponents.Position entity1Position = new TestComponents.Position(1, 1);
+        TestComponents.Velocity entity1Velocity = new TestComponents.Velocity(1, 1);
+        TestComponents.Health entity1Health = new TestComponents.Health(100, 100);
+        Entity entity1 = world.createEntity(entity1Position, entity1Velocity, entity1Health);
+
+        TestComponents.Position entity2Position = new TestComponents.Position(2, 2);
+        TestComponents.Velocity entity2Velocity = new TestComponents.Velocity(2, 2);
+        TestComponents.Health entity2Health = new TestComponents.Health(200, 200);
+        Entity entity2 = world.createEntity(entity2Position, entity2Velocity, entity2Health);
 
         Results<With3<TestComponents.Position, TestComponents.Velocity, TestComponents.Health>> results =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class, TestComponents.Health.class);
 
-        assertTrue(results.iterator().hasNext());
+        assertResultCount(results, 2);
 
-        List<With3<TestComponents.Position, TestComponents.Velocity, TestComponents.Health>> list = new ArrayList<>();
-        results.iterator().forEachRemaining(list::add);
-
-        assertEquals(2, list.size());
-
-        assertTrue(list.stream().anyMatch(r -> r.entity().equals(entity1)));
-        With3<TestComponents.Position, TestComponents.Velocity, TestComponents.Health> w1 = list.stream()
-                .filter(r -> r.entity().equals(entity1)).findFirst().orElseThrow();
-        assertEquals(1, w1.comp1().x);
-        assertEquals(1, w1.comp1().y);
-        assertEquals(1, w1.comp2().dx);
-        assertEquals(1, w1.comp2().dy);
-        assertEquals(100, w1.comp3().current);
-        assertEquals(100, w1.comp3().max);
-        assertEquals(entity1, w1.entity());
-
-        assertTrue(list.stream().anyMatch(r -> r.entity().equals(entity2)));
-        With3<TestComponents.Position, TestComponents.Velocity, TestComponents.Health> w2 = list.stream()
-                .filter(r -> r.entity().equals(entity2)).findFirst().orElseThrow();
-        assertEquals(2, w2.comp1().x);
-        assertEquals(2, w2.comp1().y);
-        assertEquals(2, w2.comp2().dx);
-        assertEquals(2, w2.comp2().dy);
-        assertEquals(200, w2.comp3().current);
-        assertEquals(200, w2.comp3().max);
-        assertEquals(entity2, w2.entity());
+        assertResultContainsEntity(results, entity1, r -> {
+            assertEquals(entity1Position, r.comp1());
+            assertEquals(entity1Velocity, r.comp2());
+            assertEquals(entity1Health, r.comp3());
+            assertEquals(entity1, r.entity());
+        });
+        assertResultContainsEntity(results, entity2, r -> {
+            assertEquals(entity2Position, r.comp1());
+            assertEquals(entity2Velocity, r.comp2());
+            assertEquals(entity2Health, r.comp3());
+            assertEquals(entity2, r.entity());
+        });
     }
 
     @Test
     void findEntitiesWith_ThreeComponents_ShouldReturnAllThreeComponents() {
-        world.createEntity(
-                new TestComponents.Position(10, 20),
-                new TestComponents.Velocity(30, 40),
-                new TestComponents.Health(50, 100)
-        );
+        TestComponents.Position position = new TestComponents.Position(10, 20);
+        TestComponents.Velocity velocity = new TestComponents.Velocity(30, 40);
+        TestComponents.Health health = new TestComponents.Health(50, 100);
+        world.createEntity(position, velocity, health);
 
         Results<With3<TestComponents.Position, TestComponents.Velocity, TestComponents.Health>> results =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class, TestComponents.Health.class);
 
-        With3<TestComponents.Position, TestComponents.Velocity, TestComponents.Health> result = results.iterator().next();
-        assertEquals(10f, result.comp1().x);
-        assertEquals(30f, result.comp2().dx);
-        assertEquals(50, result.comp3().current);
+        assertSingleResult(results, r -> {
+            assertEquals(position, r.comp1());
+            assertEquals(velocity, r.comp2());
+            assertEquals(health, r.comp3());
+        });
     }
 
     @Test
@@ -283,11 +253,9 @@ public class WorldQueryTest {
         Results<With3<TestComponents.Position, TestComponents.Velocity, TestComponents.Health>> results =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class, TestComponents.Health.class);
 
-        List<With3<TestComponents.Position, TestComponents.Velocity, TestComponents.Health>> list = new ArrayList<>();
-        results.iterator().forEachRemaining(list::add);
-
-        assertEquals(1, list.size());
-        assertEquals(4f, list.get(0).comp1().x);
+        assertSingleResult(results, r -> {
+            assertEquals(4f, r.comp1().x);
+        });
     }
 
 
@@ -305,23 +273,22 @@ public class WorldQueryTest {
                         TestComponents.Name.class
                 );
 
-        assertFalse(results.iterator().hasNext());
+        assertResultsEmpty(results);
     }
 
     @Test
     void findEntitiesWith_FourComponents_WithMatchingEntities_ShouldReturnResults() {
-        Entity entity1 = world.createEntity(
-                new TestComponents.Position(1, 1),
-                new TestComponents.Velocity(1, 1),
-                new TestComponents.Health(100, 100),
-                new TestComponents.Name("Entity1")
-        );
-        Entity entity2 = world.createEntity(
-                new TestComponents.Position(2, 2),
-                new TestComponents.Velocity(2, 2),
-                new TestComponents.Health(200, 200),
-                new TestComponents.Name("Entity2")
-        );
+        TestComponents.Position entity1Position = new TestComponents.Position(1, 1);
+        TestComponents.Velocity entity1Velocity = new TestComponents.Velocity(1, 1);
+        TestComponents.Health entity1Health = new TestComponents.Health(100, 100);
+        TestComponents.Name entity1Name = new TestComponents.Name("entity1");
+        Entity entity1 = world.createEntity(entity1Position, entity1Velocity, entity1Health, entity1Name);
+
+        TestComponents.Position entity2Position = new TestComponents.Position(2, 2);
+        TestComponents.Velocity entity2Velocity = new TestComponents.Velocity(2, 2);
+        TestComponents.Health entity2Health = new TestComponents.Health(200, 200);
+        TestComponents.Name entity2Name = new TestComponents.Name("entity2");
+        Entity entity2 = world.createEntity(entity2Position, entity2Velocity, entity2Health, entity2Name);
 
         Results<With4<TestComponents.Position, TestComponents.Velocity, TestComponents.Health, TestComponents.Name>> results =
                 world.findEntitiesWith(
@@ -331,46 +298,31 @@ public class WorldQueryTest {
                         TestComponents.Name.class
                 );
 
-        assertTrue(results.iterator().hasNext());
+        assertResultCount(results, 2);
 
-        List<With4<TestComponents.Position, TestComponents.Velocity, TestComponents.Health, TestComponents.Name>> list = new ArrayList<>();
-        results.iterator().forEachRemaining(list::add);
-
-        assertEquals(2, list.size());
-
-        assertTrue(list.stream().anyMatch(r -> r.entity().equals(entity1)));
-        With4<TestComponents.Position, TestComponents.Velocity, TestComponents.Health, TestComponents.Name> w1 = list.stream()
-                .filter(r -> r.entity().equals(entity1)).findFirst().orElseThrow();
-        assertEquals(1, w1.comp1().x);
-        assertEquals(1, w1.comp1().y);
-        assertEquals(1, w1.comp2().dx);
-        assertEquals(1, w1.comp2().dy);
-        assertEquals(100, w1.comp3().current);
-        assertEquals(100, w1.comp3().max);
-        assertEquals("Entity1", w1.comp4().value);
-        assertEquals(entity1, w1.entity());
-
-        assertTrue(list.stream().anyMatch(r -> r.entity().equals(entity2)));
-        With4<TestComponents.Position, TestComponents.Velocity, TestComponents.Health, TestComponents.Name> w2 = list.stream()
-                .filter(r -> r.entity().equals(entity2)).findFirst().orElseThrow();
-        assertEquals(2, w2.comp1().x);
-        assertEquals(2, w2.comp1().y);
-        assertEquals(2, w2.comp2().dx);
-        assertEquals(2, w2.comp2().dy);
-        assertEquals(200, w2.comp3().current);
-        assertEquals(200, w2.comp3().max);
-        assertEquals("Entity2", w2.comp4().value);
-        assertEquals(entity2, w2.entity());
+        assertResultContainsEntity(results, entity1, r -> {
+            assertEquals(entity1Position, r.comp1());
+            assertEquals(entity1Velocity, r.comp2());
+            assertEquals(entity1Health, r.comp3());
+            assertEquals(entity1Name, r.comp4());
+            assertEquals(entity1, r.entity());
+        });
+        assertResultContainsEntity(results, entity2, r -> {
+            assertEquals(entity2Position, r.comp1());
+            assertEquals(entity2Velocity, r.comp2());
+            assertEquals(entity2Health, r.comp3());
+            assertEquals(entity2Name, r.comp4());
+            assertEquals(entity2, r.entity());
+        });
     }
 
     @Test
     void findEntitiesWith_FourComponents_ShouldReturnAllFourComponents() {
-        world.createEntity(
-                new TestComponents.Position(10, 20),
-                new TestComponents.Velocity(30, 40),
-                new TestComponents.Health(50, 100),
-                new TestComponents.Name("TestEntity")
-        );
+        TestComponents.Position position = new TestComponents.Position(10, 20);
+        TestComponents.Velocity velocity = new TestComponents.Velocity(30, 40);
+        TestComponents.Health health = new TestComponents.Health(50, 100);
+        TestComponents.Name name = new TestComponents.Name("TestEntity");
+        world.createEntity(position, velocity, health, name);
 
         Results<With4<TestComponents.Position, TestComponents.Velocity, TestComponents.Health, TestComponents.Name>> results =
                 world.findEntitiesWith(
@@ -380,11 +332,12 @@ public class WorldQueryTest {
                         TestComponents.Name.class
                 );
 
-        With4<TestComponents.Position, TestComponents.Velocity, TestComponents.Health, TestComponents.Name> result = results.iterator().next();
-        assertEquals(10f, result.comp1().x);
-        assertEquals(30f, result.comp2().dx);
-        assertEquals(50, result.comp3().current);
-        assertEquals("TestEntity", result.comp4().value);
+        assertSingleResult(results, r -> {
+            assertEquals(position, r.comp1());
+            assertEquals(velocity, r.comp2());
+            assertEquals(health, r.comp3());
+            assertEquals(name, r.comp4());
+        });
     }
 
     @Test
@@ -411,11 +364,9 @@ public class WorldQueryTest {
                         TestComponents.Name.class
                 );
 
-        List<With4<TestComponents.Position, TestComponents.Velocity, TestComponents.Health, TestComponents.Name>> list = new ArrayList<>();
-        results.iterator().forEachRemaining(list::add);
-
-        assertEquals(1, list.size());
-        assertEquals("Complete", list.get(0).comp4().value);
+        assertSingleResult(results, r -> {
+            assertEquals("Complete", r.comp4().value);
+        });
     }
 
 
@@ -576,6 +527,7 @@ public class WorldQueryTest {
         world.deleteEntity(entity2);
 
         Results<With1<TestComponents.Position>> results = world.findEntitiesWith(TestComponents.Position.class);
+        assertResultCount(results, 2);
 
         Set<Integer> entityIds = new HashSet<>();
         for (With1<TestComponents.Position> r : results) {
@@ -596,8 +548,7 @@ public class WorldQueryTest {
 
         Results<With1<TestComponents.Position>> results = world.findEntitiesWith(TestComponents.Position.class);
 
-        long count = results.stream().count();
-        assertEquals(50, count);
+        assertResultCount(results, 50);
     }
 
     @Test
@@ -612,8 +563,8 @@ public class WorldQueryTest {
         Results<With2<TestComponents.Position, TestComponents.EnemyTag>> enemyResults =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.EnemyTag.class);
 
-        assertEquals(2, playerResults.stream().count());
-        assertEquals(1, enemyResults.stream().count());
+        assertResultCount(playerResults, 2);
+        assertResultCount(enemyResults, 1);
     }
 
     @Test
@@ -623,7 +574,7 @@ public class WorldQueryTest {
         // Query before removal
         Results<With2<TestComponents.Position, TestComponents.Velocity>> resultsBefore =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class);
-        assertEquals(1, resultsBefore.stream().count());
+        assertResultCount(resultsBefore, 1);
 
         // Remove velocity component
         entity.removeType(TestComponents.Velocity.class);
@@ -631,11 +582,11 @@ public class WorldQueryTest {
         // Query after removal
         Results<With2<TestComponents.Position, TestComponents.Velocity>> resultsAfter =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class);
-        assertEquals(0, resultsAfter.stream().count());
+        assertResultsEmpty(resultsAfter);
 
         // Single component query should still work
         Results<With1<TestComponents.Position>> posResults = world.findEntitiesWith(TestComponents.Position.class);
-        assertEquals(1, posResults.stream().count());
+        assertResultCount(posResults, 1);
     }
 
     @Test
@@ -645,7 +596,7 @@ public class WorldQueryTest {
         // Query before addition
         Results<With2<TestComponents.Position, TestComponents.Velocity>> resultsBefore =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class);
-        assertEquals(0, resultsBefore.stream().count());
+        assertResultsEmpty(resultsBefore);
 
         // Add velocity component
         entity.add(new TestComponents.Velocity(2, 2));
@@ -653,7 +604,7 @@ public class WorldQueryTest {
         // Query after addition
         Results<With2<TestComponents.Position, TestComponents.Velocity>> resultsAfter =
                 world.findEntitiesWith(TestComponents.Position.class, TestComponents.Velocity.class);
-        assertEquals(1, resultsAfter.stream().count());
+        assertResultCount(resultsAfter, 1);
     }
 
     @Test
@@ -668,24 +619,21 @@ public class WorldQueryTest {
         Results<With1<TestComponents.Position>> results = world.findEntitiesWith(TestComponents.Position.class);
 
         // First: Count results (should be 1)
-        long initialCount = results.stream().count();
-        assertEquals(1, initialCount);
+        assertResultCount(results, 1);
 
         // Add another entity with Position
         world.createEntity(new TestComponents.Position(2, 2));
 
         // Retest the same Results object: Does it reflect the new entity?
-        long afterInsertCount = results.stream().count();
+        assertResultCount(results, 2);
 
-//        // If the Results is snapshot-based, afterInsertCount == 1
-//        // If Results is live, afterInsertCount == 2
-//        // We're asserting typical ECS behavior: Results are not automatically live-updated.
-//        assertEquals(1, afterInsertCount,
-//                "Results object should  automatically include new entities added after it was obtained");
-//
-//        // To confirm, a new query should see 2 entities
-//        Results<With1<TestComponents.Position>> newResults = world.findEntitiesWith(TestComponents.Position.class);
-//        assertEquals(2, newResults.stream().count(),
-//                "A new Results object should reflect all current entities");
+        // // If the Results is snapshot-based, afterInsertCount == 1
+        // // If Results is live, afterInsertCount == 2
+        // // We're asserting typical ECS behavior: Results are not automatically live-updated.
+        // assertEquals(1, afterInsertCount, "Results object should  automatically include new entities added after it was obtained");
+        //
+        // // To confirm, a new query should see 2 entities
+        // Results<With1<TestComponents.Position>> newResults = world.findEntitiesWith(TestComponents.Position.class);
+        // assertEquals(2, newResults.stream().count(), "A new Results object should reflect all current entities");
     }
 }

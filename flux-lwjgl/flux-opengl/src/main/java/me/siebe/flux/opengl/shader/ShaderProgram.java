@@ -12,18 +12,23 @@ import org.lwjgl.BufferUtils;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram extends GLResource {
-    private static final Logger logger = LoggerFactory.getLogger(ShaderProgram.class, LoggingCategories.RENDERER);
-    private static ShaderProgram ACTIVE_SHADER;
+    private static final Logger logger = LoggerFactory.getLogger(ShaderProgram.class, LoggingCategories.SHADER);
+    static ShaderProgram ACTIVE_SHADER;
 
     private final String filename;
 
-    private final Map<String, ShaderAttribute> attributes;
-    private final Map<String, ShaderUniform> uniforms;
+    final Map<String, ShaderAttribute> attributes;
+    final Map<String, ShaderUniform> uniforms;
+
+    /** Tracks uniform names that have already triggered a "not found or unused" warning. */
+    private final Set<String> missingUniformWarnings = new HashSet<>();
 
     /**
      * Creates a new shader program from vertex and fragment shader files.
@@ -98,6 +103,11 @@ public class ShaderProgram extends GLResource {
             int size = sizeBuf.get(0);
             int type = typeBuf.get(0);
 
+            // Array uniforms always have the following format: <name>[0]. For predictability, we remove the [0] part
+            if (size != 1 && name.contains("[0]")) {
+                name = name.replace("[0]", "");
+            }
+
             uniforms.put(name, new ShaderUniform(name, location, type, size));
         }
     }
@@ -117,7 +127,9 @@ public class ShaderProgram extends GLResource {
         Validator.notNull(value);
         ShaderUniform u = getUniform(name);
         if (u == null) {
-            logger.warn("Uniform {} not found or unused in {}", name, filename);
+            if (missingUniformWarnings.add(name)) {
+                logger.warn("Uniform {} not found or unused in {}", name, filename);
+            }
             return;
         }
         bind();
@@ -137,7 +149,9 @@ public class ShaderProgram extends GLResource {
     public void uploadTexture(String name, int slot) {
         ShaderUniform u = getUniform(name);
         if (u == null) {
-            logger.warn("Uniform {} not found or unused in {}", name, filename);
+            if (missingUniformWarnings.add(name)) {
+                logger.warn("Uniform {} not found or unused in {}", name, filename);
+            }
             return;
         }
         bind();

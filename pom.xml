@@ -21,6 +21,7 @@
         <module>flux-api</module>
         <module>flux-renderer-3d</module>
         <module>flux-ui</module>
+        <module>flux-test-utils</module>
     </modules>
 
     <properties>

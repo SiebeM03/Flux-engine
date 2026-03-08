@@ -1,5 +1,6 @@
 package me.siebe.flux.glfw.window;
 
+import me.siebe.flux.api.event.EventListener;
 import me.siebe.flux.api.event.common.FramebufferResizeEvent;
 import me.siebe.flux.api.event.common.WindowResizeEvent;
 import me.siebe.flux.api.input.Input;
@@ -17,6 +18,9 @@ import static org.lwjgl.glfw.GLFW.*;
 public class GlfwWindow implements Window {
     private static final Logger logger = LoggerFactory.getLogger(GlfwWindow.class, LoggingCategories.WINDOW);
     private final WindowConfig config;
+
+    private EventListener<FramebufferResizeEvent> framebufferResizeListener = this::onFramebufferResize;
+    private EventListener<WindowResizeEvent> windowResizeListener = this::onWindowResize;
 
     GlfwWindow(WindowConfig config) {
         this.config = config;
@@ -41,8 +45,8 @@ public class GlfwWindow implements Window {
         glfwSetFramebufferSizeCallback(getId(), this::sendFramebufferResizeEvent);
 
         // Register event listeners
-        AppContext.get().getEventBus().getListenerRegistry().register(WindowResizeEvent.class, this::onWindowResize);
-        AppContext.get().getEventBus().getListenerRegistry().register(FramebufferResizeEvent.class, this::onFramebufferResize);
+        AppContext.get().getEventBus().getListenerRegistry().register(WindowResizeEvent.class, windowResizeListener);
+        AppContext.get().getEventBus().getListenerRegistry().register(FramebufferResizeEvent.class, framebufferResizeListener);
 
 //        AppContext.get().getEventBus().getListenerRegistry().register(KeyPressEvent.class, e -> {
 //            if (!e.isKey(Key.KEY_ESCAPE)) return;
@@ -107,8 +111,10 @@ public class GlfwWindow implements Window {
         logger.info("Destroying GlfwWindow");
         glfwDestroyWindow(config.windowId);
 
-        AppContext.get().getEventBus().getListenerRegistry().unregister(WindowResizeEvent.class, this::onWindowResize);
-        AppContext.get().getEventBus().getListenerRegistry().unregister(FramebufferResizeEvent.class, this::onFramebufferResize);
+        AppContext.get().getEventBus().getListenerRegistry().unregister(WindowResizeEvent.class, windowResizeListener);
+        AppContext.get().getEventBus().getListenerRegistry().unregister(FramebufferResizeEvent.class, framebufferResizeListener);
+
+        glfwTerminate();
     }
 
     private boolean isValidSizeChange(int newWidth, int newHeight) {
