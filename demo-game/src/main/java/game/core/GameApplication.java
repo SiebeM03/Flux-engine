@@ -26,7 +26,6 @@ public class GameApplication extends FluxApplication {
 
     private List<Demo> demos = List.of(
             new CameraControllerDemo(),
-            new PauseActionsDemo(),
             new GltfLoadingDemo(),
             new TerrainDemo()
     );
@@ -37,8 +36,11 @@ public class GameApplication extends FluxApplication {
 
         // Init RenderContext
         Renderer renderer = AppContext.get().getRenderer();
-        renderer.setRenderContext(new CustomRenderContext());
-        renderer.getRenderContext().setRenderables(new ArrayList<>());
+        renderer.setRenderContext(
+                new CustomRenderContext.Builder()
+                        .emptyRenderables()
+                        .build()
+        );
         renderer.getPipeline().addStep(new GltfStep());
 
         demos.forEach(Demo::init);

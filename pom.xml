@@ -20,6 +20,7 @@
         <module>flux-core</module>
         <module>flux-api</module>
         <module>flux-renderer-3d</module>
+        <module>flux-test-utils</module>
     </modules>
 
     <properties>
@@ -55,4 +56,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>

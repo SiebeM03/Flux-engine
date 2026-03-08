@@ -13,4 +13,20 @@ public class CustomRenderContext extends BaseRenderContext {
     public void setTerrainModel(Renderable terrainModel) {
         this.terrainModel = terrainModel;
     }
+
+    public static class Builder extends BaseRenderContext.Builder<CustomRenderContext> {
+        private Renderable terrainModel;
+
+        public Builder terrainModel(Renderable terrainModel) {
+            this.terrainModel = terrainModel;
+            return this;
+        }
+
+        @Override
+        protected CustomRenderContext createContext() {
+            CustomRenderContext ctx = new CustomRenderContext();
+            ctx.setTerrainModel(terrainModel);
+            return ctx;
+        }
+    }
 }
