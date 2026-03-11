@@ -30,4 +30,8 @@ public class FluxUi implements Ui {
     public Queue<UIScene> getScenes() {
         return scenes;
     }
+
+    @Override
+    public void destroy() {
+    }
 }

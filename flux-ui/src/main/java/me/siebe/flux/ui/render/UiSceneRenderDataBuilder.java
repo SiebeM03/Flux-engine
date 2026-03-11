@@ -3,9 +3,12 @@ package me.siebe.flux.ui.render;
 import me.siebe.flux.api.ui.UIElement;
 import me.siebe.flux.api.ui.UIScene;
 import me.siebe.flux.opengl.shader.ShaderDataType;
+import me.siebe.flux.opengl.shader.ShaderProgram;
 import me.siebe.flux.opengl.vertex.*;
+import me.siebe.flux.ui.components.UiTexturedElement;
 import me.siebe.flux.util.data.buffer.FloatBuffer;
 import me.siebe.flux.util.data.buffer.IntBuffer;
+import org.joml.Vector2f;
 
 class UiSceneRenderDataBuilder {
     private static final int MAX_QUADS_PER_SCENE = 1_000;
@@ -15,6 +18,13 @@ class UiSceneRenderDataBuilder {
     private VertexArray vertexArray;
     private VertexBuffer vertexBuffer;
     private IndexBuffer indexBuffer;
+
+    public Vector2f[] textureCoords = {
+            new Vector2f(1, 1),
+            new Vector2f(1, 0),
+            new Vector2f(0, 0),
+            new Vector2f(0, 1),
+    };
 
     UiSceneRenderDataBuilder() {
         vertexData = new FloatBuffer(128);
@@ -27,6 +37,9 @@ class UiSceneRenderDataBuilder {
         BufferLayout bufferLayout = new BufferLayout(
                 new BufferElement("aPos", ShaderDataType.Float2, false),
                 new BufferElement("aColor", ShaderDataType.Float4, false)
+//                ,
+//                new BufferElement("aTexCoords", ShaderDataType.Float2, false),
+//                new BufferElement("aTexId", ShaderDataType.Float, false)
         );
         vertexBuffer = new VertexBuffer(MAX_QUADS_PER_SCENE * 4 * bufferLayout.getComponentCount() * Float.BYTES);
         vertexBuffer.setLayout(bufferLayout);
@@ -70,6 +83,19 @@ class UiSceneRenderDataBuilder {
             vertexData.add(element.getBackground().greenFloat());
             vertexData.add(element.getBackground().blueFloat());
             vertexData.add(element.getBackground().alphaFloat());
+
+//            // aTexCoords
+//            vertexData.add(textureCoords[i].x);
+//            vertexData.add(textureCoords[i].y);
+//
+//            // aTexId
+//            if (element instanceof UiTexturedElement texturedElement) {
+//                texturedElement.getTexture().bindToSlot(14);
+//                ShaderProgram.getActiveShader().uploadTexture("uTextures", 1);
+//                vertexData.add(1);
+//            } else {
+//                vertexData.add(-1);
+//            }
         }
 
         indexData.add(lastIndex + 0);

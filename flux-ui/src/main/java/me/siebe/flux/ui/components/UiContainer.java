@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UiContainer implements UIElement {
-    private float width;
-    private float height;
-    private float x = 0;
-    private float y = 0;
-    private FluxColor color;
-    private List<UIElement> children = new ArrayList<>();
+    protected float width;
+    protected float height;
+    protected float x = 0;
+    protected float y = 0;
+    protected FluxColor color = FluxColor.WHITE.copy();
+    protected List<UIElement> children = new ArrayList<>();
 
     @Override
     public void setWidth(float width) {
@@ -58,7 +58,7 @@ public class UiContainer implements UIElement {
     }
     @Override
     public boolean isVisible() {
-        return false;
+        return true;
     }
     @Override
     public void setEnabled(boolean enabled) {

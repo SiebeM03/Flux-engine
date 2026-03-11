@@ -58,7 +58,6 @@ public class VertexArray extends GLResource implements Copyable<VertexArray> {
                     vertexBufferIndex++;
                 }
                 case Int, Int2, Int3, Int4 -> {
-                    glEnableVertexAttribArray(vertexBufferIndex);
                     glVertexAttribIPointer(
                             vertexBufferIndex,
                             element.type.getComponentCount(),
@@ -66,6 +65,7 @@ public class VertexArray extends GLResource implements Copyable<VertexArray> {
                             layout.getStride(),
                             element.offset
                     );
+                    glEnableVertexAttribArray(vertexBufferIndex);
                     vertexBufferIndex++;
                 }
                 case Bool -> {

@@ -18,4 +18,6 @@ public interface Ui extends ProvidableSystem {
     static Ui findImplementation() {
         return SystemProvider.provide(Ui.class, SystemProviderType.ALL);
     }
+
+    void destroy();
 }
