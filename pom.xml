@@ -21,6 +21,7 @@
         <module>flux-api</module>
         <module>flux-renderer-3d</module>
         <module>flux-test-utils</module>
+        <module>flux-bom</module>
     </modules>
 
     <properties>
@@ -29,9 +30,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <lwjgl.version>3.3.4</lwjgl.version>
-        <joml.version>1.10.8</joml.version>
         <lwjgl.natives>natives-windows</lwjgl.natives>
-        <slf4j.version>2.0.13</slf4j.version>
+        <joml.version>1.10.8</joml.version>
     </properties>
 
     <dependencies>

@@ -14,35 +14,38 @@
     <name>Flux Test Utils</name>
     <description>Reusable testing harness for headless engine execution, deterministic simulation, and fake systems.</description>
 
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>me.siebe</groupId>
+                <artifactId>flux-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-util</artifactId>
-            <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>6.0.2</version>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>5.21.0</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.lwjgl</groupId>

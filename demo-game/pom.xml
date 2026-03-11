@@ -19,28 +19,35 @@
         <flux.engine.version>1.0.0-SNAPSHOT</flux.engine.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>me.siebe</groupId>
+                <artifactId>flux-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-core</artifactId>
-            <version>${flux.engine.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-opengl</artifactId>
-            <version>${flux.engine.version}</version>
         </dependency>
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-glfw</artifactId>
-            <version>${flux.engine.version}</version>
         </dependency>
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-renderer-3d</artifactId>
-            <version>${flux.engine.version}</version>
         </dependency>
     </dependencies>
 

@@ -16,12 +16,6 @@
         <module>flux-opengl</module>
     </modules>
 
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -31,6 +25,14 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+
+            <dependency>
+                <groupId>me.siebe</groupId>
+                <artifactId>flux-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -38,12 +40,10 @@
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-util</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
 

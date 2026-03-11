@@ -1,17 +1,12 @@
 package me.siebe.flux.util.system;
 
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ScanResult;
 import me.siebe.flux.util.exceptions.FluxException;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 /**
@@ -26,8 +21,6 @@ import java.util.function.Predicate;
  */
 public class SystemProvider {
     private static final Logger logger = LoggerFactory.getLogger(SystemProvider.class, "system-provider");
-    private static final Map<Class<? extends ProvidableSystem>, List<ProvidableSystem>> cache = new ConcurrentHashMap<>();
-    private static final String ENGINE_PACKAGE_PREFIX = "me.siebe.flux";
 
     /**
      * Provide all implementations of the given system interface.
@@ -114,32 +107,19 @@ public class SystemProvider {
     private static <T extends ProvidableSystem> List<T> findCustomImplementations(Class<T> clazz) {
         List<T> customImplementations = new ArrayList<>();
 
-        try (ScanResult scan = new ClassGraph().enableClassInfo().scan()) {
-            List<Class<?>> classes;
-            if (Modifier.isInterface(clazz.getModifiers())) {
-                classes = scan.getClassesImplementing(clazz).loadClasses();
-            } else {
-                classes = scan.getSubclasses(clazz).loadClasses();
-            }
+        new ClassGraph()
+                .ignoreAbstract()
+                .ignoreInterface()
+                .ignoreFluxPackages()
+                .scanForSubclasses(clazz)
+                .forEach(implClass -> {
+                    try {
+                        customImplementations.add(implClass.getDeclaredConstructor().newInstance());
+                    } catch (Exception e) {
+                        logger.warn("Could not instantiate {} using {} ({})", implClass.getSimpleName(), clazz.getSimpleName(), e.getClass().getName());
+                    }
+                });
 
-            for (Class<?> implClass : classes) {
-                // Skip implementations in engine packages
-                if (implClass.getPackageName().startsWith(ENGINE_PACKAGE_PREFIX))
-                    continue;
-                // Skip abstract classes since they are not actual implementations
-                if (Modifier.isAbstract(implClass.getModifiers()))
-                    continue;
-                // Skip interfaces since they are not actual implementations
-                if (Modifier.isInterface(implClass.getModifiers()))
-                    continue;
-
-                try {
-                    customImplementations.add((T) implClass.getDeclaredConstructor().newInstance());
-                } catch (Exception e) {
-                    logger.warn("Could not instantiate {} using {} ({})", implClass.getSimpleName(), clazz.getSimpleName(), e.getClass().getName());
-                }
-            }
-        }
         return customImplementations;
     }
 }

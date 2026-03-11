@@ -11,17 +11,10 @@
 
     <artifactId>flux-glfw</artifactId>
 
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-opengl</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -44,7 +37,6 @@
         <dependency>
             <groupId>me.siebe</groupId>
             <artifactId>flux-test-utils</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

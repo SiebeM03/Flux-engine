@@ -2,6 +2,7 @@ package me.siebe.flux.core;
 
 
 import me.siebe.flux.util.exceptions.ApplicationException;
+import me.siebe.flux.util.system.ClassGraph;
 import me.siebe.flux.util.system.SystemProvider;
 import me.siebe.flux.util.system.SystemProviderType;
 
@@ -17,6 +18,8 @@ public class FluxLauncher {
         // This will retrieve the application implementation in the game project
         FluxApplication app = providers.stream().findFirst()
                 .orElseThrow(ApplicationException::noAppProviderImplementationFound);
+
+        ClassGraph.setGamePackage(app.getClass());
 
         // Make sure AppContext is initialized properly before starting the application lifecycle
         AppContext.get();

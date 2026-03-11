@@ -2,7 +2,6 @@ package game.core;
 
 import game.core.demos.Demo;
 import game.core.demos.input.camera_controller.CameraControllerDemo;
-import game.core.demos.input.pause_actions.PauseActionsDemo;
 import game.core.demos.render.CustomRenderContext;
 import game.core.demos.render.gltf.GltfLoadingDemo;
 import game.core.demos.render.terrain.TerrainDemo;
@@ -18,7 +17,6 @@ import me.siebe.flux.renderer3d.steps.GltfStep;
 import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameApplication extends FluxApplication {
