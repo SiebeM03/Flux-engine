@@ -16,9 +16,9 @@ public class GlfwMouse extends AbstractMouse {
     private static final Logger logger = LoggerFactory.getLogger(GlfwMouse.class, LoggingCategories.INPUT);
 
     GlfwMouse(long windowId) {
-        glfwSetMouseButtonCallback(windowId, this::mouseButtonCallback);
-        glfwSetCursorPosCallback(windowId, this::mousePosCallback);
-        glfwSetScrollCallback(windowId, this::scrollCallback);
+        glfwSetMouseButtonCallback(windowId, GlfwCallbacks.mouseButton(this::mouseButtonCallback));
+        glfwSetCursorPosCallback(windowId, GlfwCallbacks.cursorPos(this::mousePosCallback));
+        glfwSetScrollCallback(windowId, GlfwCallbacks.scroll(this::scrollCallback));
 
         double[] mouseX = new double[1];
         double[] mouseY = new double[1];

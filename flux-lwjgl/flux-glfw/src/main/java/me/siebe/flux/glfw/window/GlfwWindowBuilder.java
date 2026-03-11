@@ -9,7 +9,6 @@ import me.siebe.flux.util.logging.Logger;
 import me.siebe.flux.util.logging.LoggerFactory;
 import me.siebe.flux.util.logging.config.LoggingCategories;
 import me.siebe.flux.util.time.TimeProvider;
-import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
 import static me.siebe.flux.util.config.Flux.NULL;
@@ -43,7 +42,7 @@ public class GlfwWindowBuilder extends WindowBuilder {
     }
 
     private void initGLFW() {
-        GLFWErrorCallback.createPrint(System.err).set();
+        GlfwCallbacks.errorPrintCallback(System.err).set();
         if (!glfwInit()) {
             throw WindowException.creationFailed("Failed to initialize GLFW");
         }
@@ -105,15 +104,15 @@ public class GlfwWindowBuilder extends WindowBuilder {
     }
 
     private void setWindowSizeListener() {
-        glfwSetWindowSizeCallback(config.windowId, (window, width, height) -> {
+        glfwSetWindowSizeCallback(config.windowId, GlfwCallbacks.windowSize((window, width, height) -> {
             config.width = width;
             config.height = height;
-        });
+        }));
     }
 
     private void setWindowCloseListener() {
-        glfwSetWindowCloseCallback(config.windowId, window -> {
+        glfwSetWindowCloseCallback(config.windowId, GlfwCallbacks.windowClose(window -> {
             glfwSetWindowShouldClose(config.windowId, true);
-        });
+        }));
     }
 }

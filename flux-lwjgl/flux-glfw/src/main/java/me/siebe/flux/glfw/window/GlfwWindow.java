@@ -41,8 +41,8 @@ public class GlfwWindow implements Window {
         );
 
         // Register window event callbacks
-        glfwSetWindowSizeCallback(getId(), this::sendWindowResizeEvent);
-        glfwSetFramebufferSizeCallback(getId(), this::sendFramebufferResizeEvent);
+        glfwSetWindowSizeCallback(getId(), GlfwCallbacks.windowSize(this::sendWindowResizeEvent));
+        glfwSetFramebufferSizeCallback(getId(), GlfwCallbacks.framebufferSize(this::sendFramebufferResizeEvent));
 
         // Register event listeners
         AppContext.get().getEventBus().getListenerRegistry().register(WindowResizeEvent.class, windowResizeListener);

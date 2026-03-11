@@ -16,7 +16,7 @@ class GlfwKeyboard extends AbstractKeyboard {
     private static final Logger logger = LoggerFactory.getLogger(GlfwKeyboard.class, LoggingCategories.INPUT);
 
     GlfwKeyboard(long windowId) {
-        glfwSetKeyCallback(windowId, this::keyCallback);
+        glfwSetKeyCallback(windowId, GlfwCallbacks.key(this::keyCallback));
     }
 
     private void keyCallback(long window, int key, int scancode, int action, int mods) {
