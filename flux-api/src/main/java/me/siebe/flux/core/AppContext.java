@@ -4,6 +4,7 @@ import me.siebe.flux.api.event.EventBus;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.systems.SystemManager;
 import me.siebe.flux.api.window.Window;
+import me.siebe.flux.api.ui.Ui;
 import me.siebe.flux.util.time.Timer;
 
 /**
@@ -22,6 +23,7 @@ public final class AppContext {
     Renderer renderer;
     EventBus eventBus;
     SystemManager systemManager;
+    Ui ui;
 
     private AppContext() {
     }
@@ -55,6 +57,8 @@ public final class AppContext {
 
     /** Returns the system manager for registering and accessing application systems. */
     public SystemManager getSystemManager() {return systemManager;}
+
+    public Ui getUi() {return ui;}
 
 
     // =================================================================================================================

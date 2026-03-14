@@ -49,6 +49,11 @@
             <groupId>me.siebe</groupId>
             <artifactId>flux-renderer-3d</artifactId>
         </dependency>
+        <dependency>
+            <groupId>me.siebe</groupId>
+            <artifactId>flux-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

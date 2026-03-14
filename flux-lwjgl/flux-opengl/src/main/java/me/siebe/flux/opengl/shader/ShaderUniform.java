@@ -89,7 +89,7 @@ public record ShaderUniform(
 
     public void upload(int[] array) {
         checkLocation(location);
-        validateType(GL_INT);
+//        validateType(GL_INT);
         if (array.length > size) {
             logger.warn("Tried uploading an array of size {}, but the shader uniform expects size {}. The overflowing values will be ignored.", array.length, size);
         }

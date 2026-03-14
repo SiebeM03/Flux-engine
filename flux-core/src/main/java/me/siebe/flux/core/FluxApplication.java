@@ -6,6 +6,7 @@ import me.siebe.flux.api.input.Input;
 import me.siebe.flux.api.renderer.Renderer;
 import me.siebe.flux.api.renderer.pipeline.RenderPipeline;
 import me.siebe.flux.api.systems.SystemManager;
+import me.siebe.flux.api.ui.Ui;
 import me.siebe.flux.api.window.WindowBuilder;
 import me.siebe.flux.core.system.StartupBanner;
 import me.siebe.flux.core.system.SystemInfoService;
@@ -105,6 +106,8 @@ public abstract class FluxApplication implements ProvidableSystem {
 
             // Render pipeline initialization
             ctx.renderer = new Renderer(RenderPipeline.create());
+
+            ctx.ui = Ui.findImplementation();
         });
     }
 

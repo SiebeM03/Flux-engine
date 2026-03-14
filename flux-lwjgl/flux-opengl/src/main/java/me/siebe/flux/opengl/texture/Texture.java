@@ -2,9 +2,8 @@ package me.siebe.flux.opengl.texture;
 
 import me.siebe.flux.opengl.GLResource;
 import me.siebe.flux.util.memory.Copyable;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -14,7 +13,7 @@ import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
-import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.stb.STBImage.*;
 
 public class Texture extends GLResource implements Copyable<Texture> {
     /**
@@ -68,29 +67,64 @@ public class Texture extends GLResource implements Copyable<Texture> {
 
     // TODO implement with GltfLoader#loadTexture() as it uses a lot of similar code
     public Texture(String path) {
+//        super(glGenTextures());
+//        bind();
+//
+//        try (MemoryStack stack = stackPush()) {
+//            IntBuffer w = stack.mallocInt(1);
+//            IntBuffer h = stack.mallocInt(1);
+//            IntBuffer channels = stack.mallocInt(1);
+//
+//            STBImage.stbi_set_flip_vertically_on_load(true);
+//            ByteBuffer imageData = STBImage.stbi_load(path, w, h, channels, 4);
+//            if (imageData == null) {
+//                throw new RuntimeException("Failed to load texture: " + path);
+//            }
+//
+//            width = w.get();
+//            height = h.get();
+//            target = GL_TEXTURE_2D;
+//
+//            glTexImage2D(target, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+//            glGenerateMipmap(target);
+//
+//            setFilters(GL_NEAREST, GL_NEAREST);
+//            setWrap(GL_REPEAT, GL_REPEAT);
+//
+//            STBImage.stbi_image_free(imageData);
+//        }
+
         super(glGenTextures());
         bind();
 
-        try (MemoryStack stack = stackPush()) {
-            IntBuffer w = stack.mallocInt(1);
-            IntBuffer h = stack.mallocInt(1);
-            IntBuffer channels = stack.mallocInt(1);
+        setWrap(GL_REPEAT, GL_REPEAT);
 
-            STBImage.stbi_set_flip_vertically_on_load(true);
-            ByteBuffer imageData = STBImage.stbi_load(path, w, h, channels, 4);
-            if (imageData == null) {
-                throw new RuntimeException("Failed to load texture: " + path);
-            }
+        setFilters(GL_NEAREST, GL_NEAREST);
 
-            width = w.get();
-            height = h.get();
-            target = GL_TEXTURE_2D;
+        IntBuffer width = BufferUtils.createIntBuffer(1);
+        IntBuffer height = BufferUtils.createIntBuffer(1);
+        IntBuffer channels = BufferUtils.createIntBuffer(1);
+        stbi_set_flip_vertically_on_load(true);
+        ByteBuffer image = stbi_load(path, width, height, channels, 0);
 
-            glTexImage2D(target, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+        if (image == null) {
+            assert false : "Error: (Texture) Could not load image '" + path + "'";
+        }
+
+        this.width = width.get(0);
+        this.height = height.get(0);
+        this.target = GL_TEXTURE_2D;
+
+        if (channels.get(0) == 3) {
+            glTexImage2D(this.target, 0, GL_RGB, this.width, this.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+        } else if (channels.get(0) == 4) {
+            glTexImage2D(this.target, 0, GL_RGB, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+        } else {
+            assert false : "Error: (Texture) Unknown number of channels '" + channels.get(0) + "'";
+        }
             glGenerateMipmap(target);
 
-            STBImage.stbi_image_free(imageData);
-        }
+        stbi_image_free(image);
     }
 
     @Override

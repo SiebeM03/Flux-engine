@@ -31,7 +31,7 @@ public class VertexBuffer extends GLResource {
         buffer.put(vertices).flip();
 
         glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-        this.size = vertices.length;
+        this.size = vertices.length * Float.BYTES;
     }
 
     @Override
@@ -49,12 +49,11 @@ public class VertexBuffer extends GLResource {
 
     public void setData(float[] data) {
         bind();
-
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
-        buffer.put(data).flip();
-
+        if (data.length * Float.BYTES > size) {
+            logger.error("Buffer data size is too large. Max byte capacity is {} bytes but got {} bytes", size, data.length * Float.BYTES);
+        }
         glBufferSubData(GL_ARRAY_BUFFER, 0, data);
-        this.size = data.length;
+        this.size = data.length * Float.BYTES;
     }
 
     public int getSize() {

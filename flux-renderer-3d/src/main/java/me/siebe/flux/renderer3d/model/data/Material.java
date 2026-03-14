@@ -453,6 +453,31 @@ public class Material implements Copyable<Material> {
         // Restore default state if needed
         // For now, we'll let the next primitive set its own state
         // In a more sophisticated renderer, you might want to track previous state
+//        int slot = 0;
+//        if (hasAlbedoTexture()) {
+//            albedoTexture.bindToSlot(slot);
+//            albedoTexture.unbind();
+//        }
+//        slot++;
+//        if (hasNormalTexture()) {
+//            normalTexture.bindToSlot(slot);
+//            normalTexture.unbind();
+//        }
+//        slot++;
+//        if (hasMetallicRoughnessTexture()) {
+//            metallicRoughnessTexture.bindToSlot(slot);
+//            metallicRoughnessTexture.unbind();
+//        }
+//        slot++;
+//        if (hasEmissiveTexture()) {
+//            emissiveTexture.bindToSlot(slot);
+//            emissiveTexture.unbind();
+//        }
+//        slot++;
+//        if (hasOcclusionTexture()){
+//            occlusionTexture.bindToSlot(slot);
+//            occlusionTexture.unbind();
+//        }
     }
 
     public void uploadToShader(ShaderProgram shader) {
