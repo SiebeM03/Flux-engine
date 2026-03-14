@@ -9,6 +9,10 @@ public class BufferElement {
     int offset;
     boolean normalized;
 
+    public BufferElement(String name, ShaderDataType type) {
+        this(name, type, false);
+    }
+
     public BufferElement(String name, ShaderDataType type, boolean normalized) {
         this.name = name;
         this.type = type;

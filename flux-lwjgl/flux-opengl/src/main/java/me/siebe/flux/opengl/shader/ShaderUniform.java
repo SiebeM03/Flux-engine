@@ -24,6 +24,7 @@ public record ShaderUniform(
     }
 
     private void validateType(int expectedGLType) {
+        if (glType == GL_SAMPLER_2D && expectedGLType == GL_INT) return;
         if (glType != expectedGLType) {
             throw new IllegalArgumentException(
                     "Type mismatch when uploading to uniform '" + name +
