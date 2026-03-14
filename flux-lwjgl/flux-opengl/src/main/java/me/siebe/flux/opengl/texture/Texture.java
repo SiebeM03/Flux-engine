@@ -82,8 +82,8 @@ public class Texture extends GLResource implements Copyable<Texture> {
                 throw new RuntimeException("Failed to load texture: " + path);
             }
 
-            width = w.get();
-            height = h.get();
+            width = w.get(0);
+            height = h.get(0);
             target = GL_TEXTURE_2D;
 
             glTexImage2D(target, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
@@ -101,6 +101,11 @@ public class Texture extends GLResource implements Copyable<Texture> {
     public void bindToSlot(int slot) {
         glActiveTexture(GL_TEXTURE0 + slot);
         bind();
+    }
+
+    public void unbindToSlot(int slot) {
+        glActiveTexture(GL_TEXTURE0 + slot);
+        unbind();
     }
 
     public void unbind() {

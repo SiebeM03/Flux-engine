@@ -22,6 +22,7 @@
         <module>flux-renderer-3d</module>
         <module>flux-test-utils</module>
         <module>flux-bom</module>
+        <module>texture-test</module>
     </modules>
 
     <properties>
